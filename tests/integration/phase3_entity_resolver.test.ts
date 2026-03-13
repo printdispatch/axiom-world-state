@@ -275,8 +275,8 @@ describe("Phase 3 — EntityResolver", () => {
     resolver.resolve("sig-001", layer2);
 
     expect(resolvedEvents).toHaveLength(1);
-    const event = resolvedEvents[0] as { signalId: string; createdCount: number };
-    expect(event.signalId).toBe("sig-001");
+    const event = resolvedEvents[0] as { signal_id: string; createdCount: number };
+    expect(event.signal_id).toBe("sig-001");
     expect(event.createdCount).toBe(1);
   });
 

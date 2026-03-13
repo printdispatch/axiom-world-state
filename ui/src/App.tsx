@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import KnowledgeGraph from "./KnowledgeGraph";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -793,7 +794,7 @@ function WorldDashboard({ world }: { world: WorldState }) {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "graph";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("feed");
@@ -1007,6 +1008,8 @@ export default function App() {
             ? <WorldDashboard world={worldState} />
             : <div className="feed-list"><div className="empty-msg">Loading world state...</div></div>
         )}
+        {/* ── Graph Tab ── */}
+        {tab === "graph" && <KnowledgeGraph />}
       </main>
 
       {/* ── Bottom Nav ── */}
@@ -1033,6 +1036,10 @@ export default function App() {
         <button className={`nav-item${tab === "world" ? " active" : ""}`} onClick={() => setTab("world")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           <span>World</span>
+        </button>
+        <button className={`nav-item${tab === "graph" ? " active" : ""}`} onClick={() => setTab("graph")}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><line x1="7" y1="12" x2="17" y2="6"/><line x1="7" y1="12" x2="17" y2="18"/></svg>
+          <span>Graph</span>
         </button>
       </nav>
 

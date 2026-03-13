@@ -429,7 +429,9 @@ describe("Phase 2 — Six-Layer Processing Engine", () => {
 
       const reviewEvents: string[] = [];
       eventBus.on("review_required", (p) => {
-        reviewEvents.push(p.signalId);
+        // Handle both ReviewRequiredPayload (signalId) and ReviewRequiredPayload2 (signal_id)
+        const id = (p as { signalId?: string }).signalId ?? (p as { signal_id?: string }).signal_id ?? "";
+        reviewEvents.push(id);
       });
 
       eventBus.emit("signal_received", {

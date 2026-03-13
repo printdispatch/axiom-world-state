@@ -1,34 +1,176 @@
 {
-  "id": "proc-001", "signal_id": "sig-001", "processed_at": "2026-03-10T09:15:05Z",
-  "model": "gpt-5-pro", "is_noise": false,
-  "layer_1": { "is_noise": false, "raw_facts": [
-    {"fact": "Invoice #2024-089 issued for $4,200", "source_ref": "email body"},
-    {"fact": "Payment due April 11, 2026", "source_ref": "email body"},
-    {"fact": "Work is for Meridian Coffee brand identity project", "source_ref": "email subject"},
-    {"fact": "Sender is Sarah Chen at Vertex Design Co", "source_ref": "email signature"}
-  ]},
-  "layer_2": { "entity_candidates": [
-    {"label": "Sarah Chen", "domain": "person", "likely_existing": false, "lookup_key": "sarah chen", "email": "sarah@vertexdesign.com"},
-    {"label": "Vertex Design Co", "domain": "organization", "likely_existing": false, "lookup_key": "vertex design co"},
-    {"label": "Meridian Coffee", "domain": "organization", "likely_existing": false, "lookup_key": "meridian coffee"},
-    {"label": "Invoice #2024-089", "domain": "artifact", "likely_existing": false, "lookup_key": "invoice-2024-089"}
-  ], "matched_entity_ids": [], "proposed_new_entities": [], "similarity_conflicts": [] },
-  "layer_3": { "state_updates": [
-    {"entity_label": "Invoice #2024-089", "entity_domain": "artifact", "field": "status", "new_value": "sent", "source_fact": "Invoice issued"},
-    {"entity_label": "Invoice #2024-089", "entity_domain": "artifact", "field": "amount", "new_value": "$4,200", "source_fact": "Invoice for $4,200"},
-    {"entity_label": "Invoice #2024-089", "entity_domain": "artifact", "field": "due_date", "new_value": "April 11, 2026", "source_fact": "Payment due April 11"}
-  ], "unchanged_entities": ["Sarah Chen", "Vertex Design Co"], "ambiguities": [] },
-  "layer_4": { "new_obligations": [
-    {"title": "Pay Invoice #2024-089", "description": "Payment of $4,200 due to Vertex Design Co for Meridian Coffee brand identity", "owed_by": "Meridian Coffee", "owed_to": "Vertex Design Co", "workspace_hint": "Meridian Coffee", "priority": "high", "due_hint": "April 11, 2026", "source_fact": "Payment due April 11, 2026", "is_new": true}
-  ], "updated_obligations": [], "dependency_changes": [] },
-  "layer_5": { "inferences": [
-    {"statement": "Project is in final delivery stage", "confidence": 0.9, "based_on_facts": ["Invoice issued for completed work"], "risk_if_wrong": "low"}
-  ], "risk_flags": [
-    {"flag": "Invoice due in 32 days", "severity": "medium", "entities_involved": ["Invoice #2024-089"]}
-  ], "priority_estimates": [], "missing_information": [] },
-  "layer_6": { "proposed_actions": [
-    {"rank": 1, "kind": "create_task", "description": "Create payment task for Invoice #2024-089 due April 11", "target_entities": ["Invoice #2024-089"], "risk": "low", "requires_approval": false, "rationale": "Invoice due in 32 days", "expected_outcome": "Payment tracked"},
-    {"rank": 2, "kind": "update_workspace", "description": "Mark Meridian Coffee project as invoiced", "target_entities": ["Meridian Coffee"], "risk": "low", "requires_approval": false, "rationale": "Project status should reflect invoice sent", "expected_outcome": "Workspace updated"},
-    {"rank": 3, "kind": "draft_reply", "description": "Send payment confirmation acknowledgment to Sarah Chen", "target_entities": ["Sarah Chen"], "risk": "high", "requires_approval": true, "rationale": "Client communication requires approval", "expected_outcome": "Client informed of receipt"}
-  ], "any_requires_approval": true, "confidence": 0.92 }
+  "id": "proc-001",
+  "signal_id": "sig-001",
+  "processed_at": "2026-03-10T09:15:05Z",
+  "model": "gpt-5-pro",
+  "is_noise": false,
+  "layer_1": {
+    "is_noise": false,
+    "raw_facts": [
+      {
+        "fact": "Invoice #2024-089 issued for $4,200",
+        "source_ref": "email body"
+      },
+      {
+        "fact": "Payment due April 11, 2026",
+        "source_ref": "email body"
+      },
+      {
+        "fact": "Work is for Meridian Coffee brand identity project",
+        "source_ref": "email subject"
+      },
+      {
+        "fact": "Sender is Sarah Chen at Vertex Design Co",
+        "source_ref": "email signature"
+      }
+    ]
+  },
+  "layer_2": {
+    "entity_candidates": [
+      {
+        "label": "Sarah Chen",
+        "domain": "person",
+        "likely_existing": false,
+        "lookup_key": "sarah chen",
+        "email": "sarah@vertexdesign.com",
+        "resolved_entity_id": "ent-001"
+      },
+      {
+        "label": "Vertex Design Co",
+        "domain": "organization",
+        "likely_existing": false,
+        "lookup_key": "vertex design co",
+        "resolved_entity_id": "ent-002"
+      },
+      {
+        "label": "Meridian Coffee",
+        "domain": "organization",
+        "likely_existing": false,
+        "lookup_key": "meridian coffee",
+        "resolved_entity_id": "ent-003"
+      },
+      {
+        "label": "Invoice #2024-089",
+        "domain": "artifact",
+        "likely_existing": false,
+        "lookup_key": "invoice-2024-089",
+        "resolved_entity_id": "ent-004"
+      }
+    ],
+    "matched_entity_ids": [],
+    "proposed_new_entities": [],
+    "similarity_conflicts": []
+  },
+  "layer_3": {
+    "state_updates": [
+      {
+        "entity_label": "Invoice #2024-089",
+        "entity_domain": "artifact",
+        "field": "status",
+        "new_value": "sent",
+        "source_fact": "Invoice issued"
+      },
+      {
+        "entity_label": "Invoice #2024-089",
+        "entity_domain": "artifact",
+        "field": "amount",
+        "new_value": "$4,200",
+        "source_fact": "Invoice for $4,200"
+      },
+      {
+        "entity_label": "Invoice #2024-089",
+        "entity_domain": "artifact",
+        "field": "due_date",
+        "new_value": "April 11, 2026",
+        "source_fact": "Payment due April 11"
+      }
+    ],
+    "unchanged_entities": [
+      "Sarah Chen",
+      "Vertex Design Co"
+    ],
+    "ambiguities": []
+  },
+  "layer_4": {
+    "new_obligations": [
+      {
+        "title": "Pay Invoice #2024-089",
+        "description": "Payment of $4,200 due to Vertex Design Co for Meridian Coffee brand identity",
+        "owed_by": "Meridian Coffee",
+        "owed_to": "Vertex Design Co",
+        "workspace_hint": "Meridian Coffee",
+        "priority": "high",
+        "due_hint": "April 11, 2026",
+        "source_fact": "Payment due April 11, 2026",
+        "is_new": true
+      }
+    ],
+    "updated_obligations": [],
+    "dependency_changes": []
+  },
+  "layer_5": {
+    "inferences": [
+      {
+        "statement": "Project is in final delivery stage",
+        "confidence": 0.9,
+        "based_on_facts": [
+          "Invoice issued for completed work"
+        ],
+        "risk_if_wrong": "low"
+      }
+    ],
+    "risk_flags": [
+      {
+        "flag": "Invoice due in 32 days",
+        "severity": "medium",
+        "entities_involved": [
+          "Invoice #2024-089"
+        ]
+      }
+    ],
+    "priority_estimates": [],
+    "missing_information": []
+  },
+  "layer_6": {
+    "proposed_actions": [
+      {
+        "rank": 1,
+        "kind": "create_task",
+        "description": "Create payment task for Invoice #2024-089 due April 11",
+        "target_entities": [
+          "Invoice #2024-089"
+        ],
+        "risk": "low",
+        "requires_approval": false,
+        "rationale": "Invoice due in 32 days",
+        "expected_outcome": "Payment tracked"
+      },
+      {
+        "rank": 2,
+        "kind": "update_workspace",
+        "description": "Mark Meridian Coffee project as invoiced",
+        "target_entities": [
+          "Meridian Coffee"
+        ],
+        "risk": "low",
+        "requires_approval": false,
+        "rationale": "Project status should reflect invoice sent",
+        "expected_outcome": "Workspace updated"
+      },
+      {
+        "rank": 3,
+        "kind": "draft_reply",
+        "description": "Send payment confirmation acknowledgment to Sarah Chen",
+        "target_entities": [
+          "Sarah Chen"
+        ],
+        "risk": "high",
+        "requires_approval": true,
+        "rationale": "Client communication requires approval",
+        "expected_outcome": "Client informed of receipt"
+      }
+    ],
+    "any_requires_approval": true,
+    "confidence": 0.92
+  }
 }

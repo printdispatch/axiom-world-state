@@ -32,7 +32,8 @@ import {
   ProposedAction,
 } from "../../schema/processing.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Module directory — resolved relative to project root for Jest compatibility
+const _moduleDir = path.resolve(process.cwd(), "src", "engine");
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 
@@ -49,7 +50,7 @@ export interface SixLayerProcessorOptions {
 
 const DEFAULT_MODEL = "gpt-5-pro";
 const DEFAULT_PROMPT_PATH = path.resolve(
-  __dirname,
+  _moduleDir,
   "../../prompts/six_layer_processor_prompt.md"
 );
 

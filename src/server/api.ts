@@ -408,6 +408,177 @@ app.get("/api/world", (_req, res) => {
   });
 });
 
+// ─── Knowledge Graph ────────────────────────────────────────────────────────────
+// GET /api/graph — returns nodes and edges for the knowledge graph visualization
+app.get("/api/graph", (_req, res) => {
+  // Load all data sources
+  const signalsRaw = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
+  const entitiesRaw = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const obligationsRaw = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  const stateUpdatesRaw = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "state", "state_updates.json"), []);
+  // Read all individual processing result files
+  const processingDir = path.join(DATA_DIR, "processing");
+  const processingRaw: Record<string, unknown>[] = fs.existsSync(processingDir)
+    ? fs.readdirSync(processingDir)
+        .filter((f) => f.endsWith(".json"))
+        .map((f) => { try { return JSON.parse(fs.readFileSync(path.join(processingDir, f), "utf-8")); } catch { return null; } })
+        .filter(Boolean) as Record<string, unknown>[]
+    : [];
+  const workspacesRaw = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "workspaces", "workspaces.json"), []);
+
+  // Build nodes
+  const nodes: Array<{
+    id: string;
+    label: string;
+    type: string;
+    domain?: string;
+    size: number;
+    color: string;
+  }> = [];
+
+  const nodeIds = new Set<string>();
+
+  const domainColors: Record<string, string> = {
+    person: "#7c6af7",
+    organization: "#3b9eff",
+    artifact: "#f7a04a",
+    project: "#4af7a0",
+    location: "#f74a7c",
+    concept: "#a0a0a0",
+    workspace: "#f7e04a",
+    signal: "#4af7f7",
+  };
+
+  // Entity nodes
+  for (const e of entitiesRaw) {
+    const id = e.id as string;
+    if (!id || nodeIds.has(id)) continue;
+    nodeIds.add(id);
+    const domain = (e.domain as string) ?? "concept";
+    // Count how many state updates reference this entity
+    const updateCount = stateUpdatesRaw.filter(u => u.entity_id === id || u.entity_label === e.canonical_name).length;
+    nodes.push({
+      id,
+      label: (e.canonical_name as string) ?? id,
+      type: "entity",
+      domain,
+      size: Math.max(8, Math.min(30, 8 + updateCount * 3)),
+      color: domainColors[domain] ?? "#a0a0a0",
+    });
+  }
+
+  // Workspace nodes
+  for (const w of workspacesRaw) {
+    const id = `ws-${w.id as string}`;
+    if (!w.id || nodeIds.has(id)) continue;
+    nodeIds.add(id);
+    nodes.push({
+      id,
+      label: (w.name as string) ?? id,
+      type: "workspace",
+      domain: "workspace",
+      size: 20,
+      color: domainColors["workspace"],
+    });
+  }
+
+  // Build edges
+  const edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    type: string;
+    label: string;
+    weight: number;
+  }> = [];
+
+  const edgeSet = new Set<string>();
+
+  function addEdge(source: string, target: string, type: string, label: string, weight = 1) {
+    if (!nodeIds.has(source) || !nodeIds.has(target)) return;
+    const key = `${source}--${target}--${type}`;
+    if (edgeSet.has(key)) return;
+    edgeSet.add(key);
+    edges.push({
+      id: `e-${edges.length}`,
+      source,
+      target,
+      type,
+      label,
+      weight,
+    });
+  }
+
+  // Edges from processing results: entity co-occurrence in same signal
+  for (const result of processingRaw) {
+    const layer2 = result.layer_2 as Record<string, unknown> | undefined;
+    if (!layer2) continue;
+    const candidates = (layer2.entity_candidates as Array<Record<string, unknown>>) ?? [];
+    const entityIds: string[] = [];
+    for (const c of candidates) {
+      const resolvedId = c.resolved_entity_id as string | undefined;
+      if (resolvedId && nodeIds.has(resolvedId)) entityIds.push(resolvedId);
+    }
+    // Connect all co-occurring entities in the same signal
+    for (let i = 0; i < entityIds.length; i++) {
+      for (let j = i + 1; j < entityIds.length; j++) {
+        addEdge(entityIds[i], entityIds[j], "co_occurrence", "co-occurs", 1);
+      }
+    }
+  }
+
+  // Edges from obligations: owed_by → owed_to
+  for (const ob of obligationsRaw) {
+    const owedBy = ob.owed_by as string | undefined;
+    const owedTo = ob.owed_to as string | undefined;
+    if (!owedBy || !owedTo) continue;
+    // Find entity ids by label
+    const fromEntity = entitiesRaw.find(e => e.canonical_name === owedBy || (e.aliases as string[] | undefined)?.includes(owedBy));
+    const toEntity = entitiesRaw.find(e => e.canonical_name === owedTo || (e.aliases as string[] | undefined)?.includes(owedTo));
+    if (fromEntity?.id && toEntity?.id) {
+      addEdge(fromEntity.id as string, toEntity.id as string, "obligation", "owes", 2);
+    }
+  }
+
+  // Edges from state updates: entity → entity (same signal)
+  const updatesBySignal = new Map<string, string[]>();
+  for (const u of stateUpdatesRaw) {
+    const sigId = u.source_signal_id as string;
+    const entId = u.entity_id as string;
+    if (!sigId || !entId) continue;
+    if (!updatesBySignal.has(sigId)) updatesBySignal.set(sigId, []);
+    updatesBySignal.get(sigId)!.push(entId);
+  }
+  for (const [, entityIds] of updatesBySignal) {
+    const unique = [...new Set(entityIds)].filter(id => nodeIds.has(id));
+    for (let i = 0; i < unique.length; i++) {
+      for (let j = i + 1; j < unique.length; j++) {
+        addEdge(unique[i], unique[j], "shared_signal", "same signal", 1);
+      }
+    }
+  }
+
+  // Edges from workspaces: workspace → linked entities
+  for (const w of workspacesRaw) {
+    const wsNodeId = `ws-${w.id as string}`;
+    const linkedEntities = (w.linked_entity_ids as string[] | undefined) ?? [];
+    for (const entId of linkedEntities) {
+      addEdge(wsNodeId, entId, "workspace_entity", "includes", 1);
+    }
+  }
+
+  res.json({
+    nodes,
+    edges,
+    meta: {
+      node_count: nodes.length,
+      edge_count: edges.length,
+      entity_count: entitiesRaw.length,
+      workspace_count: workspacesRaw.length,
+    },
+  });
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");
