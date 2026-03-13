@@ -54,6 +54,10 @@ export interface EntityCandidate {
   likely_existing: boolean;
   /** Normalized identifier to use for lookup (e.g. email address, company name) */
   lookup_key: string;
+  /** Email address for person entities — used for exact-match deduplication */
+  email?: string;
+  /** Arbitrary key-value attributes extracted from the signal */
+  attributes?: Record<string, string | number | boolean | null>;
 }
 
 export interface Layer2EntityLinking {

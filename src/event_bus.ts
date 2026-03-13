@@ -49,6 +49,13 @@ export interface ReviewRequiredPayload {
   riskLevel: "low" | "medium" | "high" | "critical";
 }
 
+export interface EntitiesResolvedPayload {
+  signalId: string;
+  mergedCount: number;
+  createdCount: number;
+  conflictCount: number;
+}
+
 // ─── Event Map ────────────────────────────────────────────────────────────────
 
 export interface AxiomEvents {
@@ -56,6 +63,7 @@ export interface AxiomEvents {
   signal_processed: SignalProcessedPayload;
   state_updated: StateUpdatedPayload;
   review_required: ReviewRequiredPayload;
+  entities_resolved: EntitiesResolvedPayload;
 }
 
 export type AxiomEventName = keyof AxiomEvents;

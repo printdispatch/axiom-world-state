@@ -1,18 +1,22 @@
 /**
  * ProcessingService
  *
- * Wires the SixLayerProcessor to the EventBus.
- * Listens for `signal_received` events and automatically triggers processing.
- * Emits `signal_processed` when complete, or `review_required` if the result
- * contains high-risk actions or ambiguities.
+ * Orchestrates the full signal processing pipeline:
+ *   1. Listens for `signal_received` events on the EventBus
+ *   2. Runs the signal through the SixLayerProcessor (Phase 2)
+ *   3. Passes Layer 2 entity candidates to the EntityResolver (Phase 3)
+ *   4. Emits `signal_processed` when complete
+ *   5. Emits `review_required` for high-risk actions or entity conflicts
  *
- * This is the glue layer between the Signal Pipeline (Phase 1) and the
- * Six-Layer Engine (Phase 2). It keeps both components decoupled.
+ * This service keeps all components decoupled — the processor, resolver,
+ * and stores never reference each other directly.
  */
 
 import { EventBus } from "../event_bus.js";
 import { SignalStore } from "../signals/signal_store.js";
 import { SixLayerProcessor, SixLayerProcessorOptions } from "./six_layer_processor.js";
+import { EntityResolver } from "../entities/entity_resolver.js";
+import { EntityResolutionSummary } from "../entities/entity_resolver.js";
 import { ProcessingResult } from "../../schema/processing.js";
 
 export interface ProcessingServiceOptions {
@@ -20,18 +24,22 @@ export interface ProcessingServiceOptions {
   signalStore: SignalStore;
   processor?: SixLayerProcessor;
   processorOptions?: SixLayerProcessorOptions;
+  /** Optional EntityResolver. If provided, entity resolution runs after processing. */
+  entityResolver?: EntityResolver;
 }
 
 export class ProcessingService {
   private readonly eventBus: EventBus;
   private readonly signalStore: SignalStore;
   private readonly processor: SixLayerProcessor;
+  private readonly entityResolver: EntityResolver | null;
 
   constructor(options: ProcessingServiceOptions) {
     this.eventBus = options.eventBus;
     this.signalStore = options.signalStore;
     this.processor =
       options.processor ?? new SixLayerProcessor(options.processorOptions);
+    this.entityResolver = options.entityResolver ?? null;
   }
 
   /**
@@ -45,31 +53,47 @@ export class ProcessingService {
   }
 
   /**
-   * Processes a single signal by ID.
+   * Processes a single signal by ID through the full pipeline.
    * Can be called directly for testing or manual processing.
+   *
+   * Returns both the ProcessingResult and (if a resolver is configured)
+   * the EntityResolutionSummary.
    */
-  async processSignal(signalId: string): Promise<ProcessingResult> {
+  async processSignal(signalId: string): Promise<{
+    processingResult: ProcessingResult;
+    resolutionSummary: EntityResolutionSummary | null;
+  }> {
     const signal = this.signalStore.findById(signalId);
     if (!signal) {
       throw new Error(`ProcessingService: Signal not found: id="${signalId}"`);
     }
 
-    const result = await this.processor.process(signal);
+    // ── Step 1: Six-Layer Processing ─────────────────────────────────────────
+    const processingResult = await this.processor.process(signal);
 
     // Mark the signal as processed in the store
     this.signalStore.markProcessed(signalId);
 
-    // Emit signal_processed event
+    // ── Step 2: Entity Resolution (if resolver is configured) ────────────────
+    let resolutionSummary: EntityResolutionSummary | null = null;
+    if (this.entityResolver && !processingResult.is_noise) {
+      resolutionSummary = this.entityResolver.resolve(
+        signalId,
+        processingResult.layer_2
+      );
+    }
+
+    // ── Step 3: Emit signal_processed ────────────────────────────────────────
     this.eventBus.emit("signal_processed", {
       signalId: signal.id,
-      processingRecordId: result.id,
-      proposedActionCount: result.layer_6.proposed_actions.length,
-      requiresReview: result.layer_6.any_requires_approval,
+      processingRecordId: processingResult.id,
+      proposedActionCount: processingResult.layer_6.proposed_actions.length,
+      requiresReview: processingResult.layer_6.any_requires_approval,
     });
 
-    // If any proposed action requires approval, also emit review_required
-    if (result.layer_6.any_requires_approval && !result.is_noise) {
-      const highRiskAction = result.layer_6.proposed_actions.find(
+    // ── Step 4: Emit review_required for high-risk actions ───────────────────
+    if (processingResult.layer_6.any_requires_approval && !processingResult.is_noise) {
+      const highRiskAction = processingResult.layer_6.proposed_actions.find(
         (a) => a.requires_approval
       );
       if (highRiskAction) {
@@ -81,7 +105,7 @@ export class ProcessingService {
       }
     }
 
-    return result;
+    return { processingResult, resolutionSummary };
   }
 
   /**

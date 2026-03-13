@@ -85,23 +85,42 @@ Acceptance test results (5/5 passing — gpt-4.1 for tests, gpt-5-pro default fo
 - ✅ ProcessingService auto-processes a signal when signal_received fires on EventBus
 - ✅ ProcessingService emits review_required when a proposed action requires approval
 
-## Phase 3 — Entity Resolver
+## Phase 3 — Entity Resolver ✅ COMPLETE
 
 Goal: prevent duplicate entities.
 
-Implement:
-- /engine/entity_resolver.ts
+Implemented:
+- `src/entities/entity_store.ts` — Persistent JSON-backed storage for canonical entities
+- `src/entities/entity_resolver.ts` — Similarity detection, merge-before-create enforcement, manual merge
+- `src/engine/processing_service.ts` — Updated to wire EntityResolver after six-layer processing
+- `src/event_bus.ts` — Added `entities_resolved` event type
+- `schema/processing.ts` — Added `email` and `attributes` fields to EntityCandidate
 
-Responsibilities:
-- similarity detection
-- canonical entity creation
-- merge-before-create enforcement
+Similarity strategy (in priority order):
+1. Email exact match (person entities) — always merge
+2. Exact name match (case-insensitive) — always merge
+3. Jaccard token similarity ≥ 0.65 — merge
+4. Jaccard token similarity 0.40–0.65 — conflict flagged, review_required emitted
+5. Jaccard token similarity < 0.40 — create new entity
 
-Rules must follow:
-- rules/normalization_rules.md
-
-Acceptance test:
-- Duplicate signals referencing same person resolve to same entity.
+Acceptance test results (17/17 passing):
+- ✅ Initializes with an empty store
+- ✅ Creates a new entity and persists it
+- ✅ Persists entities to disk and reloads them
+- ✅ Updates an entity with a new alias and attributes
+- ✅ Does not add duplicate aliases
+- ✅ Marks an entity as superseded
+- ✅ Finds entities by name (case-insensitive, partial match)
+- ✅ Creates a new entity when no match exists
+- ✅ Merges on exact name match (case-insensitive)
+- ✅ Merges on high token similarity (same org, different format)
+- ✅ Merges on email exact match for person entities
+- ✅ Flags a similarity conflict and emits review_required
+- ✅ Creates distinct entities for clearly different names
+- ✅ Resolves multiple candidates in a single call
+- ✅ Emits entities_resolved event on the EventBus
+- ✅ Manual merge transfers aliases and supersedes the duplicate
+- ✅ Does not resolve noise signals (skips entity resolution)
 
 ## Phase 4 — State Mutation Engine
 
