@@ -208,6 +208,37 @@ export class EntityStore {
   }
 
   /**
+   * Promotes a new name to canonical, demoting the old canonical name to an alias.
+   * Used during merge operations when the incoming name is more complete/formal.
+   */
+  promoteCanonicalName(id: string, newCanonicalName: string): void {
+    const entity = this.entities.get(id);
+    if (!entity) {
+      throw new Error(`EntityStore: Entity not found: id="${id}"`);
+    }
+    // The old canonical name becomes an alias (if not already present)
+    const oldName = entity.canonical_name;
+    const alreadyAlias = entity.aliases.some(
+      (a) => a.value.toLowerCase() === oldName.toLowerCase()
+    );
+    if (!alreadyAlias && oldName.toLowerCase() !== newCanonicalName.toLowerCase()) {
+      entity.aliases.push({
+        value: oldName,
+        source_signal_id: "system:promotion",
+        observed_at: new Date().toISOString(),
+      });
+    }
+    // Remove the new canonical name from aliases if it was there
+    entity.aliases = entity.aliases.filter(
+      (a) => a.value.toLowerCase() !== newCanonicalName.toLowerCase()
+    );
+    entity.canonical_name = newCanonicalName;
+    entity.last_updated_at = new Date().toISOString();
+    this.entities.set(id, entity);
+    this.flush();
+  }
+
+  /**
    * Marks an entity as superseded by another (used during merges).
    * The superseded entity is kept in the store for provenance but excluded
    * from all active queries.

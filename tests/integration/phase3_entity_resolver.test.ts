@@ -293,6 +293,68 @@ describe("Phase 3 — EntityResolver", () => {
     expect(merged.aliases.some((a) => a.value === "Sarah C.")).toBe(true);
   });
 
+  it("merges DBA entity — 'Acme Inc dba Coyote Building Supplies' resolves to 'Acme Inc'", () => {
+    store.create({ domain: "organization", canonical_name: "Acme Inc", source_signal_id: "sig-000" });
+
+    const layer2 = makeLayer2([
+      { label: "Acme Inc dba Coyote Building Supplies", domain: "organization", likely_existing: true, lookup_key: "acme" },
+    ]);
+
+    const summary = resolver.resolve("sig-001", layer2);
+
+    expect(summary.merged_count).toBe(1);
+    expect(summary.created_count).toBe(0);
+    expect(store.activeCount).toBe(1);
+  });
+
+  it("promotes the longer DBA name to canonical and demotes the shorter to alias", () => {
+    store.create({ domain: "organization", canonical_name: "Acme Inc", source_signal_id: "sig-000" });
+
+    const layer2 = makeLayer2([
+      { label: "Acme Inc dba Coyote Building Supplies", domain: "organization", likely_existing: true, lookup_key: "acme" },
+    ]);
+
+    resolver.resolve("sig-001", layer2);
+
+    const entity = store.findByDomain("organization")[0];
+    // The longer/more complete name should be canonical
+    expect(entity.canonical_name).toBe("Acme Inc dba Coyote Building Supplies");
+    // The shorter name should be an alias
+    expect(entity.aliases.some((a) => a.value === "Acme Inc")).toBe(true);
+  });
+
+  it("merges via substring containment — 'Acme Building' contained in 'Acme Building Supplies Inc'", () => {
+    // Realistic case: a short 2-token name is fully contained in a longer formal name
+    store.create({ domain: "organization", canonical_name: "Acme Building Supplies Inc", source_signal_id: "sig-000" });
+
+    const layer2 = makeLayer2([
+      { label: "Acme Building", domain: "organization", likely_existing: true, lookup_key: "acme building" },
+    ]);
+
+    const summary = resolver.resolve("sig-001", layer2);
+
+    expect(summary.merged_count).toBe(1);
+    expect(store.activeCount).toBe(1);
+    // Longer name stays canonical
+    expect(store.findByDomain("organization")[0].canonical_name).toBe("Acme Building Supplies Inc");
+    // Shorter name added as alias
+    expect(store.findByDomain("organization")[0].aliases.some((a) => a.value === "Acme Building")).toBe(true);
+  });
+
+  it("canonical name promotion — longer name wins when merging", () => {
+    store.create({ domain: "organization", canonical_name: "Vertex Design", source_signal_id: "sig-000" });
+
+    const layer2 = makeLayer2([
+      { label: "Vertex Design Co", domain: "organization", likely_existing: true, lookup_key: "vertex design" },
+    ]);
+
+    resolver.resolve("sig-001", layer2);
+
+    const entity = store.findByDomain("organization")[0];
+    expect(entity.canonical_name).toBe("Vertex Design Co");
+    expect(entity.aliases.some((a) => a.value === "Vertex Design")).toBe(true);
+  });
+
   it("does not resolve noise signals (skips entity resolution)", () => {
     // This is tested at the ProcessingService level — the resolver itself
     // only receives Layer2 data, so we verify the store stays empty when
