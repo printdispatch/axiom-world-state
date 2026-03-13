@@ -21,6 +21,15 @@ import cors from "cors";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  getAuthUrl,
+  exchangeCodeForToken,
+  syncGmailEmails,
+  getSyncStatus,
+  recordSync,
+  deleteToken,
+} from "../adapters/gmail_adapter.js";
+import { processBatch, processSingle } from "../engine/signal_processor_service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -913,8 +922,8 @@ app.get("/api/health/metrics", (_req, res) => {
 
 // ─── Manual Ingest ───────────────────────────────────────────────────────────
 
-// POST /api/ingest/manual — Accept a raw email paste and create a signal
-app.post("/api/ingest/manual", (req, res) => {
+// POST /api/ingest/manual — Accept a raw email paste, create a signal, and auto-process it
+app.post("/api/ingest/manual", async (req, res) => {
   const { raw_content, from, subject } = req.body as { raw_content?: string; from?: string; subject?: string };
   if (!raw_content || !raw_content.trim()) {
     return res.status(400).json({ error: "raw_content is required" });
@@ -947,24 +956,121 @@ app.post("/api/ingest/manual", (req, res) => {
     return res.status(500).json({ error: "Failed to save signal" });
   }
 
+  // Auto-process in background (don't block the response)
+  processSingle(signal as any, DATA_DIR).then(({ isNoise }) => {
+    // Update processed flag in signal log
+    const signals = readJson<Array<{ id: string; processed: boolean }>>(logPath, []);
+    const idx = signals.findIndex((s) => s.id === signalId);
+    if (idx >= 0) { signals[idx].processed = true; fs.writeFileSync(logPath, JSON.stringify(signals, null, 2)); }
+    console.log(`[Ingest] ${signalId} processed (noise=${isNoise})`);
+  }).catch((err) => console.error(`[Ingest] Processing error for ${signalId}:`, err));
+
   return res.status(201).json(signal);
 });
 
-// GET /api/connect/gmail/status — Check Gmail connection status
-app.get("/api/connect/gmail/status", (_req, res) => {
-  // In production this would check OAuth token storage
-  // For now returns disconnected (real OAuth requires credentials)
-  return res.json({ connected: false, message: "Gmail OAuth not yet configured. Use manual ingest or set up OAuth credentials." });
+// POST /api/process/batch — Trigger batch processing of all unprocessed signals
+app.post("/api/process/batch", async (req, res) => {
+  const { max } = req.body as { max?: number };
+  try {
+    const result = await processBatch({
+      dataDir: DATA_DIR,
+      maxSignals: max ?? 50,
+      onProgress: (done, total, id, noise) => {
+        console.log(`[Batch] ${done}/${total} — ${id} (noise=${noise})`);
+      },
+    });
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: String(err) });
+  }
 });
 
-// GET /api/connect/gmail/auth — Redirect to Gmail OAuth (placeholder)
-app.get("/api/connect/gmail/auth", (_req, res) => {
-  // In production: redirect to Google OAuth consent screen
-  // For now: return instructions
-  return res.status(501).json({
-    error: "Gmail OAuth requires Google API credentials. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables to enable.",
-    setup_url: "https://console.cloud.google.com/apis/credentials",
+// GET /api/process/status — Get processing queue status
+app.get("/api/process/status", (req, res) => {
+  const logPath = path.join(DATA_DIR, "signals", "signal_log.json");
+  const signals = readJson<Array<{ processed: boolean }>> (logPath, []);
+  return res.json({
+    total: signals.length,
+    processed: signals.filter((s) => s.processed).length,
+    unprocessed: signals.filter((s) => !s.processed).length,
   });
+});
+
+// ─── Gmail OAuth ─────────────────────────────────────────────────────────────
+
+// GET /api/connect/gmail/status — Check Gmail connection status
+app.get("/api/connect/gmail/status", (_req, res) => {
+  try {
+    const status = getSyncStatus(DATA_DIR);
+    return res.json(status);
+  } catch (err) {
+    return res.status(500).json({ connected: false, error: String(err) });
+  }
+});
+
+// GET /api/connect/gmail/auth — Redirect to Google OAuth consent screen
+app.get("/api/connect/gmail/auth", (_req, res) => {
+  try {
+    const url = getAuthUrl();
+    return res.redirect(url);
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+// GET /api/connect/gmail/callback — Handle OAuth callback from Google
+app.get("/api/connect/gmail/callback", async (req, res) => {
+  const code = req.query.code as string | undefined;
+  if (!code) {
+    return res.status(400).send("<h2>Error: No authorization code received from Google.</h2>");
+  }
+  try {
+    const token = await exchangeCodeForToken(code, DATA_DIR);
+    // Trigger initial sync immediately after connecting
+    const syncResult = await syncGmailEmails(DATA_DIR, "2026/03/06", 200);
+    recordSync(DATA_DIR, syncResult);
+    // Redirect back to the app immediately — batch processing runs in background
+    const appUrl = process.env.APP_URL ?? "http://localhost:5175";
+    res.redirect(`${appUrl}?gmail_connected=1&added=${syncResult.added}`);
+    // Start batch processing in background after redirect
+    processBatch({ dataDir: DATA_DIR, maxSignals: 150,
+      onProgress: (done, total, id, noise) => console.log(`[GmailSync] ${done}/${total} — ${id} (noise=${noise})`),
+    }).then((r) => console.log(`[GmailSync] Batch done: ${r.processed} processed, ${r.noise} noise, ${r.errors} errors`))
+      .catch((err) => console.error("[GmailSync] Batch error:", err));
+    return;
+  } catch (err) {
+    console.error("[Gmail OAuth] Callback error:", err);
+    return res.status(500).send(`<h2>Gmail connection failed</h2><pre>${String(err)}</pre>`);
+  }
+});
+
+// POST /api/connect/gmail/sync — Manually trigger a Gmail sync and batch-process new signals
+app.post("/api/connect/gmail/sync", async (_req, res) => {
+  try {
+    const result = await syncGmailEmails(DATA_DIR, "2026/03/06", 200);
+    recordSync(DATA_DIR, result);
+    // Respond immediately, then process new signals in background
+    res.json({ success: true, ...result });
+    if (result.added > 0) {
+      processBatch({ dataDir: DATA_DIR, maxSignals: result.added + 10,
+        onProgress: (done, total, id, noise) => console.log(`[Sync] ${done}/${total} — ${id} (noise=${noise})`),
+      }).then((r) => console.log(`[Sync] Batch done: ${r.processed} processed, ${r.noise} noise`))
+        .catch((err) => console.error("[Sync] Batch error:", err));
+    }
+    return;
+  } catch (err) {
+    return res.status(500).json({ success: false, error: String(err) });
+  }
+});
+
+// DELETE /api/connect/gmail — Disconnect Gmail (remove token)
+app.delete("/api/connect/gmail", (_req, res) => {
+  try {
+    deleteToken(DATA_DIR);
+    return res.json({ success: true, message: "Gmail disconnected." });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: String(err) });
+  }
 });
 
 // ─── Static UI ────────────────────────────────────────────────────────────────
@@ -977,12 +1083,36 @@ if (fs.existsSync(uiDir)) {
   });
 }
 
-// ─── Start ────────────────────────────────────────────────────────────────────
-
+//// ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = parseInt(process.env.PORT ?? "3333", 10);
 app.listen(PORT, () => {
   console.log(`[Axiom API] Listening on http://localhost:${PORT}`);
   console.log(`[Axiom API] Data directory: ${DATA_DIR}`);
-});
 
+  // ── Periodic Gmail sync every 15 minutes ──────────────────────────────────
+  const SYNC_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+  const runPeriodicSync = async () => {
+    const status = getSyncStatus(DATA_DIR);
+    if (!status.connected) return; // Skip if not connected
+    try {
+      console.log("[Periodic Sync] Starting Gmail sync…");
+      const result = await syncGmailEmails(DATA_DIR);
+      if (result.added > 0) {
+        console.log(`[Periodic Sync] Added ${result.added} new signals. Running batch processor…`);
+        const batchResult = await processBatch({ dataDir: DATA_DIR, maxSignals: 50 });
+        console.log(`[Periodic Sync] Processed ${batchResult.processed} signals, ${batchResult.noise} noise.`);
+      } else {
+        console.log("[Periodic Sync] No new emails.");
+      }
+    } catch (err) {
+      console.error("[Periodic Sync] Error:", err);
+    }
+  };
+
+  // Run once after 30 seconds (to let the server fully start), then every 15 min
+  setTimeout(() => {
+    runPeriodicSync();
+    setInterval(runPeriodicSync, SYNC_INTERVAL_MS);
+  }, 30_000);
+});
 export default app;

@@ -496,16 +496,19 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
 // ─── Entity Card ──────────────────────────────────────────────────────────────
 
 function EntityCard({ entity, onClick }: { entity: Entity; onClick: () => void }) {
+  const displayName = (entity as any).name || entity.canonical_name || "Unknown";
+  const displayDomain = entity.domain || (entity as any).type || "unknown";
+  const aliasCount = Array.isArray(entity.aliases) ? entity.aliases.length : 0;
   return (
     <div className="entity-card" onClick={onClick}>
-      <div className="entity-avatar-sm" style={{ background: domainColor(entity.domain) }}>
-        <span>{domainIcon(entity.domain)}</span>
+      <div className="entity-avatar-sm" style={{ background: domainColor(displayDomain) }}>
+        <span>{domainIcon(displayDomain)}</span>
       </div>
       <div className="entity-card-body">
-        <div className="entity-name">{entity.canonical_name}</div>
+        <div className="entity-name">{displayName}</div>
         <div className="entity-meta">
-          {entity.domain}
-          {entity.aliases.length > 0 && ` · ${entity.aliases.length} alias${entity.aliases.length > 1 ? "es" : ""}`}
+          {displayDomain}
+          {aliasCount > 0 && ` · ${aliasCount} alias${aliasCount > 1 ? "es" : ""}`}
         </div>
       </div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text3)", flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
@@ -906,34 +909,112 @@ function SearchBar({ query, setQuery, onClose }: { query: string; setQuery: (q: 
 
 // ─── Connect Tab ──────────────────────────────────────────────────────────────
 
+interface GmailStatus {
+  connected: boolean;
+  email?: string;
+  last_sync?: string;
+  signal_count?: number;
+}
+
 function ConnectTab({ onIngest }: { onIngest: (signal: Signal) => void }) {
-  const [connections, setConnections] = useState<IngestConnection[]>([
-    { id: "gmail-1", kind: "gmail", label: "Gmail", status: "disconnected" },
-    { id: "manual-1", kind: "manual", label: "Manual Paste", status: "connected" },
-  ]);
+  const [gmailStatus, setGmailStatus] = useState<GmailStatus>({ connected: false });
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ added: number; skipped: number } | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
   const [pasteText, setPasteText] = useState("");
   const [pasteFrom, setPasteFrom] = useState("");
   const [pasteSubject, setPasteSubject] = useState("");
   const [ingesting, setIngesting] = useState(false);
   const [ingestResult, setIngestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [processingQueue, setProcessingQueue] = useState(false);
+  const [processStatus, setProcessStatus] = useState<{ total: number; processed: number; unprocessed: number } | null>(null);
+  const [processResult, setProcessResult] = useState<{ processed: number; noise: number; errors: number } | null>(null);
+
+  // Load real Gmail status and process queue status on mount
+  useEffect(() => {
+    fetch("/api/connect/gmail/status")
+      .then(r => r.json())
+      .then((data: GmailStatus) => setGmailStatus(data))
+      .catch(() => {});
+    fetch("/api/process/status")
+      .then(r => r.json())
+      .then((data: { total: number; processed: number; unprocessed: number }) => setProcessStatus(data))
+      .catch(() => {});
+  }, []);
+
+  // Check for ?gmail_connected=1 in URL after OAuth redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("gmail_connected") === "1") {
+      // Remove query param from URL
+      window.history.replaceState({}, "", window.location.pathname);
+      // Refresh status
+      fetch("/api/connect/gmail/status")
+        .then(r => r.json())
+        .then((data: GmailStatus) => setGmailStatus(data))
+        .catch(() => {});
+      const added = parseInt(params.get("added") ?? "0", 10);
+      if (added > 0) setSyncResult({ added, skipped: 0 });
+    }
+  }, []);
 
   const handleGmailConnect = () => {
-    // Open the Gmail OAuth flow
-    window.open("/api/connect/gmail/auth", "_blank", "width=500,height=600");
-    // Poll for connection status
-    const poll = setInterval(async () => {
-      try {
-        const r = await fetch("/api/connect/gmail/status");
-        if (r.ok) {
-          const data = await r.json() as { connected: boolean };
-          if (data.connected) {
-            setConnections(prev => prev.map(c => c.id === "gmail-1" ? { ...c, status: "connected", connected_at: new Date().toISOString() } : c));
-            clearInterval(poll);
-          }
-        }
-      } catch { /* ignore */ }
-    }, 2000);
-    setTimeout(() => clearInterval(poll), 60000);
+    // Redirect the current tab to the OAuth flow (same-window so callback can redirect back)
+    window.location.href = "/api/connect/gmail/auth";
+  };
+
+  const handleGmailSync = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const res = await fetch("/api/connect/gmail/sync", { method: "POST" });
+      const data = await res.json() as { added: number; skipped: number; success: boolean; error?: string };
+      if (data.success) {
+        setSyncResult({ added: data.added, skipped: data.skipped });
+        // Refresh status
+        const statusRes = await fetch("/api/connect/gmail/status");
+        const status = await statusRes.json() as GmailStatus;
+        setGmailStatus(status);
+      } else {
+        setIngestResult({ ok: false, message: data.error ?? "Sync failed." });
+      }
+    } catch {
+      setIngestResult({ ok: false, message: "Network error during sync." });
+    }
+    setSyncing(false);
+  };
+
+  const handleGmailDisconnect = async () => {
+    setDisconnecting(true);
+    try {
+      await fetch("/api/connect/gmail", { method: "DELETE" });
+      setGmailStatus({ connected: false });
+      setSyncResult(null);
+    } catch { /* ignore */ }
+    setDisconnecting(false);
+  };
+
+  const handleProcessQueue = async () => {
+    setProcessingQueue(true);
+    setProcessResult(null);
+    try {
+      const res = await fetch("/api/process/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ max: 50 }),
+      });
+      const data = await res.json() as { success: boolean; processed: number; noise: number; errors: number; total: number };
+      if (data.success) {
+        setProcessResult({ processed: data.processed, noise: data.noise, errors: data.errors });
+        // Refresh queue status
+        const statusRes = await fetch("/api/process/status");
+        const status = await statusRes.json() as { total: number; processed: number; unprocessed: number };
+        setProcessStatus(status);
+      }
+    } catch {
+      setProcessResult({ processed: 0, noise: 0, errors: 1 });
+    }
+    setProcessingQueue(false);
   };
 
   const handleManualIngest = async () => {
@@ -971,27 +1052,54 @@ function ConnectTab({ onIngest }: { onIngest: (signal: Signal) => void }) {
     <div className="feed-list">
       <div className="section-title">Ingest Connections</div>
 
-      {/* Connection cards */}
-      {connections.map(conn => (
-        <div key={conn.id} className="connect-card">
-          <div className="connect-icon">
-            {conn.kind === "gmail" ? "✉️" : conn.kind === "webhook" ? "🔗" : "📋"}
-          </div>
-          <div className="connect-body">
-            <div className="connect-name">{conn.label}</div>
-            <div className="connect-status" style={{ color: conn.status === "connected" ? "#34C759" : conn.status === "pending" ? "#FF9500" : "var(--text3)" }}>
-              {conn.status === "connected" ? "● Connected" : conn.status === "pending" ? "◌ Pending" : "○ Not connected"}
-              {conn.connected_at && ` · since ${new Date(conn.connected_at).toLocaleDateString()}`}
-            </div>
-          </div>
-          {conn.kind === "gmail" && conn.status !== "connected" && (
-            <button className="connect-btn" onClick={handleGmailConnect}>Connect</button>
-          )}
-          {conn.kind === "gmail" && conn.status === "connected" && (
-            <button className="connect-btn connect-btn-danger" onClick={() => setConnections(prev => prev.map(c => c.id === conn.id ? { ...c, status: "disconnected" } : c))}>Disconnect</button>
+      {/* Gmail connection card */}
+      <div className="connect-card">
+        <div className="connect-icon">✉️</div>
+        <div className="connect-body">
+          <div className="connect-name">Gmail</div>
+          {gmailStatus.connected ? (
+            <>
+              <div className="connect-status" style={{ color: "#34C759" }}>● Connected{gmailStatus.email ? ` · ${gmailStatus.email}` : ""}</div>
+              {gmailStatus.signal_count !== undefined && (
+                <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>{gmailStatus.signal_count} emails synced</div>
+              )}
+              {gmailStatus.last_sync && (
+                <div style={{ fontSize: 12, color: "var(--text3)" }}>Last sync: {new Date(gmailStatus.last_sync).toLocaleString()}</div>
+              )}
+            </>
+          ) : (
+            <div className="connect-status" style={{ color: "var(--text3)" }}>○ Not connected</div>
           )}
         </div>
-      ))}
+        {gmailStatus.connected ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+            <button className="connect-btn" style={{ fontSize: 12, padding: "6px 12px" }} onClick={handleGmailSync} disabled={syncing}>
+              {syncing ? "↻ Syncing…" : "↻ Sync Now"}
+            </button>
+            <button className="connect-btn connect-btn-danger" style={{ fontSize: 12, padding: "5px 10px" }} onClick={handleGmailDisconnect} disabled={disconnecting}>
+              {disconnecting ? "…" : "Disconnect"}
+            </button>
+          </div>
+        ) : (
+          <button className="connect-btn" onClick={handleGmailConnect}>Connect</button>
+        )}
+      </div>
+
+      {/* Sync result banner */}
+      {syncResult && (
+        <div style={{ margin: "0 16px 4px", padding: "10px 14px", background: "rgba(52,199,89,0.1)", borderRadius: 10, fontSize: 13, color: "#34C759" }}>
+          ✓ Sync complete — {syncResult.added} new signal{syncResult.added !== 1 ? "s" : ""} added{syncResult.skipped > 0 ? `, ${syncResult.skipped} already seen` : ""}.
+        </div>
+      )}
+
+      {/* Manual paste */}
+      <div className="connect-card">
+        <div className="connect-icon">📋</div>
+        <div className="connect-body">
+          <div className="connect-name">Manual Paste</div>
+          <div className="connect-status" style={{ color: "#34C759" }}>● Always available</div>
+        </div>
+      </div>
 
       {/* Manual paste ingest */}
       <div className="section-title" style={{ marginTop: 8 }}>Manual Email Ingest</div>
@@ -1033,6 +1141,37 @@ function ConnectTab({ onIngest }: { onIngest: (signal: Signal) => void }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Processing Queue */}
+      <div className="section-title" style={{ marginTop: 8 }}>Processing Queue</div>
+      <div className="review-card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <div>
+            <div className="review-title" style={{ marginBottom: 4 }}>AI Signal Processor</div>
+            {processStatus && (
+              <div style={{ fontSize: 12, color: "var(--text3)" }}>
+                {processStatus.processed} processed · {processStatus.unprocessed} queued · {processStatus.total} total
+              </div>
+            )}
+          </div>
+          <button
+            className="connect-btn"
+            style={{ fontSize: 12, padding: "8px 14px", opacity: processingQueue ? 0.6 : 1 }}
+            onClick={handleProcessQueue}
+            disabled={processingQueue || (processStatus?.unprocessed === 0)}
+          >
+            {processingQueue ? "⚙ Processing…" : processStatus?.unprocessed === 0 ? "✓ All processed" : `⚙ Process ${Math.min(processStatus?.unprocessed ?? 0, 50)} signals`}
+          </button>
+        </div>
+        <div style={{ fontSize: 12, color: "var(--text3)", lineHeight: 1.5 }}>
+          The AI processor runs the six-layer analysis on each signal, extracts entities, creates obligations, and flags risks. Noise (newsletters, promotions) is filtered automatically without using AI credits.
+        </div>
+        {processResult && (
+          <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(52,199,89,0.08)", borderRadius: 8, fontSize: 13, color: "#34C759" }}>
+            ✓ Batch complete — {processResult.processed} signals processed by AI, {processResult.noise} filtered as noise{processResult.errors > 0 ? `, ${processResult.errors} errors` : ""}.
+          </div>
+        )}
       </div>
 
       {/* Webhook info */}
@@ -1079,6 +1218,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [hideNoise, setHideNoise] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -1136,20 +1276,27 @@ export default function App() {
 
   // Search filtering
   const q = searchQuery.toLowerCase();
+  const noiseFilteredSignals = hideNoise ? signals.filter(s => s.processed) : signals;
   const filteredSignals = q
-    ? signals.filter(s => (s.metadata?.subject || "").toLowerCase().includes(q) || (s.metadata?.from || "").toLowerCase().includes(q) || s.raw_content?.toLowerCase().includes(q))
-    : signals;
+    ? noiseFilteredSignals.filter(s => (s.metadata?.subject || "").toLowerCase().includes(q) || (s.metadata?.from || "").toLowerCase().includes(q) || s.raw_content?.toLowerCase().includes(q))
+    : noiseFilteredSignals;
   const filteredObligations = q
     ? obligations.filter(o => o.title.toLowerCase().includes(q) || o.owed_by.toLowerCase().includes(q) || o.owed_to.toLowerCase().includes(q))
     : obligations;
   const filteredEntities = q
-    ? entities.filter(e => e.canonical_name.toLowerCase().includes(q) || e.domain.toLowerCase().includes(q) || e.aliases.some(a => a.value.toLowerCase().includes(q)))
+    ? entities.filter(e => {
+        const name = ((e as any).name || e.canonical_name || "").toLowerCase();
+        const domain = ((e as any).type || e.domain || "").toLowerCase();
+        const aliasMatch = Array.isArray(e.aliases) && e.aliases.some(a => (typeof a === "string" ? a : a.value || "").toLowerCase().includes(q));
+        return name.includes(q) || domain.includes(q) || aliasMatch;
+      })
     : entities;
 
-  // Group entities by domain
-  const people = filteredEntities.filter(e => e.domain === "person");
-  const orgs = filteredEntities.filter(e => e.domain === "organization");
-  const artifacts = filteredEntities.filter(e => e.domain === "artifact");
+  // Group entities by domain (new entities use 'type', old ones use 'domain')
+  const getEntityType = (e: Entity) => (e as any).type || e.domain || "artifact";
+  const people = filteredEntities.filter(e => getEntityType(e) === "person");
+  const orgs = filteredEntities.filter(e => getEntityType(e) === "organization");
+  const artifacts = filteredEntities.filter(e => getEntityType(e) === "artifact");
 
   const tabLabel = NAV_ITEMS.find(n => n.id === tab)?.label ?? "Axiom";
 
@@ -1198,9 +1345,22 @@ export default function App() {
         {/* ── Feed Tab ── */}
         {!loading && tab === "feed" && (
           <div className="feed-list">
-            {searchQuery && <div className="section-title">{filteredSignals.length} result{filteredSignals.length !== 1 ? "s" : ""} for "{searchQuery}"</div>}
-            {!searchQuery && <div className="section-title">Signal Feed</div>}
-            {filteredSignals.length === 0 && <div className="empty-msg">{searchQuery ? "No signals match your search." : "No signals yet. Connect Gmail or paste an email in the Connect tab."}</div>}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 0 4px" }}>
+              <div className="section-title" style={{ margin: 0 }}>
+                {searchQuery ? `${filteredSignals.length} result${filteredSignals.length !== 1 ? "s" : ""} for "${searchQuery}"` : "Signal Feed"}
+              </div>
+              <button
+                onClick={() => setHideNoise(h => !h)}
+                style={{ fontSize: 12, padding: "4px 10px", borderRadius: 20, border: "1px solid var(--border)", background: hideNoise ? "var(--accent)" : "var(--bg3)", color: hideNoise ? "#fff" : "var(--text2)", cursor: "pointer", whiteSpace: "nowrap" }}
+              >
+                {hideNoise ? "Showing processed" : "Showing all"}
+              </button>
+            </div>
+            {filteredSignals.length === 0 && (
+              <div className="empty-msg">
+                {searchQuery ? "No signals match your search." : hideNoise ? "No processed signals yet. Use the Connect tab to run the processor." : "No signals yet. Connect Gmail or paste an email in the Connect tab."}
+              </div>
+            )}
             {filteredSignals.map(sig => (
               <SignalCard key={sig.id} signal={sig} isSelected={selected?.id === sig.id} onClick={() => handleSelect(sig)} />
             ))}

@@ -47,3 +47,7 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+# OAuth tokens and credentials — never commit these
+data/gmail_token.json
+.env

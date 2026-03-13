@@ -1,10 +1,523 @@
 [
-  {"id": "ent-001", "canonical_name": "Sarah Chen", "domain": "person", "aliases": [{"value": "S. Chen", "source": "sig-001"}], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
-  {"id": "ent-002", "canonical_name": "Vertex Design Co", "domain": "organization", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
-  {"id": "ent-003", "canonical_name": "Meridian Coffee", "domain": "organization", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
-  {"id": "ent-004", "canonical_name": "Invoice #2024-089", "domain": "artifact", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
-  {"id": "ent-005", "canonical_name": "Marcus Webb", "domain": "person", "aliases": [], "source_signal_id": "sig-002", "created_at": "2026-03-11T14:30:05Z", "superseded": false},
-  {"id": "ent-006", "canonical_name": "Harborview Restaurant Group", "domain": "organization", "aliases": ["Harborview Restaurant"], "source_signal_id": "sig-002", "created_at": "2026-03-11T14:30:05Z", "superseded": false},
-  {"id": "ent-007", "canonical_name": "Elena Thornfield", "domain": "person", "aliases": [], "source_signal_id": "sig-004", "created_at": "2026-03-13T10:00:04Z", "superseded": false},
-  {"id": "ent-008", "canonical_name": "Thornfield Bakery", "domain": "organization", "aliases": [], "source_signal_id": "sig-004", "created_at": "2026-03-13T10:00:04Z", "superseded": false}
+  {
+    "id": "ent-c26696f1",
+    "name": "Self",
+    "type": "organization",
+    "lookup_key": "self.inc",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce7a9269197f62",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Self"
+    ]
+  },
+  {
+    "id": "ent-009cc155",
+    "name": "Self Visa® Credit Card",
+    "type": "artifact",
+    "lookup_key": "Self Visa® Credit Card",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce7a9269197f62",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Self Visa® Credit Card"
+    ]
+  },
+  {
+    "id": "ent-93c0a35e",
+    "name": "Noah Frantz",
+    "type": "person",
+    "lookup_key": "printdispatch@gmail.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Noah Frantz"
+    ]
+  },
+  {
+    "id": "ent-270e7a91",
+    "name": "Michael Sall",
+    "type": "person",
+    "lookup_key": "mike@midwestsigns.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Michael Sall"
+    ]
+  },
+  {
+    "id": "ent-0185e4cc",
+    "name": "Chad Bush",
+    "type": "person",
+    "lookup_key": "Chad.bush@simon.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Chad Bush"
+    ]
+  },
+  {
+    "id": "ent-6447c07c",
+    "name": "Midwest Signs",
+    "type": "organization",
+    "lookup_key": "midwestsigns.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Midwest Signs"
+    ]
+  },
+  {
+    "id": "ent-19af380d",
+    "name": "Gaucho’s Fire Channel letters",
+    "type": "artifact",
+    "lookup_key": "Gaucho’s Fire Channel letters",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Gaucho’s Fire Channel letters"
+    ]
+  },
+  {
+    "id": "ent-2634b13c",
+    "name": "Brazillian Street Food FCO Letters",
+    "type": "artifact",
+    "lookup_key": "Brazillian Street Food FCO Letters",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce71e78642781d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Brazillian Street Food FCO Letters"
+    ]
+  },
+  {
+    "id": "ent-6f981233",
+    "name": "Google",
+    "type": "organization",
+    "lookup_key": "accounts.google.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce7b6ccece272c",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Google"
+    ]
+  },
+  {
+    "id": "ent-e438cb45",
+    "name": "Lakeview Court Posts",
+    "type": "organization",
+    "lookup_key": "ss.email.nextdoor.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce550551e0e42a",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Lakeview Court Posts"
+    ]
+  },
+  {
+    "id": "ent-cf4cf3ec",
+    "name": "Mimi Renee",
+    "type": "person",
+    "lookup_key": "unknown",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce550551e0e42a",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Mimi Renee"
+    ]
+  },
+  {
+    "id": "ent-f20981b9",
+    "name": "GitHub",
+    "type": "organization",
+    "lookup_key": "github.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce51827fbc6038",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "GitHub"
+    ]
+  },
+  {
+    "id": "ent-a1e66c85",
+    "name": "Manus Connector",
+    "type": "artifact",
+    "lookup_key": "Manus Connector",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce5176bc47a521",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Manus Connector"
+    ]
+  },
+  {
+    "id": "ent-1b0cc9ab",
+    "name": "printdispatch",
+    "type": "person",
+    "lookup_key": "printdispatch",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce5176bc47a521",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "printdispatch"
+    ]
+  },
+  {
+    "id": "ent-1172aa6c",
+    "name": "Calvin King",
+    "type": "person",
+    "lookup_key": "Calvin King",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce42935ccc09c9",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Calvin King"
+    ]
+  },
+  {
+    "id": "ent-30d67e0d",
+    "name": "Nextdoor",
+    "type": "organization",
+    "lookup_key": "nextdoor.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce42935ccc09c9",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Nextdoor"
+    ]
+  },
+  {
+    "id": "ent-9c1560f6",
+    "name": "12339 Brookshire PKWY",
+    "type": "artifact",
+    "lookup_key": "12339 Brookshire PKWY",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce42935ccc09c9",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "12339 Brookshire PKWY"
+    ]
+  },
+  {
+    "id": "ent-c210d125",
+    "name": "12329 Brookshire PWKY",
+    "type": "artifact",
+    "lookup_key": "12329 Brookshire PWKY",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce42935ccc09c9",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "12329 Brookshire PWKY"
+    ]
+  },
+  {
+    "id": "ent-c8903b98",
+    "name": "Your Lakeview Court neighbors",
+    "type": "organization",
+    "lookup_key": "is.email.nextdoor.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce3f28136c4ec8",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Your Lakeview Court neighbors"
+    ]
+  },
+  {
+    "id": "ent-086770a0",
+    "name": "Air Bnb",
+    "type": "organization",
+    "lookup_key": "airbnb.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce3f28136c4ec8",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Air Bnb"
+    ]
+  },
+  {
+    "id": "ent-784d1ad9",
+    "name": "Metro Area Printing",
+    "type": "organization",
+    "lookup_key": "metroareaprinting.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce39c0aa83963f",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Metro Area Printing"
+    ]
+  },
+  {
+    "id": "ent-a9589960",
+    "name": "Ahmer K. Khan",
+    "type": "person",
+    "lookup_key": "contact@metroareaprinting.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce398a3f0fba5d",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Ahmer K. Khan"
+    ]
+  },
+  {
+    "id": "ent-b827e4a0",
+    "name": "Elaina Bahr",
+    "type": "person",
+    "lookup_key": "elaina.bahr@nextdoor.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce384e2b37f4ed",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Elaina Bahr"
+    ]
+  },
+  {
+    "id": "ent-ab88ff86",
+    "name": "Arron Stanton",
+    "type": "person",
+    "lookup_key": "executivedirector@indianaiada.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce29eb10b514d2",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Arron Stanton"
+    ]
+  },
+  {
+    "id": "ent-176e8eb1",
+    "name": "Indiana Independent Auto Dealers Association",
+    "type": "organization",
+    "lookup_key": "indianaiada.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce29eb10b514d2",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "Indiana Independent Auto Dealers Association"
+    ]
+  },
+  {
+    "id": "ent-fb73eef8",
+    "name": "WeTransfer",
+    "type": "organization",
+    "lookup_key": "wetransfer.com",
+    "email": null,
+    "source_signal_id": "sig-gmail-19ce236e7f4d63d6",
+    "created_at": "2026-03-13T18:27:21.953608Z",
+    "aliases": [
+      "WeTransfer"
+    ]
+  },
+  {
+    "id": "ent-26fb028b",
+    "name": "Cloudflare Registrar",
+    "type": "organization",
+    "lookup_key": "cloudflare.com",
+    "source_signal_id": "sig-gmail-19ce051321386e3c",
+    "created_at": "2026-03-13T18:29:18.851Z",
+    "aliases": [
+      "Cloudflare Registrar"
+    ]
+  },
+  {
+    "id": "ent-b108191c",
+    "name": "edenframe.com",
+    "type": "artifact",
+    "lookup_key": "edenframe.com",
+    "source_signal_id": "sig-gmail-19ce051321386e3c",
+    "created_at": "2026-03-13T18:29:18.851Z",
+    "aliases": [
+      "edenframe.com"
+    ]
+  },
+  {
+    "id": "ent-41cee985",
+    "name": "Hadley Klein",
+    "type": "person",
+    "lookup_key": "Hadley Klein",
+    "source_signal_id": "sig-gmail-19cdfa82873be96f",
+    "created_at": "2026-03-13T18:30:41.563Z",
+    "aliases": [
+      "Hadley Klein"
+    ]
+  },
+  {
+    "id": "ent-ebff80f9",
+    "name": "Carmel high school",
+    "type": "organization",
+    "lookup_key": "Carmel high school",
+    "source_signal_id": "sig-gmail-19cdfa82873be96f",
+    "created_at": "2026-03-13T18:30:41.563Z",
+    "aliases": [
+      "Carmel high school"
+    ]
+  },
+  {
+    "id": "ent-c5848b15",
+    "name": "Riley Children’s Hospital",
+    "type": "organization",
+    "lookup_key": "Riley Children’s Hospital",
+    "source_signal_id": "sig-gmail-19cdfa82873be96f",
+    "created_at": "2026-03-13T18:30:41.563Z",
+    "aliases": [
+      "Riley Children’s Hospital"
+    ]
+  },
+  {
+    "id": "ent-0df021bf",
+    "name": "John D.",
+    "type": "person",
+    "lookup_key": "John D.",
+    "source_signal_id": "sig-gmail-19cdf7114c4c2639",
+    "created_at": "2026-03-13T18:31:10.317Z",
+    "aliases": [
+      "John D."
+    ]
+  },
+  {
+    "id": "ent-20656d84",
+    "name": "Gaucho's Fire LLC",
+    "type": "organization",
+    "lookup_key": "gauchosfire.com",
+    "source_signal_id": "sig-gmail-19cde548508c337e",
+    "created_at": "2026-03-13T18:33:02.647Z",
+    "aliases": [
+      "Gaucho's Fire LLC"
+    ]
+  },
+  {
+    "id": "ent-d2aae855",
+    "name": "Jack Disney",
+    "type": "person",
+    "lookup_key": "jdisney@simon.com",
+    "source_signal_id": "sig-gmail-19cde548508c337e",
+    "created_at": "2026-03-13T18:33:02.647Z",
+    "aliases": [
+      "Jack Disney"
+    ]
+  },
+  {
+    "id": "ent-f9db42f6",
+    "name": "Samantha Felling",
+    "type": "person",
+    "lookup_key": "Samantha.Felling@simon.com",
+    "source_signal_id": "sig-gmail-19cde548508c337e",
+    "created_at": "2026-03-13T18:33:02.647Z",
+    "aliases": [
+      "Samantha Felling"
+    ]
+  },
+  {
+    "id": "ent-8544c914",
+    "name": "Greenwood Park Mall",
+    "type": "organization",
+    "lookup_key": "greenwoodparkmall.com",
+    "source_signal_id": "sig-gmail-19cde548508c337e",
+    "created_at": "2026-03-13T18:33:02.647Z",
+    "aliases": [
+      "Greenwood Park Mall"
+    ]
+  },
+  {
+    "id": "ent-d323d540",
+    "name": "Indiana Premium Outlets",
+    "type": "organization",
+    "lookup_key": "indianapremiumoutlets.com",
+    "source_signal_id": "sig-gmail-19cde548508c337e",
+    "created_at": "2026-03-13T18:33:02.647Z",
+    "aliases": [
+      "Indiana Premium Outlets"
+    ]
+  },
+  {
+    "id": "ent-2e5ba619",
+    "name": "Gaucho’s Fire Express",
+    "type": "organization",
+    "lookup_key": "Gauchosfire.com",
+    "source_signal_id": "sig-gmail-19cde1d4532ba05c",
+    "created_at": "2026-03-13T18:34:04.814Z",
+    "aliases": [
+      "Gaucho’s Fire Express"
+    ]
+  },
+  {
+    "id": "ent-eec7db66",
+    "name": "Stephanie Allen",
+    "type": "person",
+    "lookup_key": "sallen@simon.com",
+    "source_signal_id": "sig-gmail-19cde1d4532ba05c",
+    "created_at": "2026-03-13T18:34:04.814Z",
+    "aliases": [
+      "Stephanie Allen"
+    ]
+  },
+  {
+    "id": "ent-97af1eae",
+    "name": "Simon Property Group",
+    "type": "organization",
+    "lookup_key": "simon.com",
+    "source_signal_id": "sig-gmail-19cde1d4532ba05c",
+    "created_at": "2026-03-13T18:34:04.814Z",
+    "aliases": [
+      "Simon Property Group"
+    ]
+  },
+  {
+    "id": "ent-2f9e2e13",
+    "name": "Ruby & Rogerio Tregnago",
+    "type": "person",
+    "lookup_key": null,
+    "source_signal_id": "sig-gmail-19cde1d4532ba05c",
+    "created_at": "2026-03-13T18:34:04.814Z",
+    "aliases": [
+      "Ruby & Rogerio Tregnago"
+    ]
+  },
+  {
+    "id": "ent-30f6f702",
+    "name": "Nick Gerli",
+    "type": "person",
+    "lookup_key": "nick@reventure.app",
+    "source_signal_id": "sig-gmail-19cddc9f8a9a8437",
+    "created_at": "2026-03-13T18:34:23.157Z",
+    "aliases": [
+      "Nick Gerli"
+    ]
+  },
+  {
+    "id": "ent-b71bce8d",
+    "name": "Reventure App",
+    "type": "organization",
+    "lookup_key": "reventure.app",
+    "source_signal_id": "sig-gmail-19cddc9f8a9a8437",
+    "created_at": "2026-03-13T18:34:23.157Z",
+    "aliases": [
+      "Reventure App"
+    ]
+  },
+  {
+    "id": "ent-037f8963",
+    "name": "WRAPOBSESSIONS_STICKERS.ai",
+    "type": "artifact",
+    "lookup_key": "WRAPOBSESSIONS_STICKERS.ai",
+    "source_signal_id": "sig-gmail-19cdd71d631e259d",
+    "created_at": "2026-03-13T18:35:33.152Z",
+    "aliases": [
+      "WRAPOBSESSIONS_STICKERS.ai"
+    ]
+  },
+  {
+    "id": "ent-3b879eaf",
+    "name": "FirstClass_Transit_Cameron_WrapObsessions.ai",
+    "type": "artifact",
+    "lookup_key": "FirstClass_Transit_Cameron_WrapObsessions.ai",
+    "source_signal_id": "sig-gmail-19cdd71d631e259d",
+    "created_at": "2026-03-13T18:35:33.152Z",
+    "aliases": [
+      "FirstClass_Transit_Cameron_WrapObsessions.ai"
+    ]
+  }
 ]

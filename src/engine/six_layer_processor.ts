@@ -48,7 +48,7 @@ export interface SixLayerProcessorOptions {
   apiKey?: string;
 }
 
-const DEFAULT_MODEL = "gpt-5-pro";
+const DEFAULT_MODEL = "gpt-4o-mini";  // gpt-4o-mini: higher rate limits, sufficient for structured extraction
 const DEFAULT_PROMPT_PATH = path.resolve(
   _moduleDir,
   "../../prompts/six_layer_processor_prompt.md"
@@ -170,19 +170,18 @@ export class SixLayerProcessor {
   async process(signal: Signal): Promise<ProcessingResult> {
     const userMessage = this.buildUserMessage(signal);
 
-    // Use the Responses API — required for gpt-5-pro and newer models
-    const response = await this.client.responses.create({
+    // Use the Chat Completions API with JSON mode
+    const response = await this.client.chat.completions.create({
       model: this.model,
-      instructions: this.systemPrompt,
-      input: userMessage,
-      text: {
-        format: {
-          type: "json_object",
-        },
-      },
+      messages: [
+        { role: "system", content: this.systemPrompt },
+        { role: "user", content: userMessage },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.1,
     });
 
-    const rawContent = response.output_text;
+    const rawContent = response.choices[0]?.message?.content;
     if (!rawContent) {
       throw new Error(`SixLayerProcessor: Empty response from model ${this.model}`);
     }
@@ -232,6 +231,10 @@ export class SixLayerProcessor {
    * Includes all signal metadata and the raw text content.
    */
   private buildUserMessage(signal: Signal): string {
+    // Truncate to 3000 chars to stay within token limits for gpt-4o-mini
+    const content = signal.raw_text.length > 3000
+      ? signal.raw_text.slice(0, 3000) + "\n[... truncated ...]"
+      : signal.raw_text;
     return [
       `SIGNAL ID: ${signal.id}`,
       `SOURCE: ${signal.source_kind}`,
@@ -239,7 +242,7 @@ export class SixLayerProcessor {
       `TITLE: ${signal.title}`,
       ``,
       `--- RAW CONTENT ---`,
-      signal.raw_text,
+      content,
       `--- END CONTENT ---`,
       ``,
       `Process this signal through all six layers and return the JSON result.`,

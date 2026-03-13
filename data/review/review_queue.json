@@ -1,70 +1,80 @@
 [
   {
-    "id": "rv-001",
+    "id": "rev-789fccca",
     "kind": "high_risk_action",
-    "title": "Send payment confirmation reply to Sarah Chen",
-    "description": "Agent proposes sending an email reply to sarah.chen@vertexdesign.co confirming receipt of Invoice #2024-089 for $4,200 and acknowledging the April 11 due date. This action sends an external email and cannot be undone.",
+    "title": "Verify the new sign-in activity and secure the account if unauthorized.",
+    "description": "To prevent potential unauthorized access to the account.",
     "severity": "high",
-    "status": "reviewed",
-    "signal_id": "sig-001",
-    "entity_ids": [
-      "ent-001",
-      "ent-002"
-    ],
-    "action_description": "Reply to sarah.chen@vertexdesign.co: 'Hi Sarah, confirming receipt of Invoice #2024-089 for $4,200 due April 11. We will process payment by the due date.'",
-    "action_risk": "high",
+    "status": "pending",
+    "signal_id": "sig-gmail-19ce7b6ccece272c",
     "requires_approval": true,
-    "created_at": "2026-03-13T09:15:00Z",
-    "decision": "approved",
-    "decision_note": "",
-    "decided_at": "2026-03-13T16:54:42.031Z"
+    "created_at": "2026-03-13T18:15:19.936Z",
+    "action_description": "Verify the new sign-in activity and secure the account if unauthorized.",
+    "action_risk": "high"
   },
   {
-    "id": "rv-002",
-    "kind": "entity_conflict",
-    "title": "Ambiguous entity: J. Smith vs John Smith",
-    "description": "A new signal references 'J. Smith' which partially matches existing entity 'John Smith' (similarity: 0.50). These may be the same person or different people. Please confirm whether to merge or keep separate.",
-    "severity": "medium",
-    "status": "reviewed",
-    "signal_id": "sig-003",
-    "entity_ids": [
-      "ent-004"
-    ],
-    "requires_approval": false,
-    "created_at": "2026-03-13T09:22:00Z",
-    "decision": "resolved",
-    "decision_note": "Confirmed duplicate — merging",
-    "decided_at": "2026-03-13T17:16:52.339Z"
-  },
-  {
-    "id": "rv-003",
-    "kind": "contradiction",
-    "title": "Conflicting project status for Meridian Coffee Co",
-    "description": "Signal sig-001 indicates the Meridian Coffee Rebrand project is in 'final delivery' stage. Signal sig-004 references a 'kickoff meeting' for the same project. These two states are mutually exclusive.",
+    "id": "rev-346f9f6d",
+    "kind": "high_risk_action",
+    "title": "Review active sessions and passkeys associated with the GitHub account.",
+    "description": "To ensure the security of the GitHub account after the linking of a new identity.",
     "severity": "high",
-    "status": "reviewed",
-    "signal_id": "sig-004",
-    "entity_ids": [
-      "ent-003"
-    ],
-    "requires_approval": false,
-    "created_at": "2026-03-13T09:30:00Z",
-    "decision": "resolved",
-    "decision_note": "",
-    "decided_at": "2026-03-13T16:55:00.219Z"
+    "status": "pending",
+    "signal_id": "sig-gmail-19ce51827fbc6038",
+    "requires_approval": true,
+    "created_at": "2026-03-13T18:18:42.475Z",
+    "action_description": "Review active sessions and passkeys associated with the GitHub account.",
+    "action_risk": "high"
   },
   {
-    "id": "rv-004",
-    "kind": "low_confidence",
-    "title": "Low confidence processing result for newsletter email",
-    "description": "The six-layer processor returned a confidence score of 0.41 for signal sig-005. The email appears to be a marketing newsletter but contains a pricing table that may represent a real proposal. Manual review recommended.",
-    "severity": "low",
-    "status": "reviewed",
-    "decision": "resolved",
-    "decision_note": "Confirmed as marketing noise, not a real proposal.",
-    "decided_at": "2026-03-13T09:45:00Z",
-    "signal_id": "sig-005",
-    "requires_approval": false,
-    "created_at": "2026-03-13T09:31:00Z"
+    "id": "rev-5524720c",
+    "kind": "high_risk_action",
+    "title": "Coordinate with neighbors to prepare the house for Air Bnb by April 1st.",
+    "description": "The deadline for preparing the house for Air Bnb is approaching quickly.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-gmail-19ce3f28136c4ec8",
+    "requires_approval": true,
+    "created_at": "2026-03-13T18:20:28.435Z",
+    "action_description": "Coordinate with neighbors to prepare the house for Air Bnb by April 1st.",
+    "action_risk": "high"
+  },
+  {
+    "id": "rev-0183cdcd",
+    "kind": "high_risk_action",
+    "title": "Post a notice in the local community about the lost items and the reward offered.",
+    "description": "A public notice may increase the chances of someone returning the items.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-gmail-19ce384e2b37f4ed",
+    "requires_approval": true,
+    "created_at": "2026-03-13T18:22:33.822Z",
+    "action_description": "Post a notice in the local community about the lost items and the reward offered.",
+    "action_risk": "medium"
+  },
+  {
+    "id": "rev-985ea86f",
+    "kind": "high_risk_action",
+    "title": "Update billing details for Cloudflare account to enable auto-renewal.",
+    "description": "To prevent the domain from expiring on Mon, Apr 6th, 2026.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-gmail-19ce051321386e3c",
+    "requires_approval": true,
+    "created_at": "2026-03-13T18:29:18.851Z",
+    "action_description": "Update billing details for Cloudflare account to enable auto-renewal.",
+    "action_risk": "high"
+  },
+  {
+    "id": "rev-dc7c1108",
+    "kind": "high_risk_action",
+    "title": "Check the updated data for accuracy and relevance.",
+    "description": "Ensuring data accuracy is critical for user trust.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-gmail-19cddc9f8a9a8437",
+    "requires_approval": true,
+    "created_at": "2026-03-13T18:34:23.157Z",
+    "action_description": "Check the updated data for accuracy and relevance.",
+    "action_risk": "medium"
   }
 ]
