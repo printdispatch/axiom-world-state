@@ -461,6 +461,163 @@ function ObCard({ ob }: { ob: Obligation }) {
   );
 }
 
+// ─── Workspace Types ─────────────────────────────────────────────────────────
+
+interface Workspace {
+  id: string;
+  name: string;
+  description?: string;
+  status: string;
+  client_name?: string;
+  entity_ids: string[];
+  signal_ids: string[];
+  obligation_ids: string[];
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  last_activity_at?: string;
+  // enriched fields from /api/workspaces/:id
+  signals?: Signal[];
+  entities?: Entity[];
+  obligations?: Obligation[];
+  state_updates?: StateUpdate[];
+}
+
+// ─── Workspace Card ───────────────────────────────────────────────────────────
+
+function WorkspaceCard({ ws, onClick }: { ws: Workspace; onClick: () => void }) {
+  const statusColor = ws.status === "active" ? "#34C759" : ws.status === "on_hold" ? "#FF9500" : "#636366";
+  return (
+    <div className="ws-card" onClick={onClick}>
+      <div className="ws-card-left">
+        <div className="ws-avatar" style={{ background: getAvatarColor(ws.name) }}>
+          {ws.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+        </div>
+        <div className="thread-line" />
+      </div>
+      <div className="ws-card-body">
+        <div className="card-header-row">
+          <span className="card-from">{ws.client_name || ws.name}</span>
+          <span className="card-time">{timeAgo(ws.last_activity_at || ws.updated_at)}</span>
+        </div>
+        <div className="card-subject">{ws.name}</div>
+        {ws.description && <div className="ws-desc">{ws.description.slice(0, 90)}{ws.description.length > 90 ? "…" : ""}</div>}
+        <div className="card-tags">
+          <span className="badge" style={{ background: statusColor + "22", color: statusColor }}>{ws.status}</span>
+          <span className="badge src">{ws.signal_ids.length} signals</span>
+          <span className="badge src">{ws.obligation_ids.length} tasks</span>
+          {ws.tags.slice(0, 2).map(t => <span key={t} className="badge">{t}</span>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Workspace Detail Sheet ───────────────────────────────────────────────────
+
+function WorkspaceSheet({ ws, onClose }: { ws: Workspace; onClose: () => void }) {
+  const [wsTab, setWsTab] = useState<"signals" | "tasks" | "entities" | "updates">("signals");
+  const [detail, setDetail] = useState<Workspace | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/workspaces/${ws.id}`).then(r => r.json()).then(setDetail).catch(() => setDetail(ws));
+  }, [ws.id]);
+
+  const d = detail || ws;
+  const statusColor = d.status === "active" ? "#34C759" : d.status === "on_hold" ? "#FF9500" : "#636366";
+
+  return (
+    <div className="sheet-overlay" onClick={onClose}>
+      <div className="bottom-sheet ws-sheet" onClick={e => e.stopPropagation()}>
+        <div className="sheet-handle" />
+        <div className="sheet-head">
+          <div className="ws-avatar" style={{ background: getAvatarColor(d.name), width: 38, height: 38, minWidth: 38, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>
+            {d.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+          </div>
+          <div className="sheet-head-text">
+            <div className="sheet-from">{d.name}</div>
+            <div className="sheet-meta">
+              <span style={{ color: statusColor }}>{d.status}</span>
+              {d.client_name && ` · ${d.client_name}`}
+            </div>
+          </div>
+          <button className="sheet-close" onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        {d.description && <div className="sheet-subject" style={{ fontSize: 14, color: "var(--text2)", marginBottom: 12 }}>{d.description}</div>}
+        <div className="ws-stats-row">
+          <div className="ws-stat"><span className="ws-stat-num">{d.signal_ids.length}</span><span className="ws-stat-lbl">Signals</span></div>
+          <div className="ws-stat"><span className="ws-stat-num">{d.obligation_ids.length}</span><span className="ws-stat-lbl">Tasks</span></div>
+          <div className="ws-stat"><span className="ws-stat-num">{d.entity_ids.length}</span><span className="ws-stat-lbl">Entities</span></div>
+          <div className="ws-stat"><span className="ws-stat-num">{d.tags.length}</span><span className="ws-stat-lbl">Tags</span></div>
+        </div>
+        <div className="entity-tabs">
+          {(["signals", "tasks", "entities", "updates"] as const).map(t => (
+            <button key={t} className={`entity-tab${wsTab === t ? " active" : ""}`} onClick={() => setWsTab(t)}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="sheet-scroll">
+          {wsTab === "signals" && (
+            <div>
+              {!d.signals || d.signals.length === 0
+                ? <div className="empty-msg">No signals linked yet.</div>
+                : d.signals.map(sig => (
+                  <div key={sig.id} className="prov-entry">
+                    <div className="prov-field">{sig.metadata?.subject || "No subject"}</div>
+                    <div className="prov-val">{sig.metadata?.from || sig.source} · {timeAgo(sig.received_at)}</div>
+                  </div>
+                ))
+              }
+            </div>
+          )}
+          {wsTab === "tasks" && (
+            <div>
+              {!d.obligations || d.obligations.length === 0
+                ? <div className="empty-msg">No tasks linked yet.</div>
+                : d.obligations.map(ob => <ObCard key={ob.id} ob={ob} />)
+              }
+            </div>
+          )}
+          {wsTab === "entities" && (
+            <div>
+              {!d.entities || d.entities.length === 0
+                ? <div className="empty-msg">No entities linked yet.</div>
+                : d.entities.map(e => (
+                  <div key={e.id} className="entity-card" style={{ cursor: "default" }}>
+                    <div className="entity-avatar-sm" style={{ background: domainColor(e.domain) }}>
+                      <span>{domainIcon(e.domain)}</span>
+                    </div>
+                    <div className="entity-card-body">
+                      <div className="entity-name">{e.canonical_name}</div>
+                      <div className="entity-meta">{e.domain}</div>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          )}
+          {wsTab === "updates" && (
+            <div>
+              {!d.state_updates || d.state_updates.length === 0
+                ? <div className="empty-msg">No state updates yet.</div>
+                : d.state_updates.map((u, i) => (
+                  <div key={i} className="prov-entry">
+                    <div className="prov-field">{u.entity_label} · {u.field}</div>
+                    <div className="prov-val">{String(u.new_value)}</div>
+                  </div>
+                ))
+              }
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 type Tab = "feed" | "tasks" | "review" | "entities" | "world";
@@ -478,6 +635,8 @@ export default function App() {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [reviewNote, setReviewNote] = useState<string>("");
   const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -488,9 +647,10 @@ export default function App() {
       fetch("/api/contradictions").then(r => r.json()),
       fetch("/api/summary").then(r => r.json()),
       fetch("/api/review").then(r => r.json()),
-    ]).then(([s, o, e, c, sum, rv]) => {
+      fetch("/api/workspaces").then(r => r.json()),
+    ]).then(([s, o, e, c, sum, rv, ws]) => {
       setSignals(s); setObligations(o); setEntities(e);
-      setContradictions(c); setSummary(sum); setReviewItems(rv); setLoading(false);
+      setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
@@ -666,11 +826,14 @@ export default function App() {
           </div>
         )}
 
-        {/* ── World Tab ── */}
+        {/* ── World Tab (Workspaces) ── */}
         {!loading && tab === "world" && (
           <div className="feed-list">
-            <div className="section-title">World State</div>
-            <div className="coming-soon"><div className="cs-icon">🌐</div><div>World state dashboard — Phase 9</div></div>
+            <div className="section-title">Workspaces</div>
+            {workspaces.length === 0 && <div className="empty-msg">No workspaces yet.</div>}
+            {workspaces.map(ws => (
+              <WorkspaceCard key={ws.id} ws={ws} onClick={() => setSelectedWorkspace(ws)} />
+            ))}
           </div>
         )}
       </main>
@@ -710,6 +873,11 @@ export default function App() {
       {/* ── Entity Profile Sheet ── */}
       {selectedEntity && (
         <EntityProfile entity={selectedEntity} onClose={() => setSelectedEntity(null)} />
+      )}
+
+      {/* ── Workspace Detail Sheet ── */}
+      {selectedWorkspace && (
+        <WorkspaceSheet ws={selectedWorkspace} onClose={() => setSelectedWorkspace(null)} />
       )}
     </div>
   );

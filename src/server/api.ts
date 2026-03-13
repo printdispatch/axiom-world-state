@@ -232,6 +232,76 @@ app.post("/api/review/:id/decide", (req, res) => {
   return res.json(item);
 });
 
+// ─── Workspaces ──────────────────────────────────────────────────────────────
+
+// GET /api/workspaces — All workspaces sorted by last activity
+app.get("/api/workspaces", (_req, res) => {
+  const workspaces = readJson<Array<Record<string, unknown>>>(
+    path.join(DATA_DIR, "workspaces", "workspaces.json"), []
+  );
+  return res.json(workspaces);
+});
+
+// GET /api/workspaces/active — Only active workspaces
+app.get("/api/workspaces/active", (_req, res) => {
+  const workspaces = readJson<Array<{ status: string }>>(path.join(DATA_DIR, "workspaces", "workspaces.json"), []);
+  return res.json(workspaces.filter(w => w.status === "active"));
+});
+
+// GET /api/workspaces/:id — Single workspace with enriched data
+app.get("/api/workspaces/:id", (req, res) => {
+  const workspaces = readJson<Array<{ id: string; signal_ids?: string[]; entity_ids?: string[]; obligation_ids?: string[] }>>(
+    path.join(DATA_DIR, "workspaces", "workspaces.json"), []
+  );
+  const ws = workspaces.find(w => w.id === req.params.id);
+  if (!ws) return res.status(404).json({ error: "Workspace not found" });
+
+  // Enrich with related signals
+  const allSignals = readJson<Array<{ id: string }>>(path.join(DATA_DIR, "signals.json"), []);
+  const signals = allSignals.filter(s => (ws.signal_ids ?? []).includes(s.id));
+
+  // Enrich with related entities
+  const allEntities = readJson<Array<{ id: string }>>(path.join(DATA_DIR, "entities.json"), []);
+  const entities = allEntities.filter(e => (ws.entity_ids ?? []).includes(e.id));
+
+  // Enrich with related obligations
+  const allObligations = readJson<Array<{ id: string }>>(path.join(DATA_DIR, "obligations.json"), []);
+  const obligations = allObligations.filter(o => (ws.obligation_ids ?? []).includes(o.id));
+
+  // Enrich with related state updates
+  const allUpdates = readJson<Array<{ entity_id?: string }>>(path.join(DATA_DIR, "state_updates.json"), []);
+  const stateUpdates = allUpdates.filter(u => (ws.entity_ids ?? []).includes(u.entity_id ?? ""));
+
+  return res.json({ ...ws, signals, entities, obligations, state_updates: stateUpdates });
+});
+
+// POST /api/workspaces — Create a new workspace
+app.post("/api/workspaces", (req, res) => {
+  const { name, description, client_name, tags } = req.body as { name: string; description?: string; client_name?: string; tags?: string[] };
+  if (!name) return res.status(400).json({ error: "name is required" });
+  const workspaces = readJson<Array<Record<string, unknown>>>(path.join(DATA_DIR, "workspaces", "workspaces.json"), []);
+  const now = new Date().toISOString();
+  const newWs = {
+    id: `ws-${Date.now().toString(36)}`,
+    name,
+    description: description ?? "",
+    status: "active",
+    client_name: client_name ?? "",
+    entity_ids: [],
+    signal_ids: [],
+    obligation_ids: [],
+    tags: tags ?? [],
+    created_at: now,
+    updated_at: now,
+    last_activity_at: now,
+  };
+  workspaces.push(newWs);
+  const dir = path.join(DATA_DIR, "workspaces");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "workspaces.json"), JSON.stringify(workspaces, null, 2));
+  return res.status(201).json(newWs);
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");
