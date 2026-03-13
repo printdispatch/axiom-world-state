@@ -302,6 +302,112 @@ app.post("/api/workspaces", (req, res) => {
   return res.status(201).json(newWs);
 });
 
+// ─── World State Dashboard ──────────────────────────────────────────────────
+
+// GET /api/world — Aggregated world state intelligence for the dashboard
+app.get("/api/world", (_req, res) => {
+  const obligations = readJson<Array<{
+    id: string; title: string; status: string; priority: string;
+    due_date?: string; owed_by?: string; owed_to?: string;
+    created_at: string; source_signal_id?: string;
+  }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+
+  const contradictions = readJson<Array<{
+    id: string; description: string; resolved: boolean;
+    entity_label?: string; signal_ids?: string[]; created_at: string;
+  }>>(path.join(DATA_DIR, "state", "contradictions.json"), []);
+
+  const entities = readJson<Array<{
+    id: string; canonical_name: string; domain: string;
+    aliases?: string[]; updated_at: string;
+  }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+
+  const stateUpdates = readJson<Array<{
+    id: string; entity_label: string; field: string;
+    new_value: string; mutated_at: string; signal_id: string;
+  }>>(path.join(DATA_DIR, "state", "state_updates.json"), []);
+
+  const signals = readJson<Array<{ id: string; received_at: string; source: string }>>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
+
+  const reviewItems = readJson<Array<{ status: string; severity: string }>>(path.join(DATA_DIR, "review", "review_queue.json"), []);
+
+  const workspaces = readJson<Array<{ id: string; name: string; status: string; client_name?: string }>>(path.join(DATA_DIR, "workspaces", "workspaces.json"), []);
+
+  // Priority order for sorting
+  const priorityOrder: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+
+  // Open obligations sorted by priority then due date
+  const openObligations = obligations
+    .filter(o => o.status === "open")
+    .sort((a, b) => {
+      const pd = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+      if (pd !== 0) return pd;
+      if (a.due_date && b.due_date) return a.due_date.localeCompare(b.due_date);
+      if (a.due_date) return -1;
+      if (b.due_date) return 1;
+      return 0;
+    });
+
+  // Overdue obligations (due_date in the past)
+  const now = new Date().toISOString();
+  const overdueObligations = openObligations.filter(o => o.due_date && o.due_date < now);
+
+  // Active contradictions
+  const activeContradictions = contradictions.filter(c => !c.resolved);
+
+  // Most active entities (those with the most recent state updates)
+  const entityUpdateCounts: Record<string, number> = {};
+  for (const update of stateUpdates) {
+    entityUpdateCounts[update.entity_label] = (entityUpdateCounts[update.entity_label] || 0) + 1;
+  }
+  const mostActiveEntities = entities
+    .map(e => ({ ...e, update_count: entityUpdateCounts[e.canonical_name] || 0 }))
+    .sort((a, b) => b.update_count - a.update_count)
+    .slice(0, 5);
+
+  // Recent activity timeline (last 10 state updates)
+  const recentActivity = [...stateUpdates]
+    .sort((a, b) => (b.mutated_at ?? "").localeCompare(a.mutated_at ?? ""))
+    .slice(0, 10);
+
+  // Pending review items by severity
+  const pendingReview = reviewItems.filter(r => r.status === "pending");
+  const reviewBySeverity = {
+    critical: pendingReview.filter(r => r.severity === "critical").length,
+    high: pendingReview.filter(r => r.severity === "high").length,
+    medium: pendingReview.filter(r => r.severity === "medium").length,
+    low: pendingReview.filter(r => r.severity === "low").length,
+  };
+
+  // System health score (0-100)
+  const totalSignals = signals.length;
+  const processedSignals = stateUpdates.length > 0 ? Math.min(totalSignals, stateUpdates.length) : 0;
+  const processingRate = totalSignals > 0 ? Math.round((processedSignals / totalSignals) * 100) : 100;
+  const contradictionPenalty = Math.min(activeContradictions.length * 10, 30);
+  const overduePenalty = Math.min(overdueObligations.length * 5, 20);
+  const healthScore = Math.max(0, processingRate - contradictionPenalty - overduePenalty);
+
+  res.json({
+    summary: {
+      total_signals: totalSignals,
+      total_entities: entities.length,
+      open_obligations: openObligations.length,
+      overdue_obligations: overdueObligations.length,
+      active_contradictions: activeContradictions.length,
+      pending_review: pendingReview.length,
+      active_workspaces: workspaces.filter(w => w.status === "active").length,
+      health_score: healthScore,
+    },
+    open_obligations: openObligations,
+    overdue_obligations: overdueObligations,
+    active_contradictions: activeContradictions,
+    most_active_entities: mostActiveEntities,
+    recent_activity: recentActivity,
+    review_by_severity: reviewBySeverity,
+    workspaces: workspaces.filter(w => w.status === "active"),
+  });
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");

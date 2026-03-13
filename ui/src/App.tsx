@@ -618,6 +618,179 @@ function WorkspaceSheet({ ws, onClose }: { ws: Workspace; onClose: () => void })
   );
 }
 
+// ─── World State Dashboard Types ────────────────────────────────────────────
+
+interface WorldSummary {
+  total_signals: number; total_entities: number; open_obligations: number;
+  overdue_obligations: number; active_contradictions: number; pending_review: number;
+  active_workspaces: number; health_score: number;
+}
+interface WorldObligation {
+  id: string; title: string; status: string; priority: string;
+  due_date?: string; due_hint?: string; owed_by?: string; owed_to?: string;
+  workspace_hint?: string; created_at: string;
+}
+interface WorldActivity {
+  id: string; entity_label: string; field: string; new_value: string;
+  mutated_at: string; signal_id: string;
+}
+interface WorldContradiction {
+  id: string; description: string; resolved: boolean;
+  entity_label?: string; signal_ids?: string[]; created_at: string;
+}
+interface ActiveEntity {
+  id: string; canonical_name: string; domain: string;
+  update_count: number; updated_at: string;
+}
+interface WorldState {
+  summary: WorldSummary;
+  open_obligations: WorldObligation[];
+  overdue_obligations: WorldObligation[];
+  active_contradictions: WorldContradiction[];
+  most_active_entities: ActiveEntity[];
+  recent_activity: WorldActivity[];
+  review_by_severity: { critical: number; high: number; medium: number; low: number };
+  workspaces: Workspace[];
+}
+
+// ─── Health Ring ─────────────────────────────────────────────────────────────
+
+function HealthRing({ score }: { score: number }) {
+  const r = 28; const circ = 2 * Math.PI * r;
+  const color = score >= 80 ? "#34C759" : score >= 60 ? "#FF9500" : "#FF3B30";
+  const label = score >= 80 ? "Healthy" : score >= 60 ? "Warning" : "Critical";
+  return (
+    <div className="health-ring-wrap">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r={r} fill="none" stroke="#2c2c2e" strokeWidth="6" />
+        <circle cx="36" cy="36" r={r} fill="none" stroke={color} strokeWidth="6"
+          strokeDasharray={circ} strokeDashoffset={circ * (1 - score / 100)}
+          strokeLinecap="round" transform="rotate(-90 36 36)" />
+      </svg>
+      <div className="health-ring-inner">
+        <span className="health-score" style={{ color }}>{score}</span>
+        <span className="health-label" style={{ color }}>{label}</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── World State Dashboard ────────────────────────────────────────────────────
+
+function WorldDashboard({ world }: { world: WorldState }) {
+  const s = world.summary;
+  return (
+    <div className="feed-list">
+      <div className="section-title">World State</div>
+
+      <div className="world-health-card">
+        <HealthRing score={s.health_score} />
+        <div className="world-stats-grid">
+          <div className="world-stat"><span className="world-stat-num">{s.total_signals}</span><span className="world-stat-lbl">Signals</span></div>
+          <div className="world-stat"><span className="world-stat-num">{s.total_entities}</span><span className="world-stat-lbl">Entities</span></div>
+          <div className="world-stat" style={{ color: s.open_obligations > 0 ? "#FF9500" : "var(--text1)" }}>
+            <span className="world-stat-num">{s.open_obligations}</span><span className="world-stat-lbl">Open</span>
+          </div>
+          <div className="world-stat" style={{ color: s.overdue_obligations > 0 ? "#FF3B30" : "var(--text1)" }}>
+            <span className="world-stat-num">{s.overdue_obligations}</span><span className="world-stat-lbl">Overdue</span>
+          </div>
+          <div className="world-stat" style={{ color: s.active_contradictions > 0 ? "#FF3B30" : "var(--text1)" }}>
+            <span className="world-stat-num">{s.active_contradictions}</span><span className="world-stat-lbl">Conflicts</span>
+          </div>
+          <div className="world-stat" style={{ color: s.pending_review > 0 ? "#FFD60A" : "var(--text1)" }}>
+            <span className="world-stat-num">{s.pending_review}</span><span className="world-stat-lbl">Review</span>
+          </div>
+        </div>
+      </div>
+
+      {world.overdue_obligations.length > 0 && (
+        <>
+          <div className="section-title" style={{ color: "#FF3B30" }}>🔴 Overdue</div>
+          {world.overdue_obligations.map(ob => (
+            <div key={ob.id} className="world-ob-card overdue">
+              <div className="ob-dot" style={{ background: "#FF3B30" }} />
+              <div className="ob-body">
+                <div className="ob-title">{ob.title}</div>
+                <div className="ob-meta">{ob.owed_by} → {ob.owed_to}{ob.due_hint ? ` · ${ob.due_hint}` : ""}</div>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {world.open_obligations.length > 0 && (
+        <>
+          <div className="section-title">Open Obligations</div>
+          {world.open_obligations.map(ob => (
+            <div key={ob.id} className="world-ob-card">
+              <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
+              <div className="ob-body">
+                <div className="ob-title">{ob.title}</div>
+                <div className="ob-meta">
+                  <span className="badge" style={{ background: priorityColor(ob.priority) + "22", color: priorityColor(ob.priority), marginRight: 6 }}>{ob.priority}</span>
+                  {ob.owed_by} → {ob.owed_to}{ob.due_hint ? ` · ${ob.due_hint}` : ""}
+                </div>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {world.active_contradictions.length > 0 && (
+        <>
+          <div className="section-title" style={{ color: "#FF3B30" }}>⚡ Active Contradictions</div>
+          {world.active_contradictions.map(c => (
+            <div key={c.id} className="contra-card">
+              <div className="contra-icon">⚡</div>
+              <div className="contra-body">
+                <div className="contra-desc">{c.description}</div>
+                {c.entity_label && <div className="contra-entities">{c.entity_label}</div>}
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {world.most_active_entities.length > 0 && (
+        <>
+          <div className="section-title">Most Active Entities</div>
+          {world.most_active_entities.map(e => (
+            <div key={e.id} className="world-entity-row">
+              <div className="entity-avatar-sm" style={{ background: domainColor(e.domain) }}>
+                <span>{domainIcon(e.domain)}</span>
+              </div>
+              <div className="world-entity-body">
+                <div className="entity-name">{e.canonical_name}</div>
+                <div className="entity-meta">{e.domain} · {e.update_count} update{e.update_count !== 1 ? "s" : ""}</div>
+              </div>
+              <div className="world-entity-bar-wrap">
+                <div className="world-entity-bar" style={{ width: `${Math.min(100, e.update_count * 20)}%`, background: domainColor(e.domain) }} />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {world.recent_activity.length > 0 && (
+        <>
+          <div className="section-title">Recent Activity</div>
+          {world.recent_activity.map(a => (
+            <div key={a.id} className="world-activity-row">
+              <div className="activity-dot" />
+              <div className="activity-body">
+                <span className="activity-entity">{a.entity_label}</span>
+                <span className="activity-field"> · {a.field}</span>
+                <span className="activity-value"> → {a.new_value}</span>
+              </div>
+              <span className="activity-time">{timeAgo(a.mutated_at)}</span>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 type Tab = "feed" | "tasks" | "review" | "entities" | "world";
@@ -637,6 +810,7 @@ export default function App() {
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [worldState, setWorldState] = useState<WorldState | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -648,9 +822,10 @@ export default function App() {
       fetch("/api/summary").then(r => r.json()),
       fetch("/api/review").then(r => r.json()),
       fetch("/api/workspaces").then(r => r.json()),
-    ]).then(([s, o, e, c, sum, rv, ws]) => {
+      fetch("/api/world").then(r => r.json()),
+    ]).then(([s, o, e, c, sum, rv, ws, wd]) => {
       setSignals(s); setObligations(o); setEntities(e);
-      setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setLoading(false);
+      setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setWorldState(wd); setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
@@ -826,15 +1001,11 @@ export default function App() {
           </div>
         )}
 
-        {/* ── World Tab (Workspaces) ── */}
+        {/* ── World Tab (Dashboard) ── */}
         {!loading && tab === "world" && (
-          <div className="feed-list">
-            <div className="section-title">Workspaces</div>
-            {workspaces.length === 0 && <div className="empty-msg">No workspaces yet.</div>}
-            {workspaces.map(ws => (
-              <WorkspaceCard key={ws.id} ws={ws} onClick={() => setSelectedWorkspace(ws)} />
-            ))}
-          </div>
+          worldState
+            ? <WorldDashboard world={worldState} />
+            : <div className="feed-list"><div className="empty-msg">Loading world state...</div></div>
         )}
       </main>
 
