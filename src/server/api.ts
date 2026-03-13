@@ -177,6 +177,61 @@ app.get("/api/audit", (_req, res) => {
   res.json([...log].reverse());
 });
 
+// ─── Review Queue Endpoints ─────────────────────────────────────────────────
+
+// GET /api/review — All review items (pending first)
+app.get("/api/review", (_req, res) => {
+  const items = readJson<Array<{ status: string; severity: string; created_at: string }>>(
+    path.join(DATA_DIR, "review", "review_queue.json"), []
+  );
+  const sevOrder: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+  const sorted = [...items].sort((a, b) => {
+    // Pending first
+    if (a.status === "pending" && b.status !== "pending") return -1;
+    if (a.status !== "pending" && b.status === "pending") return 1;
+    // Then by severity
+    return (sevOrder[b.severity] || 0) - (sevOrder[a.severity] || 0);
+  });
+  res.json(sorted);
+});
+
+// GET /api/review/pending — Only pending items
+app.get("/api/review/pending", (_req, res) => {
+  const items = readJson<Array<{ status: string; severity: string; created_at: string }>>(
+    path.join(DATA_DIR, "review", "review_queue.json"), []
+  );
+  const sevOrder: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+  const pending = items
+    .filter(i => i.status === "pending")
+    .sort((a, b) => (sevOrder[b.severity] || 0) - (sevOrder[a.severity] || 0));
+  res.json(pending);
+});
+
+// POST /api/review/:id/decide — Approve, reject, resolve, or defer a review item
+app.post("/api/review/:id/decide", (req, res) => {
+  const { decision, note } = req.body as { decision: string; note?: string };
+  const validDecisions = ["approved", "rejected", "resolved", "deferred"];
+  if (!validDecisions.includes(decision)) {
+    return res.status(400).json({ error: `Invalid decision. Must be one of: ${validDecisions.join(", ")}` });
+  }
+
+  const reviewPath = path.join(DATA_DIR, "review", "review_queue.json");
+  const items = readJson<Array<{ id: string; status: string; decision?: string; decision_note?: string; decided_at?: string }>>(reviewPath, []);
+  const item = items.find(i => i.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "Review item not found" });
+
+  item.status = "reviewed";
+  item.decision = decision;
+  item.decision_note = note;
+  item.decided_at = new Date().toISOString();
+
+  const dir = path.dirname(reviewPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(reviewPath, JSON.stringify(items, null, 2));
+
+  return res.json(item);
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");

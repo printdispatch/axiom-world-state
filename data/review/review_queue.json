@@ -1,0 +1,54 @@
+[
+  {
+    "id": "rv-001",
+    "kind": "high_risk_action",
+    "title": "Send payment confirmation reply to Sarah Chen",
+    "description": "Agent proposes sending an email reply to sarah.chen@vertexdesign.co confirming receipt of Invoice #2024-089 for $4,200 and acknowledging the April 11 due date. This action sends an external email and cannot be undone.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-001",
+    "entity_ids": ["ent-001", "ent-002"],
+    "action_description": "Reply to sarah.chen@vertexdesign.co: 'Hi Sarah, confirming receipt of Invoice #2024-089 for $4,200 due April 11. We will process payment by the due date.'",
+    "action_risk": "high",
+    "requires_approval": true,
+    "created_at": "2026-03-13T09:15:00Z"
+  },
+  {
+    "id": "rv-002",
+    "kind": "entity_conflict",
+    "title": "Ambiguous entity: J. Smith vs John Smith",
+    "description": "A new signal references 'J. Smith' which partially matches existing entity 'John Smith' (similarity: 0.50). These may be the same person or different people. Please confirm whether to merge or keep separate.",
+    "severity": "medium",
+    "status": "pending",
+    "signal_id": "sig-003",
+    "entity_ids": ["ent-004"],
+    "requires_approval": false,
+    "created_at": "2026-03-13T09:22:00Z"
+  },
+  {
+    "id": "rv-003",
+    "kind": "contradiction",
+    "title": "Conflicting project status for Meridian Coffee Co",
+    "description": "Signal sig-001 indicates the Meridian Coffee Rebrand project is in 'final delivery' stage. Signal sig-004 references a 'kickoff meeting' for the same project. These two states are mutually exclusive.",
+    "severity": "high",
+    "status": "pending",
+    "signal_id": "sig-004",
+    "entity_ids": ["ent-003"],
+    "requires_approval": false,
+    "created_at": "2026-03-13T09:30:00Z"
+  },
+  {
+    "id": "rv-004",
+    "kind": "low_confidence",
+    "title": "Low confidence processing result for newsletter email",
+    "description": "The six-layer processor returned a confidence score of 0.41 for signal sig-005. The email appears to be a marketing newsletter but contains a pricing table that may represent a real proposal. Manual review recommended.",
+    "severity": "low",
+    "status": "reviewed",
+    "decision": "resolved",
+    "decision_note": "Confirmed as marketing noise, not a real proposal.",
+    "decided_at": "2026-03-13T09:45:00Z",
+    "signal_id": "sig-005",
+    "requires_approval": false,
+    "created_at": "2026-03-13T09:31:00Z"
+  }
+]

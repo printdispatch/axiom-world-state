@@ -49,6 +49,24 @@ interface Summary {
   signals: number; entities: number; open_obligations: number; total_obligations: number;
   state_updates: number; unresolved_contradictions: number; audit_entries: number;
 }
+interface ReviewItem {
+  id: string;
+  kind: "entity_conflict" | "high_risk_action" | "contradiction" | "low_confidence";
+  title: string;
+  description: string;
+  severity: "low" | "medium" | "high" | "critical";
+  status: "pending" | "reviewed";
+  decision?: string;
+  decision_note?: string;
+  decided_at?: string;
+  signal_id: string;
+  entity_ids?: string[];
+  action_description?: string;
+  action_risk?: string;
+  requires_approval: boolean;
+  created_at: string;
+  metadata?: Record<string, unknown>;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -445,7 +463,7 @@ function ObCard({ ob }: { ob: Obligation }) {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "entities" | "world";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("feed");
@@ -457,6 +475,9 @@ export default function App() {
   const [selected, setSelected] = useState<Signal | null>(null);
   const [result, setResult] = useState<ProcessingResult | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
+  const [reviewNote, setReviewNote] = useState<string>("");
+  const [decidingId, setDecidingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -466,11 +487,31 @@ export default function App() {
       fetch("/api/entities").then(r => r.json()),
       fetch("/api/contradictions").then(r => r.json()),
       fetch("/api/summary").then(r => r.json()),
-    ]).then(([s, o, e, c, sum]) => {
+      fetch("/api/review").then(r => r.json()),
+    ]).then(([s, o, e, c, sum, rv]) => {
       setSignals(s); setObligations(o); setEntities(e);
-      setContradictions(c); setSummary(sum); setLoading(false);
+      setContradictions(c); setSummary(sum); setReviewItems(rv); setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  const pendingReview = reviewItems.filter(r => r.status === "pending");
+
+  const handleDecide = async (id: string, decision: string) => {
+    setDecidingId(id);
+    try {
+      const res = await fetch(`/api/review/${id}/decide`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision, note: reviewNote }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setReviewItems(prev => prev.map(r => r.id === id ? updated : r));
+        setReviewNote("");
+      }
+    } catch { /* ignore */ }
+    setDecidingId(null);
+  };
 
   const handleSelect = async (sig: Signal) => {
     setSelected(sig);
@@ -567,6 +608,64 @@ export default function App() {
           </div>
         )}
 
+        {/* ── Review Tab ── */}
+        {!loading && tab === "review" && (
+          <div className="feed-list">
+            <div className="section-title">
+              Review Queue
+              {pendingReview.length > 0 && <span className="review-badge">{pendingReview.length}</span>}
+            </div>
+            {reviewItems.length === 0 && <div className="empty-msg">No items in the review queue.</div>}
+            {reviewItems.map(item => (
+              <div key={item.id} className={`review-card${item.status === "reviewed" ? " reviewed" : ""}`}>
+                <div className="review-card-header">
+                  <div className="review-sev-dot" style={{ background: item.severity === "critical" ? "#FF3B30" : item.severity === "high" ? "#FF9500" : item.severity === "medium" ? "#FFD60A" : "#34C759" }} />
+                  <div className="review-kind-badge">
+                    {item.kind === "high_risk_action" ? "⚡ Action" : item.kind === "entity_conflict" ? "🔀 Conflict" : item.kind === "contradiction" ? "⚠️ Contradiction" : "❓ Low Confidence"}
+                  </div>
+                  <span className="review-time">{timeAgo(item.created_at)}</span>
+                  {item.status === "reviewed" && (
+                    <span className="review-decision-chip" style={{ color: item.decision === "approved" ? "#34C759" : item.decision === "rejected" ? "#FF3B30" : "#FF9500" }}>
+                      {item.decision}
+                    </span>
+                  )}
+                </div>
+                <div className="review-title">{item.title}</div>
+                <div className="review-desc">{item.description}</div>
+                {item.status === "pending" && (
+                  <div className="review-actions">
+                    <input
+                      className="review-note-input"
+                      placeholder="Optional note..."
+                      value={decidingId === item.id ? reviewNote : ""}
+                      onChange={e => { setDecidingId(item.id); setReviewNote(e.target.value); }}
+                    />
+                    <div className="review-btn-row">
+                      {item.requires_approval && (
+                        <button className="review-btn approve" onClick={() => handleDecide(item.id, "approved")} disabled={decidingId === item.id}>
+                          ✓ Approve
+                        </button>
+                      )}
+                      <button className="review-btn reject" onClick={() => handleDecide(item.id, "rejected")} disabled={decidingId === item.id}>
+                        ✕ Reject
+                      </button>
+                      <button className="review-btn resolve" onClick={() => handleDecide(item.id, "resolved")} disabled={decidingId === item.id}>
+                        ◎ Resolve
+                      </button>
+                      <button className="review-btn defer" onClick={() => handleDecide(item.id, "deferred")} disabled={decidingId === item.id}>
+                        ⟳ Defer
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {item.status === "reviewed" && item.decision_note && (
+                  <div className="review-note-display">Note: {item.decision_note}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* ── World Tab ── */}
         {!loading && tab === "world" && (
           <div className="feed-list">
@@ -586,8 +685,12 @@ export default function App() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           <span>Tasks</span>
         </button>
-        <button className="nav-item compose">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <button className={`nav-item${tab === "review" ? " active" : ""}`} onClick={() => setTab("review")} style={{ position: "relative" }}>
+          {pendingReview.length > 0 && (
+            <span style={{ position: "absolute", top: 4, right: 10, background: "#FF3B30", color: "#fff", borderRadius: "50%", width: 16, height: 16, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{pendingReview.length}</span>
+          )}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Review</span>
         </button>
         <button className={`nav-item${tab === "entities" ? " active" : ""}`} onClick={() => setTab("entities")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>

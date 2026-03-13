@@ -277,7 +277,7 @@ export class EntityResolver {
     };
 
     this.eventBus.emit("entities_resolved", {
-      signalId,
+      signal_id: signalId,
       mergedCount: summary.merged_count,
       createdCount: summary.created_count,
       conflictCount: summary.conflict_count,
@@ -347,7 +347,7 @@ export class EntityResolver {
       });
 
       this.eventBus.emit("review_required", {
-        signalId,
+        signal_id: signalId,
         reason: `Entity similarity conflict: "${candidate.label}" (new) vs "${bestMatch.canonical_name}" (existing) — score ${bestScore.toFixed(2)}. Manual review required.`,
         riskLevel: "medium",
       });

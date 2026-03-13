@@ -50,10 +50,21 @@ export interface ReviewRequiredPayload {
 }
 
 export interface EntitiesResolvedPayload {
-  signalId: string;
+  signal_id: string;
   mergedCount: number;
   createdCount: number;
   conflictCount: number;
+  conflicts?: Array<{ candidate: string; existing: string; existing_id: string; score: number }>;
+}
+
+export interface ReviewRequiredPayload2 {
+  signal_id: string;
+  reason: string;
+}
+
+export interface ReviewDecidedPayload {
+  item: unknown;
+  decision: string;
 }
 
 // ─── Event Map ────────────────────────────────────────────────────────────────
@@ -62,8 +73,11 @@ export interface AxiomEvents {
   signal_received: SignalReceivedPayload;
   signal_processed: SignalProcessedPayload;
   state_updated: StateUpdatedPayload;
-  review_required: ReviewRequiredPayload;
+  review_required: ReviewRequiredPayload | ReviewRequiredPayload2;
   entities_resolved: EntitiesResolvedPayload;
+  review_decided: ReviewDecidedPayload;
+  processing_complete: { signal: { id: string }; result: import('../schema/processing.js').ProcessingResult };
+  contradiction_detected: { signal_id: string; description: string; entities: string[] };
 }
 
 export type AxiomEventName = keyof AxiomEvents;
