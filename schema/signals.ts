@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime, SourceKind, StalenessLevel } from "./common";
+import { BaseRecord, EntityRef, ISODateTime, SourceKind, StalenessLevel } from "./common.js";
 
 export type SignalKind =
   | "incoming_message"

@@ -6,7 +6,7 @@ import {
   PriorityLevel,
   RiskLevel,
   StalenessLevel
-} from "./common";
+} from "./common.js";
 
 export interface InferenceRecord extends BaseRecord {
   type: "inference_record";

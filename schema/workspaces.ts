@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime, PriorityLevel, RiskLevel } from "./common";
+import { BaseRecord, EntityRef, ISODateTime, PriorityLevel, RiskLevel } from "./common.js";
 
 export type WorkspaceKind =
   | "project"

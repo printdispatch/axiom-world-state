@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime } from "./common";
+import { BaseRecord, EntityRef, ISODateTime } from "./common.js";
 
 export type MemoryKind =
   | "episodic_summary"

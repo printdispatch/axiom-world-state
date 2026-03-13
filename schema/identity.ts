@@ -1,4 +1,4 @@
-import { BaseRecord, ISODateTime } from "./common";
+import { BaseRecord, ISODateTime } from "./common.js";
 
 export type PersonRole =
   | "self"

@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime, RiskLevel } from "./common";
+import { BaseRecord, EntityRef, ISODateTime, RiskLevel } from "./common.js";
 
 export type ResourceKind =
   | "invoice"

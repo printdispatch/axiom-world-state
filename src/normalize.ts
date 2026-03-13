@@ -1,4 +1,4 @@
-import { SimilarityCandidate } from "../schema/common";
+import { SimilarityCandidate } from "../schema/common.js";
 
 export interface NormalizeInput {
   domain: string;

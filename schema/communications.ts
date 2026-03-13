@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime, PriorityLevel } from "./common";
+import { BaseRecord, EntityRef, ISODateTime, PriorityLevel } from "./common.js";
 
 export type ChannelKind =
   | "email"

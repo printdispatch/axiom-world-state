@@ -1,4 +1,4 @@
-import { StalenessLevel } from "../schema/common";
+import { StalenessLevel } from "../schema/common.js";
 
 export function computeStaleness(observedAtISO: string, nowISO: string): StalenessLevel {
   const observed = new Date(observedAtISO).getTime();

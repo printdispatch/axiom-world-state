@@ -17,13 +17,15 @@ The build should proceed in layers:
 
 Each stage must work before the next begins.
 
-## Phase 1 — Core Signal Pipeline
+## Phase 1 — Core Signal Pipeline ✅ COMPLETE
 
 Goal: the system can ingest a signal and store it.
 
-Implement:
-- /signals/signal_gateway.ts
-- /signals/signal_store.ts
+Implemented:
+- `src/signals/signal_gateway.ts` — Single entry point for all incoming signals
+- `src/signals/signal_store.ts` — Append-only JSON-backed signal persistence
+- `src/signals/adapters/gmail_adapter.ts` — Gmail message → Signal converter
+- `src/event_bus.ts` — In-process typed EventBus (Node.js EventEmitter)
 
 Responsibilities:
 - Accept external signals
@@ -43,9 +45,20 @@ Signal {
 }
 ```
 
-Acceptance test:
-- Ingest sample email
-- Signal appears in storage
+Acceptance test results (13/13 passing):
+- ✅ Converts a Gmail message into a valid Signal object
+- ✅ Attaches provenance to the signal
+- ✅ Generates a unique UUID for each signal
+- ✅ Initializes with an empty signal log
+- ✅ Persists a signal to the log
+- ✅ Rejects duplicate signals with the same external_id
+- ✅ Marks a signal as processed
+- ✅ Successfully ingests a Gmail signal end-to-end
+- ✅ Persists the signal to the store after ingestion
+- ✅ Emits a signal_received event on the EventBus after ingestion
+- ✅ Records the event in the EventBus log
+- ✅ Returns an error result (not throws) when provenance is missing
+- ✅ Returns an error result when a duplicate signal is ingested
 
 ## Phase 2 — Six-Layer Processing
 

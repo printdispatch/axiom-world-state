@@ -1,4 +1,4 @@
-import { BaseRecord, EntityRef, ISODateTime, URLString } from "./common";
+import { BaseRecord, EntityRef, ISODateTime, URLString } from "./common.js";
 
 export type ArtifactKind =
   | "document"
