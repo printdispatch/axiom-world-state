@@ -60,12 +60,15 @@ Acceptance test results (13/13 passing):
 - ✅ Returns an error result (not throws) when provenance is missing
 - ✅ Returns an error result when a duplicate signal is ingested
 
-## Phase 2 — Six-Layer Processing
+## Phase 2 — Six-Layer Processing ✅ COMPLETE
 
 Goal: every signal goes through the structured interpretation pipeline.
 
-Implement:
-- /engine/six_layer_processor.ts
+Implemented:
+- `schema/processing.ts` — Full ProcessingResult type definition (all six layers)
+- `src/engine/six_layer_processor.ts` — Calls gpt-5-pro via OpenAI Responses API, parses structured JSON output
+- `src/engine/processing_service.ts` — Wires processor to EventBus; auto-triggers on signal_received
+- `prompts/six_layer_processor_prompt.md` — Assertive six-layer system prompt with noise filtering
 
 Layers:
 1 Raw Truth
@@ -75,22 +78,12 @@ Layers:
 5 Inference
 6 Agency
 
-Output object:
-
-```ts
-ProcessingResult {
-  signal_id
-  raw_truth
-  linked_entities
-  state_deltas
-  relational_updates
-  inferences
-  proposed_actions
-}
-```
-
-Acceptance test:
-- A signal produces a complete six-layer record.
+Acceptance test results (5/5 passing — gpt-4.1 for tests, gpt-5-pro default for production):
+- ✅ Client project email produces a complete ProcessingResult with all six layers populated
+- ✅ Invoice follow-up email detects overdue payment and flags it as a risk
+- ✅ Spam/promotional email classified as noise with no obligations or inferences
+- ✅ ProcessingService auto-processes a signal when signal_received fires on EventBus
+- ✅ ProcessingService emits review_required when a proposed action requires approval
 
 ## Phase 3 — Entity Resolver
 
