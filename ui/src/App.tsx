@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface Signal {
   id: string; source: string; raw_content: string;
   metadata: { from: string; subject: string; date: string; thread_id: string };
@@ -8,7 +10,7 @@ interface Signal {
 }
 interface Fact { fact: string; source_ref: string }
 interface EntityCandidate { label: string; domain: string; likely_existing: boolean; lookup_key: string; email?: string }
-interface StateUpdate { entity_label: string; entity_domain: string; field: string; new_value: string; source_fact: string }
+interface StateUpdate { entity_label: string; entity_domain: string; field: string; new_value: string; source_fact: string; signal_id?: string; mutated_at?: string }
 interface ObligationCandidate { title: string; description: string; owed_by: string; owed_to: string; priority: string; due_hint?: string; source_fact: string }
 interface Inference { statement: string; confidence: number; based_on_facts: string[]; risk_if_wrong: string }
 interface RiskFlag { flag: string; severity: string; entities_involved: string[] }
@@ -27,10 +29,28 @@ interface Obligation {
   workspace_hint?: string; priority: string; status: string; due_hint?: string;
   source_signal_id: string; created_at: string;
 }
+interface Entity {
+  id: string; canonical_name: string; domain: string;
+  aliases: { value: string; source: string }[];
+  source_signal_id: string; created_at: string; superseded: boolean;
+  email?: string; organization?: string; role?: string;
+}
+interface Provenance {
+  entity: Entity;
+  state_updates: StateUpdate[];
+  signals: Signal[];
+  obligations: Obligation[];
+}
+interface Contradiction {
+  id: string; description: string; entities_involved: string[];
+  signal_a: string; signal_b: string; resolved: boolean; created_at: string;
+}
 interface Summary {
   signals: number; entities: number; open_obligations: number; total_obligations: number;
   state_updates: number; unresolved_contradictions: number; audit_entries: number;
 }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -75,6 +95,15 @@ function domainIcon(d: string): string {
   return "◆";
 }
 
+function domainColor(d: string): string {
+  if (d === "person") return "#007AFF";
+  if (d === "organization") return "#AF52DE";
+  if (d === "artifact") return "#FF9500";
+  return "#34C759";
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
 function Avatar({ from, size = 44 }: { from: string; size?: number }) {
   return (
     <div className="avatar" style={{ width: size, height: size, minWidth: size, background: getAvatarColor(from), fontSize: Math.round(size * 0.36) }}>
@@ -82,6 +111,8 @@ function Avatar({ from, size = 44 }: { from: string; size?: number }) {
     </div>
   );
 }
+
+// ─── Signal Card ──────────────────────────────────────────────────────────────
 
 function SignalCard({ signal, isSelected, onClick }: { signal: Signal; isSelected: boolean; onClick: () => void }) {
   const from = signal.metadata?.from || signal.source;
@@ -120,6 +151,8 @@ function SignalCard({ signal, isSelected, onClick }: { signal: Signal; isSelecte
     </div>
   );
 }
+
+// ─── Signal Inspector (Bottom Sheet) ─────────────────────────────────────────
 
 function Inspector({ signal, result, onClose }: { signal: Signal; result: ProcessingResult | null; onClose: () => void }) {
   const [openLayer, setOpenLayer] = useState<number | null>(1);
@@ -233,6 +266,171 @@ function Inspector({ signal, result, onClose }: { signal: Signal; result: Proces
   );
 }
 
+// ─── Entity Profile Sheet ─────────────────────────────────────────────────────
+
+function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => void }) {
+  const [prov, setProv] = useState<Provenance | null>(null);
+  const [loadingProv, setLoadingProv] = useState(true);
+  const [activeTab, setActiveTab] = useState<"overview" | "provenance" | "obligations">("overview");
+
+  useEffect(() => {
+    fetch(`/api/entities/${entity.id}/provenance`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { setProv(d); setLoadingProv(false); })
+      .catch(() => setLoadingProv(false));
+  }, [entity.id]);
+
+  return (
+    <div className="sheet-overlay" onClick={onClose}>
+      <div className="bottom-sheet" onClick={e => e.stopPropagation()}>
+        <div className="sheet-handle" />
+        {/* Header */}
+        <div className="sheet-head">
+          <div className="entity-avatar" style={{ background: domainColor(entity.domain) }}>
+            <span style={{ fontSize: 22 }}>{domainIcon(entity.domain)}</span>
+          </div>
+          <div className="sheet-head-text">
+            <div className="sheet-from">{entity.canonical_name}</div>
+            <div className="sheet-meta">{entity.domain} · since {new Date(entity.created_at).toLocaleDateString()}</div>
+          </div>
+          <button className="sheet-close" onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        {/* Sub-tabs */}
+        <div className="entity-tabs">
+          {(["overview", "provenance", "obligations"] as const).map(t => (
+            <button key={t} className={`entity-tab${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Overview */}
+        {activeTab === "overview" && (
+          <div className="entity-body">
+            {entity.email && (
+              <div className="detail-row"><span className="d-sub">Email</span><span className="d-main">{entity.email}</span></div>
+            )}
+            {entity.organization && (
+              <div className="detail-row"><span className="d-sub">Organization</span><span className="d-main">{entity.organization}</span></div>
+            )}
+            {entity.role && (
+              <div className="detail-row"><span className="d-sub">Role</span><span className="d-main">{entity.role}</span></div>
+            )}
+            <div className="detail-row">
+              <span className="d-sub">Domain</span>
+              <span className="d-main" style={{ color: domainColor(entity.domain) }}>{entity.domain}</span>
+            </div>
+            <div className="detail-row">
+              <span className="d-sub">First seen</span>
+              <span className="d-main">{new Date(entity.created_at).toLocaleString()}</span>
+            </div>
+            {entity.aliases.length > 0 && (
+              <div className="detail-row">
+                <span className="d-sub">Also known as</span>
+                <div className="alias-chips">
+                  {entity.aliases.map((a, i) => (
+                    <span key={i} className="alias-chip">{a.value}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Provenance Trace */}
+        {activeTab === "provenance" && (
+          <div className="entity-body">
+            {loadingProv && <div className="loader"><div className="spinner" /></div>}
+            {!loadingProv && !prov && <div className="detail-note">No provenance data available.</div>}
+            {!loadingProv && prov && prov.state_updates.length === 0 && (
+              <div className="detail-note">No state changes recorded for this entity yet.</div>
+            )}
+            {!loadingProv && prov && prov.state_updates.map((u, i) => (
+              <div key={i} className="prov-row">
+                <div className="prov-line" />
+                <div className="prov-content">
+                  <div className="prov-field">{u.field} → <span className="prov-value">{u.new_value}</span></div>
+                  <div className="prov-source">{u.source_fact}</div>
+                  {u.mutated_at && <div className="prov-time">{new Date(u.mutated_at).toLocaleString()}</div>}
+                  {u.signal_id && (
+                    <div className="prov-signal-ref">
+                      from signal: <span className="prov-signal-id">{u.signal_id}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Obligations */}
+        {activeTab === "obligations" && (
+          <div className="entity-body">
+            {loadingProv && <div className="loader"><div className="spinner" /></div>}
+            {!loadingProv && prov && prov.obligations.length === 0 && (
+              <div className="detail-note">No obligations linked to this entity.</div>
+            )}
+            {!loadingProv && prov && prov.obligations.map((ob, i) => (
+              <div key={i} className="detail-row">
+                <span className="d-main" style={{ color: priorityColor(ob.priority) }}>● {ob.title}</span>
+                <span className="d-sub">{ob.owed_by} → {ob.owed_to}</span>
+                <div className="action-chips">
+                  <span className="chip" style={{ color: ob.status === "open" ? "#FF9500" : "#34C759" }}>{ob.status}</span>
+                  <span className="chip">{ob.priority}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Entity Card ──────────────────────────────────────────────────────────────
+
+function EntityCard({ entity, onClick }: { entity: Entity; onClick: () => void }) {
+  return (
+    <div className="entity-card" onClick={onClick}>
+      <div className="entity-avatar-sm" style={{ background: domainColor(entity.domain) }}>
+        <span>{domainIcon(entity.domain)}</span>
+      </div>
+      <div className="entity-card-body">
+        <div className="entity-name">{entity.canonical_name}</div>
+        <div className="entity-meta">
+          {entity.domain}
+          {entity.aliases.length > 0 && ` · ${entity.aliases.length} alias${entity.aliases.length > 1 ? "es" : ""}`}
+        </div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text3)", flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+  );
+}
+
+// ─── Contradiction Card ───────────────────────────────────────────────────────
+
+function ContraCard({ c }: { c: Contradiction }) {
+  return (
+    <div className="contra-card">
+      <div className="contra-icon">⚡</div>
+      <div className="contra-body">
+        <div className="contra-desc">{c.description}</div>
+        <div className="contra-entities">{c.entities_involved.join(", ")}</div>
+        <div className="contra-signals">
+          <span className="prov-signal-id">{c.signal_a}</span>
+          <span style={{ color: "var(--text3)", margin: "0 6px" }}>vs</span>
+          <span className="prov-signal-id">{c.signal_b}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Obligation Card ──────────────────────────────────────────────────────────
+
 function ObCard({ ob }: { ob: Obligation }) {
   return (
     <div className="ob-card">
@@ -245,24 +443,32 @@ function ObCard({ ob }: { ob: Obligation }) {
   );
 }
 
+// ─── App ──────────────────────────────────────────────────────────────────────
+
 type Tab = "feed" | "tasks" | "entities" | "world";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("feed");
   const [signals, setSignals] = useState<Signal[]>([]);
   const [obligations, setObligations] = useState<Obligation[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [contradictions, setContradictions] = useState<Contradiction[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [selected, setSelected] = useState<Signal | null>(null);
   const [result, setResult] = useState<ProcessingResult | null>(null);
+  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       fetch("/api/signals").then(r => r.json()),
       fetch("/api/obligations").then(r => r.json()),
+      fetch("/api/entities").then(r => r.json()),
+      fetch("/api/contradictions").then(r => r.json()),
       fetch("/api/summary").then(r => r.json()),
-    ]).then(([s, o, sum]) => {
-      setSignals(s); setObligations(o); setSummary(sum); setLoading(false);
+    ]).then(([s, o, e, c, sum]) => {
+      setSignals(s); setObligations(o); setEntities(e);
+      setContradictions(c); setSummary(sum); setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
@@ -273,6 +479,11 @@ export default function App() {
       setResult(r.ok ? await r.json() : null);
     } catch { setResult(null); }
   };
+
+  // Group entities by domain
+  const people = entities.filter(e => e.domain === "person");
+  const orgs = entities.filter(e => e.domain === "organization");
+  const artifacts = entities.filter(e => e.domain === "artifact");
 
   return (
     <div className="app">
@@ -304,6 +515,8 @@ export default function App() {
 
       <main className="main-content">
         {loading && <div className="loader"><div className="spinner"/></div>}
+
+        {/* ── Feed Tab ── */}
         {!loading && tab === "feed" && (
           <div className="feed-list">
             <div className="section-title">Signal Feed</div>
@@ -313,6 +526,8 @@ export default function App() {
             ))}
           </div>
         )}
+
+        {/* ── Tasks Tab ── */}
         {!loading && tab === "tasks" && (
           <div className="feed-list">
             <div className="section-title">Open Obligations</div>
@@ -320,12 +535,39 @@ export default function App() {
             {obligations.map(ob => <ObCard key={ob.id} ob={ob} />)}
           </div>
         )}
+
+        {/* ── Entities Tab ── */}
         {!loading && tab === "entities" && (
           <div className="feed-list">
-            <div className="section-title">Entities</div>
-            <div className="coming-soon"><div className="cs-icon">🕸️</div><div>Entity graph — Phase 10</div></div>
+            {contradictions.length > 0 && (
+              <>
+                <div className="section-title" style={{ color: "#FF3B30" }}>⚡ Contradictions</div>
+                {contradictions.map(c => <ContraCard key={c.id} c={c} />)}
+              </>
+            )}
+            {people.length > 0 && (
+              <>
+                <div className="section-title">People</div>
+                {people.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
+              </>
+            )}
+            {orgs.length > 0 && (
+              <>
+                <div className="section-title">Organizations</div>
+                {orgs.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
+              </>
+            )}
+            {artifacts.length > 0 && (
+              <>
+                <div className="section-title">Artifacts</div>
+                {artifacts.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
+              </>
+            )}
+            {entities.length === 0 && <div className="empty-msg">No entities resolved yet.</div>}
           </div>
         )}
+
+        {/* ── World Tab ── */}
         {!loading && tab === "world" && (
           <div className="feed-list">
             <div className="section-title">World State</div>
@@ -334,6 +576,7 @@ export default function App() {
         )}
       </main>
 
+      {/* ── Bottom Nav ── */}
       <nav className="bottom-nav">
         <button className={`nav-item${tab === "feed" ? " active" : ""}`} onClick={() => setTab("feed")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -356,8 +599,14 @@ export default function App() {
         </button>
       </nav>
 
+      {/* ── Signal Inspector Sheet ── */}
       {selected && (
         <Inspector signal={selected} result={result} onClose={() => { setSelected(null); setResult(null); }} />
+      )}
+
+      {/* ── Entity Profile Sheet ── */}
+      {selectedEntity && (
+        <EntityProfile entity={selectedEntity} onClose={() => setSelectedEntity(null)} />
       )}
     </div>
   );

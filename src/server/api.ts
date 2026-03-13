@@ -130,6 +130,47 @@ app.get("/api/contradictions", (_req, res) => {
   res.json(contradictions.filter((c) => !c.resolved));
 });
 
+// GET /api/entities/:id — Single entity with full alias history and provenance
+app.get("/api/entities/:id", (req, res) => {
+  const entities = readJson<Array<{ id: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const entity = entities.find((e) => e.id === req.params.id);
+  if (!entity) return res.status(404).json({ error: "Entity not found" });
+  return res.json(entity);
+});
+
+// GET /api/entities/:id/provenance — All signals and state changes that touched this entity
+app.get("/api/entities/:id/provenance", (req, res) => {
+  const entityId = req.params.id;
+  const entities = readJson<Array<{ id: string; canonical_name: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const entity = entities.find((e) => e.id === entityId);
+  if (!entity) return res.status(404).json({ error: "Entity not found" });
+
+  // Find all state updates referencing this entity
+  const stateUpdates = readJson<Array<{ entity_label: string; signal_id: string; mutated_at: string; field: string; new_value: string; source_fact: string }>>(path.join(DATA_DIR, "state", "state_updates.json"), []);
+  const entityUpdates = stateUpdates.filter((u) =>
+    u.entity_label?.toLowerCase() === entity.canonical_name?.toLowerCase()
+  );
+
+  // Find all signals that produced those updates
+  const signals = readJson<Array<{ id: string; metadata: { subject: string; from: string; date: string }; received_at: string; source: string }>>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
+  const signalIds = [...new Set(entityUpdates.map((u) => u.signal_id))];
+  const relatedSignals = signals.filter((s) => signalIds.includes(s.id));
+
+  // Find obligations related to this entity
+  const obligations = readJson<Array<{ owed_by: string; owed_to: string; title: string; status: string; priority: string; created_at: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  const entityObligations = obligations.filter((o) =>
+    o.owed_by?.toLowerCase().includes(entity.canonical_name?.toLowerCase()) ||
+    o.owed_to?.toLowerCase().includes(entity.canonical_name?.toLowerCase())
+  );
+
+  res.json({
+    entity,
+    state_updates: entityUpdates,
+    signals: relatedSignals,
+    obligations: entityObligations,
+  });
+});
+
 // GET /api/audit
 app.get("/api/audit", (_req, res) => {
   const log = readJson<unknown[]>(path.join(DATA_DIR, "state", "audit_log.json"), []);
