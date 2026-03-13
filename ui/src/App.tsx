@@ -6,7 +6,7 @@ import "./App.css";
 interface Signal {
   id: string; source: string; raw_content: string;
   metadata: { from: string; subject: string; date: string; thread_id: string };
-  received_at: string; processed: boolean; adapter: string;
+  received_at: string; processed: boolean; is_noise?: boolean; adapter: string;
 }
 interface Fact { fact: string; source_ref: string }
 interface EntityCandidate { label: string; domain: string; likely_existing: boolean; lookup_key: string; email?: string }
@@ -277,7 +277,7 @@ function SignalCard({ signal, isSelected, onClick }: { signal: Signal; isSelecte
   const from = signal.metadata?.from || signal.source;
   const subject = signal.metadata?.subject || "No subject";
   const date = signal.metadata?.date || signal.received_at;
-  const isNoise = !signal.processed;
+  const isNoise = signal.is_noise === true;
   return (
     <div className={`signal-card${isSelected ? " selected" : ""}${isNoise ? " noise" : ""}`} onClick={onClick}>
       <div className="card-left">
@@ -419,7 +419,14 @@ function Inspector({ signal, result, onClose }: { signal: Signal; result: Proces
 function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => void }) {
   const [prov, setProv] = useState<Provenance | null>(null);
   const [loadingProv, setLoadingProv] = useState(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "provenance" | "obligations">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "signals" | "obligations">("overview");
+
+  // Resolve display name and domain — new entities use 'name'/'type', old use 'canonical_name'/'domain'
+  const displayName = (entity as any).name || entity.canonical_name || "Unknown";
+  const displayDomain = (entity as any).type || entity.domain || "artifact";
+  const displayAliases: Array<{ value: string }> = Array.isArray(entity.aliases)
+    ? entity.aliases.map(a => typeof a === "string" ? { value: a } : a)
+    : [];
 
   useEffect(() => {
     fetch(`/api/entities/${entity.id}/provenance`)
@@ -433,21 +440,27 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
       <div className="bottom-sheet" onClick={e => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-head">
-          <div className="entity-avatar" style={{ background: domainColor(entity.domain) }}>
-            <span style={{ fontSize: 22 }}>{domainIcon(entity.domain)}</span>
+          <div className="entity-avatar" style={{ background: domainColor(displayDomain) }}>
+            <span style={{ fontSize: 22 }}>{domainIcon(displayDomain)}</span>
           </div>
           <div className="sheet-head-text">
-            <div className="sheet-from">{entity.canonical_name}</div>
-            <div className="sheet-meta">{entity.domain} · since {new Date(entity.created_at).toLocaleDateString()}</div>
+            <div className="sheet-from">{displayName}</div>
+            <div className="sheet-meta">{displayDomain} · since {new Date(entity.created_at).toLocaleDateString()}</div>
           </div>
           <button className="sheet-close" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
         <div className="entity-tabs">
-          {(["overview", "provenance", "obligations"] as const).map(t => (
+          {(["overview", "signals", "obligations"] as const).map(t => (
             <button key={t} className={`entity-tab${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {t === "signals" ? "Signals" : t.charAt(0).toUpperCase() + t.slice(1)}
+              {t === "signals" && prov && prov.signals.length > 0 && (
+                <span style={{ marginLeft: 4, background: "var(--accent)", color: "#fff", borderRadius: 8, padding: "1px 5px", fontSize: 10 }}>{prov.signals.length}</span>
+              )}
+              {t === "obligations" && prov && prov.obligations.length > 0 && (
+                <span style={{ marginLeft: 4, background: "var(--accent)", color: "#fff", borderRadius: 8, padding: "1px 5px", fontSize: 10 }}>{prov.obligations.length}</span>
+              )}
             </button>
           ))}
         </div>
@@ -456,23 +469,25 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
             <>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
                 {[
-                  { label: "Domain", value: entity.domain },
-                  { label: "Aliases", value: entity.aliases.length.toString() },
-                  entity.email ? { label: "Email", value: entity.email } : null,
-                  entity.organization ? { label: "Org", value: entity.organization } : null,
-                  entity.role ? { label: "Role", value: entity.role } : null,
+                  { label: "Type", value: displayDomain },
+                  { label: "Signals", value: loadingProv ? "…" : (prov?.signals.length ?? 0).toString() },
+                  { label: "Open Tasks", value: loadingProv ? "…" : (prov?.obligations.filter(o => o.status === "open" || o.status === "pending").length ?? 0).toString() },
+                  { label: "Known As", value: displayAliases.length > 0 ? displayAliases.length.toString() + " alias" + (displayAliases.length > 1 ? "es" : "") : "None" },
+                  (entity as any).email ? { label: "Email", value: (entity as any).email } : null,
+                  (entity as any).organization ? { label: "Org", value: (entity as any).organization } : null,
+                  (entity as any).role ? { label: "Role", value: (entity as any).role } : null,
                 ].filter(Boolean).map(row => (
                   <div key={row!.label} style={{ background: "var(--bg3)", borderRadius: 10, padding: "10px 12px" }}>
                     <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>{row!.label}</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row!.value}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row!.value}</div>
                   </div>
                 ))}
               </div>
-              {entity.aliases.length > 0 && (
+              {displayAliases.length > 0 && (
                 <>
-                  <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Known As</div>
+                  <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Also known as</div>
                   <div className="alias-chips">
-                    {entity.aliases.map((a, i) => (
+                    {displayAliases.map((a, i) => (
                       <span key={i} className="alias-chip">{a.value}</span>
                     ))}
                   </div>
@@ -480,32 +495,51 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
               )}
             </>
           )}
-          {activeTab === "provenance" && (
-            loadingProv ? <div className="detail-note">Loading provenance…</div>
-            : !prov || prov.state_updates.length === 0
-              ? <div className="detail-note">No state changes recorded yet.</div>
-              : prov.state_updates.map((u, i) => (
-                  <div key={i} className="prov-row">
-                    <div className="prov-line" />
-                    <div className="prov-content">
-                      <div className="prov-field">{u.field} <span className="prov-value">→ {u.new_value}</span></div>
-                      <div className="prov-source">{u.source_fact}</div>
-                      {u.mutated_at && <div className="prov-time">{timeAgo(u.mutated_at)}</div>}
-                      {u.signal_id && <div className="prov-signal-ref">from <span className="prov-signal-id">{u.signal_id}</span></div>}
+          {activeTab === "signals" && (
+            loadingProv ? <div className="detail-note">Loading signals…</div>
+            : !prov || prov.signals.length === 0
+              ? <div className="detail-note">No signals linked to this entity yet.</div>
+              : <>
+                  {prov.signals.map((s, i) => (
+                    <div key={i} style={{ background: "var(--bg3)", borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 3 }}>{s.metadata?.subject || "(no subject)"}</div>
+                      <div style={{ fontSize: 11, color: "var(--text3)" }}>{s.metadata?.from || "Unknown sender"}</div>
+                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>{s.metadata?.date ? new Date(s.metadata.date).toLocaleDateString() : ""}</div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                  {prov.state_updates.length > 0 && (
+                    <>
+                      <div style={{ fontSize: 11, color: "var(--text3)", margin: "12px 0 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>State Changes</div>
+                      {prov.state_updates.map((u, i) => (
+                        <div key={i} className="prov-row">
+                          <div className="prov-line" />
+                          <div className="prov-content">
+                            <div className="prov-field">{u.field} <span className="prov-value">→ {u.new_value}</span></div>
+                            <div className="prov-source">{u.source_fact}</div>
+                            {u.mutated_at && <div className="prov-time">{timeAgo(u.mutated_at)}</div>}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </>
           )}
           {activeTab === "obligations" && (
             loadingProv ? <div className="detail-note">Loading…</div>
             : !prov || prov.obligations.length === 0
               ? <div className="detail-note">No obligations linked to this entity.</div>
               : prov.obligations.map((ob, i) => (
-                  <div key={i} className="ob-card">
+                  <div key={i} className="ob-card" style={{ marginBottom: 8 }}>
                     <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
                     <div className="ob-body">
                       <div className="ob-title">{ob.title}</div>
-                      <div className="ob-meta">{ob.owed_by} → {ob.owed_to} · {ob.status}</div>
+                      <div className="ob-meta">{ob.owed_by} → {ob.owed_to}</div>
+                      <div className="ob-meta" style={{ marginTop: 2 }}>
+                        <span style={{ background: ob.status === "resolved" ? "#34C759" : ob.status === "open" ? "var(--accent)" : "var(--bg3)", color: ob.status === "resolved" || ob.status === "open" ? "#fff" : "var(--text2)", borderRadius: 6, padding: "1px 6px", fontSize: 10, fontWeight: 600 }}>
+                          {ob.status}
+                        </span>
+                        {ob.priority && <span style={{ marginLeft: 6, fontSize: 11, color: "var(--text3)" }}>{ob.priority} priority</span>}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -855,7 +889,7 @@ function WorldDashboard({ world, onObligationClick }: { world: WorldState; onObl
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "connect" | "recipes" | "simulate";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "connect" | "simulate";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "feed", label: "Signal Feed", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
@@ -864,7 +898,7 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "entities", label: "Entities", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg> },
   { id: "world", label: "World State", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> },
   { id: "connect", label: "Connect", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
-  { id: "recipes", label: "Automation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
+  // Recipes tab removed — static templates with no trigger engine
   { id: "simulate", label: "Simulate", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
 ];
 
@@ -1240,6 +1274,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hideNoise, setHideNoise] = useState(true);
+  const [showDecided, setShowDecided] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -1295,8 +1330,11 @@ export default function App() {
         body: JSON.stringify({}),
       });
       if (res.ok) {
-        setObligations(prev => prev.map(o => o.id === id ? { ...o, status: "resolved" } : o));
+        // Remove from local state immediately so it disappears from Tasks view
+        setObligations(prev => prev.filter(o => o.id !== id));
         setSummary(prev => prev ? { ...prev, open_obligations: Math.max(0, prev.open_obligations - 1) } : prev);
+        // Also refresh world state so World tab updates
+        fetch("/api/world").then(r => r.json()).then(setWorldState).catch(() => {});
         setSelectedObligation(null);
       }
     } catch { /* ignore */ }
@@ -1310,8 +1348,9 @@ export default function App() {
         body: JSON.stringify({ days: 3 }),
       });
       if (res.ok) {
-        // Refresh obligations to get updated due date
+        // Refresh obligations to get updated due date and remove from open list
         fetch("/api/obligations").then(r => r.json()).then(setObligations).catch(() => {});
+        fetch("/api/world").then(r => r.json()).then(setWorldState).catch(() => {});
         setSelectedObligation(null);
       }
     } catch { /* ignore */ }
@@ -1332,13 +1371,18 @@ export default function App() {
 
   // Search filtering
   const q = searchQuery.toLowerCase();
-  const noiseFilteredSignals = hideNoise ? signals.filter(s => s.processed) : signals;
+  // hideNoise=true shows only real business signals (not noise)
+  const noiseFilteredSignals = hideNoise
+    ? signals.filter(s => s.is_noise !== true)
+    : signals;
   const filteredSignals = q
     ? noiseFilteredSignals.filter(s => (s.metadata?.subject || "").toLowerCase().includes(q) || (s.metadata?.from || "").toLowerCase().includes(q) || s.raw_content?.toLowerCase().includes(q))
     : noiseFilteredSignals;
+  // Only show open/pending obligations in Tasks tab — resolved/snoozed ones disappear
+  const openObligations = obligations.filter(o => o.status === "open" || o.status === "pending");
   const filteredObligations = q
-    ? obligations.filter(o => o.title.toLowerCase().includes(q) || o.owed_by.toLowerCase().includes(q) || o.owed_to.toLowerCase().includes(q))
-    : obligations;
+    ? openObligations.filter(o => o.title.toLowerCase().includes(q) || o.owed_by.toLowerCase().includes(q) || o.owed_to.toLowerCase().includes(q))
+    : openObligations;
   const filteredEntities = q
     ? entities.filter(e => {
         const name = ((e as any).name || e.canonical_name || "").toLowerCase();
@@ -1470,12 +1514,18 @@ export default function App() {
         {/* ── Review Tab ── */}
         {!loading && tab === "review" && (
           <div className="feed-list">
-            <div className="section-title">
-              Review Queue
-              {pendingReview.length > 0 && <span className="review-badge">{pendingReview.length}</span>}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 0 4px" }}>
+              <div className="section-title" style={{ margin: 0 }}>
+                Review Queue
+                {pendingReview.length > 0 && <span className="review-badge">{pendingReview.length}</span>}
+              </div>
+              <button
+                onClick={() => setShowDecided(s => !s)}
+                style={{ fontSize: 12, padding: "4px 10px", borderRadius: 20, border: "1px solid var(--border)", background: showDecided ? "var(--accent)" : "var(--bg3)", color: showDecided ? "#fff" : "var(--text2)", cursor: "pointer", whiteSpace: "nowrap" }}
+              >{showDecided ? "Showing all" : "Pending only"}</button>
             </div>
-            {reviewItems.length === 0 && <div className="empty-msg">No items in the review queue.</div>}
-            {reviewItems.map(item => (
+            {(showDecided ? reviewItems : reviewItems.filter(i => i.status === "pending" || i.status === "deferred")).length === 0 && <div className="empty-msg">{reviewItems.length === 0 ? "No items in the review queue." : "All items have been decided. Tap \"Showing all\" to see them."}</div>}
+            {(showDecided ? reviewItems : reviewItems.filter(i => i.status === "pending" || i.status === "deferred")).map(item => (
               <div key={item.id} className={`review-card${item.status === "reviewed" ? " reviewed" : ""}`}>
                 <div className="review-card-header">
                   <div className="review-sev-dot" style={{ background: item.severity === "critical" ? "#FF3B30" : item.severity === "high" ? "#FF9500" : item.severity === "medium" ? "#FFD60A" : "#34C759" }} />
@@ -1533,32 +1583,6 @@ export default function App() {
         {/* ── Connect Tab ── */}
         {!loading && tab === "connect" && (
           <ConnectTab onIngest={handleIngest} />
-        )}
-
-        {/* ── Recipes Tab ── */}
-        {!loading && tab === "recipes" && (
-          <div className="feed-list">
-            <div className="section-title">Automation Recipes</div>
-            {recipes.length === 0 && <div className="empty-msg">No recipes configured.</div>}
-            {recipes.map(r => (
-              <div key={r.id} className="review-card" style={{ opacity: r.enabled ? 1 : 0.5 }}>
-                <div className="review-card-header">
-                  <div className="review-sev-dot" style={{ background: r.risk_level === "critical" ? "#FF3B30" : r.risk_level === "high" ? "#FF9500" : r.risk_level === "medium" ? "#FFD60A" : "#34C759" }} />
-                  <div className="review-kind-badge">{r.trigger.kind.replace(/_/g, " ")}</div>
-                  <span className="review-time">{r.run_count} run{r.run_count !== 1 ? "s" : ""}</span>
-                  {!r.enabled && <span className="badge" style={{ background: "#333", color: "#888" }}>disabled</span>}
-                  {r.approval_required && <span className="badge" style={{ background: "#FF950022", color: "#FF9500" }}>approval</span>}
-                </div>
-                <div className="review-title">{r.name}</div>
-                <div className="review-desc">{r.description}</div>
-                <div style={{ marginTop: 8, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {r.steps.map(s => (
-                    <span key={s.id} className="badge" style={{ background: "#1a1a2e", color: "#8888aa", fontSize: 11 }}>{s.kind.replace(/_/g, " ")}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
         )}
 
         {/* ── Simulate Tab ── */}

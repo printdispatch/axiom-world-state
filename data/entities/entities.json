@@ -22,47 +22,91 @@
     ]
   },
   {
-    "id": "ent-f0b2335d",
-    "name": "Lakeview Court Lost & Found Posts",
+    "id": "ent-a1399c75",
+    "name": "Squarespace",
     "type": "organization",
-    "lookup_key": "ss.email.nextdoor.com",
-    "source_signal_id": "sig-gmail-19cd4c13fbf9ff5f",
-    "created_at": "2026-03-13T19:29:41.577Z",
+    "lookup_key": "squarespace.com",
+    "source_signal_id": "sig-gmail-19cce89552d23f3d",
+    "created_at": "2026-03-13T19:33:56.207Z",
     "aliases": [
-      "Lakeview Court Lost & Found Posts"
+      "Squarespace"
     ]
   },
   {
-    "id": "ent-483cc661",
-    "name": "Kelley Ruden",
-    "type": "person",
-    "lookup_key": "unknown",
-    "source_signal_id": "sig-gmail-19cd4c13fbf9ff5f",
-    "created_at": "2026-03-13T19:29:41.577Z",
-    "aliases": [
-      "Kelley Ruden"
-    ]
-  },
-  {
-    "id": "ent-6d602609",
-    "name": "Nextdoor",
+    "id": "ent-dea2c0cd",
+    "name": "WeTransfer",
     "type": "organization",
-    "lookup_key": "nextdoor.com",
-    "source_signal_id": "sig-gmail-19cd4c13fbf9ff5f",
-    "created_at": "2026-03-13T19:29:41.577Z",
+    "lookup_key": "wetransfer.com",
+    "source_signal_id": "sig-gmail-19cc81e632beff34",
+    "created_at": "2026-03-13T19:36:35.076Z",
     "aliases": [
-      "Nextdoor"
+      "WeTransfer"
     ]
   },
   {
-    "id": "ent-6410ede4",
-    "name": "printdispatch@gmail.com",
-    "type": "person",
-    "lookup_key": "printdispatch@gmail.com",
-    "source_signal_id": "sig-gmail-19cd4c13fbf9ff5f",
-    "created_at": "2026-03-13T19:29:41.577Z",
+    "id": "ent-69f00608",
+    "name": "Sip&Squeeze_Folder",
+    "type": "artifact",
+    "lookup_key": "Sip&Squeeze_Folder",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
     "aliases": [
-      "printdispatch@gmail.com"
+      "Sip&Squeeze_Folder"
+    ]
+  },
+  {
+    "id": "ent-cd7aa973",
+    "name": "J&J-EggRolls_Folder",
+    "type": "artifact",
+    "lookup_key": "J&J-EggRolls_Folder",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
+    "aliases": [
+      "J&J-EggRolls_Folder"
+    ]
+  },
+  {
+    "id": "ent-e19bba92",
+    "name": "FirstClass_Transit_Cameron_WrapObsessions.ai",
+    "type": "artifact",
+    "lookup_key": "FirstClass_Transit_Cameron_WrapObsessions.ai",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
+    "aliases": [
+      "FirstClass_Transit_Cameron_WrapObsessions.ai"
+    ]
+  },
+  {
+    "id": "ent-459fca0c",
+    "name": "WRAP_OBSESSIONS-STICKER-11.psd",
+    "type": "artifact",
+    "lookup_key": "WRAP_OBSESSIONS-STICKER-11.psd",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
+    "aliases": [
+      "WRAP_OBSESSIONS-STICKER-11.psd"
+    ]
+  },
+  {
+    "id": "ent-4d648180",
+    "name": "WRAP_OBSESSIONS-STICKER-4.psd",
+    "type": "artifact",
+    "lookup_key": "WRAP_OBSESSIONS-STICKER-4.psd",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
+    "aliases": [
+      "WRAP_OBSESSIONS-STICKER-4.psd"
+    ]
+  },
+  {
+    "id": "ent-53f8f462",
+    "name": "WRAP_OBSESSIONS-STICKER-5 copy.psd",
+    "type": "artifact",
+    "lookup_key": "WRAP_OBSESSIONS-STICKER-5 copy.psd",
+    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
+    "created_at": "2026-03-13T19:39:03.262Z",
+    "aliases": [
+      "WRAP_OBSESSIONS-STICKER-5 copy.psd"
     ]
   }
 ]

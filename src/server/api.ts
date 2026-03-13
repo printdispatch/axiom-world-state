@@ -157,26 +157,31 @@ app.get("/api/entities/:id", (req, res) => {
 // GET /api/entities/:id/provenance — All signals and state changes that touched this entity
 app.get("/api/entities/:id/provenance", (req, res) => {
   const entityId = req.params.id;
-  const entities = readJson<Array<{ id: string; canonical_name: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const entities = readJson<Array<{ id: string; canonical_name?: string; name?: string; source_signal_id?: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
   const entity = entities.find((e) => e.id === entityId);
   if (!entity) return res.status(404).json({ error: "Entity not found" });
+
+  // Resolve the display name — new entities use 'name', old ones use 'canonical_name'
+  const entityName = (entity.name || entity.canonical_name || "").toLowerCase();
 
   // Find all state updates referencing this entity
   const stateUpdates = readJson<Array<{ entity_label: string; signal_id: string; mutated_at: string; field: string; new_value: string; source_fact: string }>>(path.join(DATA_DIR, "state", "state_updates.json"), []);
   const entityUpdates = stateUpdates.filter((u) =>
-    u.entity_label?.toLowerCase() === entity.canonical_name?.toLowerCase()
+    u.entity_label?.toLowerCase() === entityName
   );
 
-  // Find all signals that produced those updates
+  // Find all signals that produced those updates PLUS the source signal that created the entity
   const signals = readJson<Array<{ id: string; metadata: { subject: string; from: string; date: string }; received_at: string; source: string }>>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
-  const signalIds = [...new Set(entityUpdates.map((u) => u.signal_id))];
-  const relatedSignals = signals.filter((s) => signalIds.includes(s.id));
+  const signalIds = new Set(entityUpdates.map((u) => u.signal_id));
+  if (entity.source_signal_id) signalIds.add(entity.source_signal_id);
+  const relatedSignals = signals.filter((s) => signalIds.has(s.id));
 
-  // Find obligations related to this entity
-  const obligations = readJson<Array<{ owed_by: string; owed_to: string; title: string; status: string; priority: string; created_at: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  // Find obligations related to this entity by name match
+  const obligations = readJson<Array<{ id: string; owed_by: string; owed_to: string; title: string; status: string; priority: string; created_at: string; source_signal_id?: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
   const entityObligations = obligations.filter((o) =>
-    o.owed_by?.toLowerCase().includes(entity.canonical_name?.toLowerCase()) ||
-    o.owed_to?.toLowerCase().includes(entity.canonical_name?.toLowerCase())
+    o.owed_by?.toLowerCase().includes(entityName) ||
+    o.owed_to?.toLowerCase().includes(entityName) ||
+    (entity.source_signal_id && o.source_signal_id === entity.source_signal_id)
   );
 
   res.json({

@@ -86,6 +86,9 @@ const NOISE_SENDER_DOMAINS = [
   "uber.com", "ubereats.com",
   "nextdoor.com", "rs.email", "ss.email", "reply@rs.email", "reply@ss.email",
   "no-reply@rs.email", "no-reply@ss.email",
+  "noreply@rs.email", "noreply@ss.email",
+  "email.nextdoor.com", "digest@nextdoor.com",
+  "lakeviewcourt", "neighborhood",
   "pinterest.com", "explore.pinterest.com", "discover.pinterest.com", "pinterest-recommendations",
   "creativemarketmail.com", "creativemarket.com", "hello@creativemarket",
   "movoto.com", "email.movoto.com", "customercare@email.movoto",
@@ -118,6 +121,16 @@ const NOISE_SUBJECT_PATTERNS = [
   /^security alert/i,  // Google security alerts
   /\b(supa update|year one|annual letter)\b/i,
   /\b(housing data|ran the numbers)\b/i,
+  // Community board / neighborhood posts
+  /\b(lost (dog|cat|pet)|found (dog|cat|pet)|missing (dog|cat|pet))\b/i,
+  /\b(garage sale|yard sale|rummage sale|estate sale)\b/i,
+  /\b(babysit|nanny|childcare|dog (walk|sit|board))\b/i,
+  /\b(tennis lesson|piano lesson|tutoring|lawn (care|service|mow))\b/i,
+  /\b(for sale|free to good home|free.*pickup|pickup.*free)\b/i,
+  /\b(neighborhood (post|update|alert|watch))\b/i,
+  /\b(community (post|update|alert|board))\b/i,
+  /\b(airbnb|air bnb).*review/i,  // Airbnb review requests
+  /^(your|a) (neighbor|nearby) (posted|shared|replied)/i,
 ];
 
 // Patterns that FORCE processing regardless of sender — these are business signals
@@ -382,6 +395,7 @@ export async function processBatch(options: ProcessBatchOptions): Promise<BatchR
       if (noise) {
         // Mark as processed (noise) without calling AI
         raw.processed = true;
+        (raw as any).is_noise = true;
         result.noise++;
         options.onProgress?.(result.processed + result.noise, toProcess.length, raw.id, true);
         continue;
@@ -397,6 +411,7 @@ export async function processBatch(options: ProcessBatchOptions): Promise<BatchR
       }
 
       raw.processed = true;
+      (raw as any).is_noise = processingResult.is_noise;
       result.processed++;
       options.onProgress?.(result.processed + result.noise, toProcess.length, raw.id, processingResult.is_noise);
 
