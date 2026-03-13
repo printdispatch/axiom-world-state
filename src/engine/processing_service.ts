@@ -5,18 +5,19 @@
  *   1. Listens for `signal_received` events on the EventBus
  *   2. Runs the signal through the SixLayerProcessor (Phase 2)
  *   3. Passes Layer 2 entity candidates to the EntityResolver (Phase 3)
- *   4. Emits `signal_processed` when complete
- *   5. Emits `review_required` for high-risk actions or entity conflicts
+ *   4. Applies state mutations via the StateMutationEngine (Phase 4)
+ *   5. Emits `signal_processed` when complete
+ *   6. Emits `review_required` for high-risk actions or entity conflicts
  *
  * This service keeps all components decoupled — the processor, resolver,
- * and stores never reference each other directly.
+ * mutation engine, and stores never reference each other directly.
  */
 
 import { EventBus } from "../event_bus.js";
 import { SignalStore } from "../signals/signal_store.js";
 import { SixLayerProcessor, SixLayerProcessorOptions } from "./six_layer_processor.js";
-import { EntityResolver } from "../entities/entity_resolver.js";
-import { EntityResolutionSummary } from "../entities/entity_resolver.js";
+import { EntityResolver, EntityResolutionSummary } from "../entities/entity_resolver.js";
+import { StateMutationEngine, MutationSummary } from "../state/state_mutation_engine.js";
 import { ProcessingResult } from "../../schema/processing.js";
 
 export interface ProcessingServiceOptions {
@@ -26,6 +27,8 @@ export interface ProcessingServiceOptions {
   processorOptions?: SixLayerProcessorOptions;
   /** Optional EntityResolver. If provided, entity resolution runs after processing. */
   entityResolver?: EntityResolver;
+  /** Optional StateMutationEngine. If provided, state mutations run after entity resolution. */
+  mutationEngine?: StateMutationEngine;
 }
 
 export class ProcessingService {
@@ -33,6 +36,7 @@ export class ProcessingService {
   private readonly signalStore: SignalStore;
   private readonly processor: SixLayerProcessor;
   private readonly entityResolver: EntityResolver | null;
+  private readonly mutationEngine: StateMutationEngine | null;
 
   constructor(options: ProcessingServiceOptions) {
     this.eventBus = options.eventBus;
@@ -40,6 +44,7 @@ export class ProcessingService {
     this.processor =
       options.processor ?? new SixLayerProcessor(options.processorOptions);
     this.entityResolver = options.entityResolver ?? null;
+    this.mutationEngine = options.mutationEngine ?? null;
   }
 
   /**
@@ -56,12 +61,12 @@ export class ProcessingService {
    * Processes a single signal by ID through the full pipeline.
    * Can be called directly for testing or manual processing.
    *
-   * Returns both the ProcessingResult and (if a resolver is configured)
-   * the EntityResolutionSummary.
+   * Returns the ProcessingResult, EntityResolutionSummary, and MutationSummary.
    */
   async processSignal(signalId: string): Promise<{
     processingResult: ProcessingResult;
     resolutionSummary: EntityResolutionSummary | null;
+    mutationSummary: MutationSummary | null;
   }> {
     const signal = this.signalStore.findById(signalId);
     if (!signal) {
@@ -83,7 +88,13 @@ export class ProcessingService {
       );
     }
 
-    // ── Step 3: Emit signal_processed ────────────────────────────────────────
+    // ── Step 3: State Mutation (if engine is configured) ─────────────────────
+    let mutationSummary: MutationSummary | null = null;
+    if (this.mutationEngine) {
+      mutationSummary = this.mutationEngine.apply(processingResult);
+    }
+
+    // ── Step 4: Emit signal_processed ────────────────────────────────────────
     this.eventBus.emit("signal_processed", {
       signalId: signal.id,
       processingRecordId: processingResult.id,
@@ -91,7 +102,7 @@ export class ProcessingService {
       requiresReview: processingResult.layer_6.any_requires_approval,
     });
 
-    // ── Step 4: Emit review_required for high-risk actions ───────────────────
+    // ── Step 5: Emit review_required for high-risk actions ───────────────────
     if (processingResult.layer_6.any_requires_approval && !processingResult.is_noise) {
       const highRiskAction = processingResult.layer_6.proposed_actions.find(
         (a) => a.requires_approval
@@ -105,7 +116,7 @@ export class ProcessingService {
       }
     }
 
-    return { processingResult, resolutionSummary };
+    return { processingResult, resolutionSummary, mutationSummary };
   }
 
   /**

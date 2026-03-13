@@ -122,7 +122,7 @@ Acceptance test results (17/17 passing):
 - ✅ Manual merge transfers aliases and supersedes the duplicate
 - ✅ Does not resolve noise signals (skips entity resolution)
 
-## Phase 4 — State Mutation Engine
+## Phase 4 — State Mutation Engine ✅ COMPLETE
 
 Goal: convert processing results into durable state updates.
 
