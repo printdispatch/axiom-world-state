@@ -1,0 +1,151 @@
+[
+  {
+    "id": "recipe-invoice-alert",
+    "name": "Invoice Overdue Alert",
+    "description": "When an invoice obligation becomes overdue, flag it for review and log a note.",
+    "enabled": true,
+    "trigger": {
+      "kind": "obligation_overdue",
+      "conditions": {}
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "log_note",
+        "params": {
+          "message": "Obligation overdue: {{trigger.title}} — owed by {{trigger.owed_by}}"
+        }
+      },
+      {
+        "id": "s2",
+        "kind": "flag_for_review",
+        "params": {
+          "reason": "Invoice overdue: {{trigger.title}}"
+        }
+      }
+    ],
+    "risk_level": "medium",
+    "approval_required": false,
+    "run_count": 0,
+    "created_at": "2026-03-13T10:00:00Z",
+    "updated_at": "2026-03-13T10:00:00Z"
+  },
+  {
+    "id": "recipe-spam-filter",
+    "name": "Spam Signal Suppressor",
+    "description": "When a signal is classified as noise/spam, log it and skip further processing.",
+    "enabled": true,
+    "trigger": {
+      "kind": "processing_complete",
+      "conditions": {
+        "result.is_noise": true
+      }
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "log_note",
+        "params": {
+          "message": "Noise signal suppressed: {{trigger.signal.id}}"
+        }
+      }
+    ],
+    "risk_level": "low",
+    "approval_required": false,
+    "run_count": 2,
+    "last_run_at": "2026-03-12T14:30:00Z",
+    "created_at": "2026-03-10T09:00:00Z",
+    "updated_at": "2026-03-12T14:30:00Z"
+  },
+  {
+    "id": "recipe-new-client-workspace",
+    "name": "New Client Workspace Creator",
+    "description": "When a new organization entity is created from a client email, automatically create a workspace for them.",
+    "enabled": true,
+    "trigger": {
+      "kind": "entity_created",
+      "conditions": {
+        "domain": "organization"
+      }
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "create_workspace",
+        "params": {
+          "name": "{{trigger.canonical_name}} — New Project",
+          "client_name": "{{trigger.canonical_name}}",
+          "status": "active"
+        }
+      },
+      {
+        "id": "s2",
+        "kind": "log_note",
+        "params": {
+          "message": "Workspace created for new client: {{trigger.canonical_name}}"
+        }
+      }
+    ],
+    "risk_level": "low",
+    "approval_required": false,
+    "run_count": 0,
+    "created_at": "2026-03-13T10:00:00Z",
+    "updated_at": "2026-03-13T10:00:00Z"
+  },
+  {
+    "id": "recipe-contradiction-escalate",
+    "name": "Contradiction Escalation",
+    "description": "When a contradiction is detected, immediately escalate to review queue with high severity.",
+    "enabled": true,
+    "trigger": {
+      "kind": "contradiction_detected",
+      "conditions": {}
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "flag_for_review",
+        "params": {
+          "reason": "Contradiction detected: {{trigger.description}}",
+          "severity": "high"
+        }
+      },
+      {
+        "id": "s2",
+        "kind": "log_note",
+        "params": {
+          "message": "Contradiction escalated for entities: {{trigger.entities}}"
+        }
+      }
+    ],
+    "risk_level": "high",
+    "approval_required": true,
+    "run_count": 0,
+    "created_at": "2026-03-13T10:00:00Z",
+    "updated_at": "2026-03-13T10:00:00Z"
+  },
+  {
+    "id": "recipe-entity-merge-notify",
+    "name": "Entity Merge Notification",
+    "description": "When two entities are merged, log the merge for audit purposes.",
+    "enabled": true,
+    "trigger": {
+      "kind": "entity_merged",
+      "conditions": {}
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "kind": "log_note",
+        "params": {
+          "message": "Entity merged: {{trigger.duplicate_id}} → {{trigger.survivor_id}}"
+        }
+      }
+    ],
+    "risk_level": "low",
+    "approval_required": false,
+    "run_count": 0,
+    "created_at": "2026-03-13T10:00:00Z",
+    "updated_at": "2026-03-13T10:00:00Z"
+  }
+]

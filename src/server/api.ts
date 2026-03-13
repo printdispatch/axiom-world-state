@@ -579,6 +579,338 @@ app.get("/api/graph", (_req, res) => {
   });
 });
 
+// ─── Automation Recipes ─────────────────────────────────────────────────────
+
+// GET /api/recipes — All recipes
+app.get("/api/recipes", (_req, res) => {
+  const recipes = readJson<unknown[]>(path.join(DATA_DIR, "recipes", "recipes.json"), []);
+  res.json(recipes);
+});
+
+// GET /api/recipes/enabled — Only enabled recipes
+app.get("/api/recipes/enabled", (_req, res) => {
+  const recipes = readJson<Array<{ enabled: boolean }>>(path.join(DATA_DIR, "recipes", "recipes.json"), []);
+  res.json(recipes.filter((r) => r.enabled));
+});
+
+// GET /api/recipes/:id — Single recipe
+app.get("/api/recipes/:id", (req, res) => {
+  const recipes = readJson<Array<{ id: string }>>(path.join(DATA_DIR, "recipes", "recipes.json"), []);
+  const recipe = recipes.find((r) => r.id === req.params.id);
+  if (!recipe) return res.status(404).json({ error: "Recipe not found" });
+  return res.json(recipe);
+});
+
+// POST /api/recipes — Create a new recipe
+app.post("/api/recipes", (req, res) => {
+  const data = req.body as Record<string, unknown>;
+  if (!data.name || !data.trigger || !data.steps) {
+    return res.status(400).json({ error: "name, trigger, and steps are required" });
+  }
+  const recipes = readJson<Record<string, unknown>[]>(path.join(DATA_DIR, "recipes", "recipes.json"), []);
+  const now = new Date().toISOString();
+  const recipe = {
+    ...data,
+    id: `recipe-${Date.now().toString(36)}`,
+    enabled: data.enabled ?? true,
+    risk_level: data.risk_level ?? "low",
+    approval_required: data.approval_required ?? false,
+    run_count: 0,
+    created_at: now,
+    updated_at: now,
+  };
+  recipes.push(recipe);
+  const dir = path.join(DATA_DIR, "recipes");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "recipes.json"), JSON.stringify(recipes, null, 2));
+  return res.status(201).json(recipe);
+});
+
+// PATCH /api/recipes/:id — Update a recipe (enable/disable, edit steps)
+app.patch("/api/recipes/:id", (req, res) => {
+  const recipesPath = path.join(DATA_DIR, "recipes", "recipes.json");
+  const recipes = readJson<Array<{ id: string; updated_at?: string }>>(recipesPath, []);
+  const idx = recipes.findIndex((r) => r.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Recipe not found" });
+  recipes[idx] = { ...recipes[idx], ...req.body, updated_at: new Date().toISOString() };
+  fs.writeFileSync(recipesPath, JSON.stringify(recipes, null, 2));
+  return res.json(recipes[idx]);
+});
+
+// POST /api/recipes/:id/trigger — Manually trigger a recipe
+app.post("/api/recipes/:id/trigger", (req, res) => {
+  const recipesPath = path.join(DATA_DIR, "recipes", "recipes.json");
+  const recipes = readJson<Array<{ id: string; enabled: boolean; name: string; run_count: number; approval_required: boolean; risk_level: string }>>(recipesPath, []);
+  const recipe = recipes.find((r) => r.id === req.params.id);
+  if (!recipe) return res.status(404).json({ error: "Recipe not found" });
+  if (!recipe.enabled) return res.status(400).json({ error: "Recipe is disabled" });
+
+  const now = new Date().toISOString();
+  const needsApproval = recipe.approval_required && (recipe.risk_level === "high" || recipe.risk_level === "critical");
+  const run = {
+    id: `run-${Date.now().toString(36)}`,
+    recipe_id: recipe.id,
+    trigger_payload: { ...req.body, manual: true },
+    status: needsApproval ? "pending_approval" : "completed",
+    step_results: [],
+    started_at: now,
+    completed_at: needsApproval ? undefined : now,
+  };
+
+  const runsPath = path.join(DATA_DIR, "recipes", "runs.json");
+  const runs = readJson<unknown[]>(runsPath, []);
+  runs.push(run);
+  fs.writeFileSync(runsPath, JSON.stringify(runs, null, 2));
+
+  if (!needsApproval) {
+    const idx2 = recipes.findIndex((r) => r.id === req.params.id);
+    recipes[idx2].run_count = (recipes[idx2].run_count ?? 0) + 1;
+    fs.writeFileSync(recipesPath, JSON.stringify(recipes, null, 2));
+  }
+
+  return res.json(run);
+});
+
+// GET /api/recipes/:id/runs — Run history for a recipe
+app.get("/api/recipes/:id/runs", (req, res) => {
+  const runs = readJson<Array<{ recipe_id: string }>>(path.join(DATA_DIR, "recipes", "runs.json"), []);
+  res.json(runs.filter((r) => r.recipe_id === req.params.id));
+});
+
+// GET /api/runs — All recipe runs
+app.get("/api/runs", (_req, res) => {
+  const runs = readJson<unknown[]>(path.join(DATA_DIR, "recipes", "runs.json"), []);
+  res.json([...runs].reverse());
+});
+
+// ─── Simulation Engine ─────────────────────────────────────────────────────
+
+// GET /api/simulations — All simulations (newest first)
+app.get("/api/simulations", (_req, res) => {
+  const simDir = path.join(DATA_DIR, "simulations");
+  if (!fs.existsSync(simDir)) return res.json([]);
+  const files = fs.readdirSync(simDir)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .reverse();
+  const sims = files.map((f) => {
+    try { return JSON.parse(fs.readFileSync(path.join(simDir, f), "utf8")); }
+    catch { return null; }
+  }).filter(Boolean);
+  return res.json(sims);
+});
+
+// GET /api/simulations/:id — Single simulation
+app.get("/api/simulations/:id", (req, res) => {
+  const simPath = path.join(DATA_DIR, "simulations", `${req.params.id}.json`);
+  if (!fs.existsSync(simPath)) return res.status(404).json({ error: "Simulation not found" });
+  try {
+    return res.json(JSON.parse(fs.readFileSync(simPath, "utf8")));
+  } catch {
+    return res.status(500).json({ error: "Failed to read simulation" });
+  }
+});
+
+// POST /api/simulations — Run a new simulation
+app.post("/api/simulations", (req, res) => {
+  const { name, change } = req.body as { name?: string; change?: Record<string, unknown> };
+  if (!change || !change.kind) {
+    return res.status(400).json({ error: "change.kind is required" });
+  }
+
+  // Build snapshot inline
+  const obligations = readJson<Array<{ id: string; title: string; status: string; priority: string; due_date?: string; owed_by: string; owed_to: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  const contradictions = readJson<Array<{ resolved: boolean }>>(path.join(DATA_DIR, "state", "contradictions.json"), []);
+  const entities = readJson<Array<{ id: string; canonical_name: string; domain: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const reviewItems = readJson<Array<{ status: string }>>(path.join(DATA_DIR, "review", "review_queue.json"), []);
+
+  const openObligations = obligations.filter((o) => o.status === "open");
+  const now2 = new Date();
+  const overdueObligations = openObligations.filter((o) => o.due_date && new Date(o.due_date) < now2);
+  const activeContradictions = contradictions.filter((c) => !c.resolved);
+  const pendingReview = reviewItems.filter((r) => r.status === "pending");
+  const overdueDeduction = Math.min(30, overdueObligations.length * 10);
+  const contradictionDeduction = Math.min(20, activeContradictions.length * 7);
+  const reviewDeduction = Math.min(15, pendingReview.length * 3);
+  const healthScore = Math.max(0, 100 - overdueDeduction - contradictionDeduction - reviewDeduction);
+
+  const snapshot = {
+    captured_at: new Date().toISOString(),
+    open_obligations: openObligations.length,
+    overdue_obligations: overdueObligations.length,
+    active_contradictions: activeContradictions.length,
+    entity_count: entities.length,
+    pending_review: pendingReview.length,
+    health_score: healthScore,
+    obligations: obligations.map((o) => ({ id: o.id, title: o.title, status: o.status, priority: o.priority, due_date: o.due_date, owed_by: o.owed_by, owed_to: o.owed_to })),
+    entities: entities.map((e) => ({ id: e.id, canonical_name: e.canonical_name, domain: e.domain })),
+  };
+
+  // Compute predicted effects
+  const effects: Array<{ kind: string; description: string; target_id?: string; predicted_values: Record<string, unknown>; confidence: number }> = [];
+
+  if (change.kind === "obligation_resolved") {
+    const ob = obligations.find((o) => o.id === change.target_id);
+    if (ob) {
+      effects.push({ kind: "obligation_status_change", description: `"${ob.title}" would be marked as resolved`, target_id: ob.id, predicted_values: { status: "resolved" }, confidence: 1.0 });
+      const wasOverdue = ob.due_date && new Date(ob.due_date) < now2;
+      if (wasOverdue) {
+        const newOverdue = Math.max(0, overdueObligations.length - 1);
+        const newHealth = Math.max(0, 100 - Math.min(30, newOverdue * 10) - contradictionDeduction - reviewDeduction);
+        effects.push({ kind: "health_score_change", description: `Health score would improve from ${healthScore} to ${newHealth}`, predicted_values: { old_score: healthScore, new_score: newHealth, delta: newHealth - healthScore }, confidence: 0.95 });
+      }
+    }
+  } else if (change.kind === "contradiction_resolved") {
+    const newContra = Math.max(0, activeContradictions.length - 1);
+    const newHealth = Math.max(0, 100 - overdueDeduction - Math.min(20, newContra * 7) - reviewDeduction);
+    effects.push({ kind: "contradiction_resolved", description: `Active contradictions would decrease from ${activeContradictions.length} to ${newContra}`, target_id: change.target_id as string, predicted_values: { old_count: activeContradictions.length, new_count: newContra }, confidence: 1.0 });
+    if (newHealth !== healthScore) {
+      effects.push({ kind: "health_score_change", description: `Health score would improve from ${healthScore} to ${newHealth}`, predicted_values: { old_score: healthScore, new_score: newHealth, delta: newHealth - healthScore }, confidence: 0.95 });
+    }
+  } else if (change.kind === "obligation_created") {
+    const title = change.params as Record<string, unknown>;
+    effects.push({ kind: "new_obligation", description: `New obligation "${title.title ?? "Untitled"}" would be added`, predicted_values: title, confidence: 1.0 });
+  } else {
+    effects.push({ kind: "health_score_change", description: "Custom change — effects are speculative", predicted_values: { note: change.description }, confidence: 0.3 });
+  }
+
+  const highConfidence = effects.filter((e) => e.confidence >= 0.8).length;
+  const healthEffect = effects.find((e) => e.kind === "health_score_change");
+  let summary = `Simulating: ${change.description ?? change.kind}. ${effects.length} predicted effect${effects.length !== 1 ? "s" : ""} (${highConfidence} high-confidence).`;
+  if (healthEffect) {
+    const delta = healthEffect.predicted_values.delta as number;
+    if (delta > 0) summary += ` Health score would improve by ${delta} points.`;
+    else if (delta < 0) summary += ` Health score would decrease by ${Math.abs(delta)} points.`;
+  }
+
+  const simId = `sim-${Date.now().toString(36)}`;
+  const simulation = {
+    id: simId,
+    name: name ?? `Simulation ${new Date().toLocaleString()}`,
+    change,
+    status: "completed",
+    baseline_snapshot: snapshot,
+    predicted_effects: effects,
+    summary,
+    created_at: new Date().toISOString(),
+    completed_at: new Date().toISOString(),
+  };
+
+  const simDir2 = path.join(DATA_DIR, "simulations");
+  if (!fs.existsSync(simDir2)) fs.mkdirSync(simDir2, { recursive: true });
+  fs.writeFileSync(path.join(simDir2, `${simId}.json`), JSON.stringify(simulation, null, 2));
+
+  return res.status(201).json(simulation);
+});
+
+// ─── System Health Monitor ───────────────────────────────────────────────────
+
+// GET /api/health — Full system health status with metrics and alerts
+app.get("/api/health", (_req, res) => {
+  const signals = readJson<Array<{ processed: boolean }>>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
+  const entities = readJson<Array<{ superseded_by?: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const obligations = readJson<Array<{ status: string; priority: string; due_date?: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  const contradictions = readJson<Array<{ resolved: boolean }>>(path.join(DATA_DIR, "state", "contradictions.json"), []);
+  const reviewItems = readJson<Array<{ status: string; severity?: string; reason?: string }>>(path.join(DATA_DIR, "review", "review_queue.json"), []);
+  const workspaces = readJson<Array<{ status: string }>>(path.join(DATA_DIR, "workspaces", "workspaces.json"), []);
+  const recipeRuns = readJson<Array<{ status: string }>>(path.join(DATA_DIR, "recipes", "runs.json"), []);
+
+  const signalsProcessed = signals.filter((s) => s.processed).length;
+  const unprocessedSignals = signals.filter((s) => !s.processed).length;
+  const activeEntities = entities.filter((e) => !e.superseded_by);
+  const now3 = new Date();
+  const openObligations = obligations.filter((o) => o.status === "open");
+  const overdueObligations = openObligations.filter((o) => o.due_date && new Date(o.due_date) < now3);
+  const activeContradictions = contradictions.filter((c) => !c.resolved).length;
+  const reviewBacklog = reviewItems.filter((r) => r.status === "pending").length;
+  const automationFailures = recipeRuns.filter((r) => r.status === "failed").length;
+
+  const obligationsByPriority: Record<string, number> = {};
+  for (const ob of openObligations) {
+    const p = (ob.priority as string) ?? "unknown";
+    obligationsByPriority[p] = (obligationsByPriority[p] ?? 0) + 1;
+  }
+  const reviewBySeverity: Record<string, number> = {};
+  for (const item of reviewItems.filter((r) => r.status === "pending")) {
+    const sev = item.severity ?? "medium";
+    reviewBySeverity[sev] = (reviewBySeverity[sev] ?? 0) + 1;
+  }
+
+  const overdueDeduction = Math.min(30, overdueObligations.length * 10);
+  const contradictionDeduction = Math.min(20, activeContradictions * 7);
+  const reviewDeduction = Math.min(15, reviewBacklog * 3);
+  const failureDeduction = Math.min(10, automationFailures * 5);
+  const healthScore = Math.max(0, 100 - overdueDeduction - contradictionDeduction - reviewDeduction - failureDeduction);
+
+  const metrics = {
+    collected_at: new Date().toISOString(),
+    signals_processed: signalsProcessed,
+    unprocessed_signals: unprocessedSignals,
+    merge_candidates: reviewItems.filter((r) => r.status === "pending" && r.reason && r.reason.toLowerCase().includes("similar")).length,
+    contradictions: activeContradictions,
+    review_backlog: reviewBacklog,
+    automation_failures: automationFailures,
+    entity_count: activeEntities.length,
+    workspace_count: workspaces.length,
+    open_obligations: openObligations.length,
+    overdue_obligations: overdueObligations.length,
+    health_score: healthScore,
+    review_by_severity: reviewBySeverity,
+    obligations_by_priority: obligationsByPriority,
+    automation_summary: {
+      total_runs: recipeRuns.length,
+      completed: recipeRuns.filter((r) => r.status === "completed").length,
+      failed: automationFailures,
+      pending_approval: recipeRuns.filter((r) => r.status === "pending_approval").length,
+    },
+  };
+
+  const alerts: Array<{ severity: string; code: string; message: string; value: number; threshold: number }> = [];
+  if (overdueObligations.length >= 3) alerts.push({ severity: "critical", code: "OVERDUE_OBLIGATIONS_HIGH", message: `${overdueObligations.length} obligations are overdue`, value: overdueObligations.length, threshold: 3 });
+  else if (overdueObligations.length >= 1) alerts.push({ severity: "warning", code: "OVERDUE_OBLIGATIONS", message: `${overdueObligations.length} obligation${overdueObligations.length > 1 ? "s are" : " is"} overdue`, value: overdueObligations.length, threshold: 1 });
+  if (activeContradictions >= 3) alerts.push({ severity: "critical", code: "CONTRADICTIONS_HIGH", message: `${activeContradictions} active contradictions`, value: activeContradictions, threshold: 3 });
+  else if (activeContradictions >= 1) alerts.push({ severity: "warning", code: "CONTRADICTIONS_ACTIVE", message: `${activeContradictions} active contradiction${activeContradictions > 1 ? "s" : ""} detected`, value: activeContradictions, threshold: 1 });
+  if (reviewBacklog >= 10) alerts.push({ severity: "critical", code: "REVIEW_BACKLOG_HIGH", message: `Review queue has ${reviewBacklog} pending items`, value: reviewBacklog, threshold: 10 });
+  else if (reviewBacklog >= 5) alerts.push({ severity: "warning", code: "REVIEW_BACKLOG", message: `Review queue has ${reviewBacklog} pending items`, value: reviewBacklog, threshold: 5 });
+  if (automationFailures >= 1) alerts.push({ severity: "warning", code: "AUTOMATION_FAILURES", message: `${automationFailures} automation run${automationFailures > 1 ? "s have" : " has"} failed`, value: automationFailures, threshold: 1 });
+  if (unprocessedSignals >= 5) alerts.push({ severity: "warning", code: "UNPROCESSED_SIGNALS", message: `${unprocessedSignals} signals awaiting processing`, value: unprocessedSignals, threshold: 5 });
+
+  const hasCritical = alerts.some((a) => a.severity === "critical");
+  const hasWarning = alerts.some((a) => a.severity === "warning");
+  const status = hasCritical || healthScore < 60 ? "critical" : hasWarning || healthScore < 80 ? "degraded" : "healthy";
+  const statusMessage = status === "critical"
+    ? `System is in a critical state (score: ${healthScore}/100). Immediate attention required.`
+    : status === "degraded"
+    ? `System is degraded (score: ${healthScore}/100). Review active alerts.`
+    : `System is operating normally (score: ${healthScore}/100).`;
+
+  return res.json({ status, message: statusMessage, metrics, alerts });
+});
+
+// GET /api/health/metrics — Metrics only (no alerts)
+app.get("/api/health/metrics", (_req, res) => {
+  // Redirect to /api/health and return just the metrics
+  const signals = readJson<Array<{ processed: boolean }>>(path.join(DATA_DIR, "signals", "signal_log.json"), []);
+  const entities = readJson<Array<{ superseded_by?: string }>>(path.join(DATA_DIR, "entities", "entities.json"), []);
+  const obligations = readJson<Array<{ status: string; priority: string; due_date?: string }>>(path.join(DATA_DIR, "state", "obligations.json"), []);
+  const recipeRuns = readJson<Array<{ status: string }>>(path.join(DATA_DIR, "recipes", "runs.json"), []);
+  const now4 = new Date();
+  const openObs = obligations.filter((o) => o.status === "open");
+  const overdueObs = openObs.filter((o) => o.due_date && new Date(o.due_date) < now4);
+  return res.json({
+    signals_processed: signals.filter((s) => s.processed).length,
+    unprocessed_signals: signals.filter((s) => !s.processed).length,
+    entity_count: entities.filter((e) => !e.superseded_by).length,
+    open_obligations: openObs.length,
+    overdue_obligations: overdueObs.length,
+    automation_summary: {
+      total_runs: recipeRuns.length,
+      completed: recipeRuns.filter((r) => r.status === "completed").length,
+      failed: recipeRuns.filter((r) => r.status === "failed").length,
+    },
+  });
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");

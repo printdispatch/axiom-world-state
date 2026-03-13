@@ -50,6 +50,39 @@ interface Summary {
   signals: number; entities: number; open_obligations: number; total_obligations: number;
   state_updates: number; unresolved_contradictions: number; audit_entries: number;
 }
+interface Recipe {
+  id: string; name: string; description: string; enabled: boolean;
+  trigger: { kind: string; conditions?: Record<string, unknown> };
+  steps: Array<{ id: string; kind: string; params: Record<string, unknown> }>;
+  risk_level: string; approval_required: boolean;
+  run_count: number; last_run_at?: string; created_at: string; updated_at: string;
+}
+interface SimEffect {
+  kind: string; description: string; target_id?: string;
+  predicted_values: Record<string, unknown>; confidence: number;
+}
+interface Simulation {
+  id: string; name: string; status: string; summary?: string;
+  change: { kind: string; description?: string; target_id?: string; params: Record<string, unknown> };
+  baseline_snapshot: { health_score: number; open_obligations: number; overdue_obligations: number; active_contradictions: number; entity_count: number };
+  predicted_effects: SimEffect[];
+  created_at: string; completed_at?: string;
+}
+interface HealthAlert {
+  severity: string; code: string; message: string; value: number; threshold: number;
+}
+interface HealthMetrics {
+  collected_at: string; signals_processed: number; unprocessed_signals: number;
+  merge_candidates: number; contradictions: number; review_backlog: number;
+  automation_failures: number; entity_count: number; workspace_count: number;
+  open_obligations: number; overdue_obligations: number; health_score: number;
+  review_by_severity: Record<string, number>; obligations_by_priority: Record<string, number>;
+  automation_summary: { total_runs: number; completed: number; failed: number; pending_approval: number };
+}
+interface HealthStatus {
+  status: "healthy" | "degraded" | "critical"; message: string;
+  metrics: HealthMetrics; alerts: HealthAlert[];
+}
 interface ReviewItem {
   id: string;
   kind: "entity_conflict" | "high_risk_action" | "contradiction" | "low_confidence";
@@ -794,7 +827,7 @@ function WorldDashboard({ world }: { world: WorldState }) {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "graph";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "graph" | "recipes" | "simulate" | "health";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("feed");
@@ -812,7 +845,12 @@ export default function App() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   const [worldState, setWorldState] = useState<WorldState | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [simulations, setSimulations] = useState<Simulation[]>([]);
+  const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [simForm, setSimForm] = useState({ name: "", kind: "obligation_resolved", target_id: "", description: "" });
+  const [simRunning, setSimRunning] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -824,9 +862,14 @@ export default function App() {
       fetch("/api/review").then(r => r.json()),
       fetch("/api/workspaces").then(r => r.json()),
       fetch("/api/world").then(r => r.json()),
-    ]).then(([s, o, e, c, sum, rv, ws, wd]) => {
+      fetch("/api/recipes").then(r => r.json()),
+      fetch("/api/simulations").then(r => r.json()),
+      fetch("/api/health").then(r => r.json()),
+    ]).then(([s, o, e, c, sum, rv, ws, wd, rec, sims, health]) => {
       setSignals(s); setObligations(o); setEntities(e);
-      setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setWorldState(wd); setLoading(false);
+      setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setWorldState(wd);
+      setRecipes(rec); setSimulations(sims); setHealthStatus(health);
+      setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
@@ -1010,10 +1053,174 @@ export default function App() {
         )}
         {/* ── Graph Tab ── */}
         {tab === "graph" && <KnowledgeGraph />}
+
+        {/* ── Recipes Tab ── */}
+        {!loading && tab === "recipes" && (
+          <div className="feed-list">
+            <div className="section-title">Automation Recipes</div>
+            {recipes.length === 0 && <div className="empty-msg">No recipes configured.</div>}
+            {recipes.map(r => (
+              <div key={r.id} className="review-card" style={{ opacity: r.enabled ? 1 : 0.5 }}>
+                <div className="review-card-header">
+                  <div className="review-sev-dot" style={{ background: r.risk_level === "critical" ? "#FF3B30" : r.risk_level === "high" ? "#FF9500" : r.risk_level === "medium" ? "#FFD60A" : "#34C759" }} />
+                  <div className="review-kind-badge">{r.trigger.kind.replace(/_/g, " ")}</div>
+                  <span className="review-time">{r.run_count} run{r.run_count !== 1 ? "s" : ""}</span>
+                  {!r.enabled && <span className="badge" style={{ background: "#333", color: "#888" }}>disabled</span>}
+                  {r.approval_required && <span className="badge" style={{ background: "#FF950022", color: "#FF9500" }}>approval</span>}
+                </div>
+                <div className="review-title">{r.name}</div>
+                <div className="review-desc">{r.description}</div>
+                <div style={{ marginTop: 8, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {r.steps.map(s => (
+                    <span key={s.id} className="badge" style={{ background: "#1a1a2e", color: "#8888aa", fontSize: 11 }}>{s.kind.replace(/_/g, " ")}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Simulate Tab ── */}
+        {!loading && tab === "simulate" && (
+          <div className="feed-list">
+            <div className="section-title">Simulation Engine</div>
+            <div className="review-card">
+              <div className="review-title" style={{ marginBottom: 12 }}>Run a Hypothetical Simulation</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <input className="review-note-input" style={{ padding: "8px 12px" }} placeholder="Simulation name (optional)" value={simForm.name} onChange={e => setSimForm(f => ({ ...f, name: e.target.value }))} />
+                <select className="review-note-input" style={{ padding: "8px 12px" }} value={simForm.kind} onChange={e => setSimForm(f => ({ ...f, kind: e.target.value }))}>
+                  <option value="obligation_resolved">Resolve an obligation</option>
+                  <option value="obligation_created">Create a new obligation</option>
+                  <option value="contradiction_resolved">Resolve a contradiction</option>
+                  <option value="entity_attribute_change">Change an entity attribute</option>
+                  <option value="signal_received">Receive a new signal</option>
+                  <option value="custom">Custom change</option>
+                </select>
+                <input className="review-note-input" style={{ padding: "8px 12px" }} placeholder="Target ID (optional, e.g. ob-001)" value={simForm.target_id} onChange={e => setSimForm(f => ({ ...f, target_id: e.target.value }))} />
+                <input className="review-note-input" style={{ padding: "8px 12px" }} placeholder="Description of the change" value={simForm.description} onChange={e => setSimForm(f => ({ ...f, description: e.target.value }))} />
+                <button className="review-btn approve" style={{ alignSelf: "flex-start" }} disabled={simRunning} onClick={async () => {
+                  setSimRunning(true);
+                  try {
+                    const res = await fetch("/api/simulations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: simForm.name || undefined, change: { kind: simForm.kind, description: simForm.description, target_id: simForm.target_id || undefined, params: {} } }),
+                    });
+                    if (res.ok) {
+                      const sim = await res.json();
+                      setSimulations(prev => [sim, ...prev]);
+                      setSimForm({ name: "", kind: "obligation_resolved", target_id: "", description: "" });
+                    }
+                  } catch { /* ignore */ }
+                  setSimRunning(false);
+                }}>
+                  {simRunning ? "Running..." : "Run Simulation"}
+                </button>
+              </div>
+            </div>
+            {simulations.length > 0 && (
+              <>
+                <div className="section-title" style={{ marginTop: 16 }}>Past Simulations</div>
+                {simulations.map(sim => (
+                  <div key={sim.id} className="review-card">
+                    <div className="review-card-header">
+                      <div className="review-sev-dot" style={{ background: "#007AFF" }} />
+                      <div className="review-kind-badge">{sim.change.kind.replace(/_/g, " ")}</div>
+                      <span className="review-time">{timeAgo(sim.created_at)}</span>
+                      <span className="badge" style={{ background: "#34C75922", color: "#34C759" }}>{sim.predicted_effects.length} effects</span>
+                    </div>
+                    <div className="review-title">{sim.name}</div>
+                    {sim.summary && <div className="review-desc">{sim.summary}</div>}
+                    <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                      {sim.predicted_effects.map((e, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0", borderTop: "1px solid #1a1a2e" }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: e.confidence >= 0.8 ? "#34C759" : e.confidence >= 0.5 ? "#FF9500" : "#888", marginTop: 4, flexShrink: 0 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13, color: "var(--text1)" }}>{e.description}</div>
+                            <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{Math.round(e.confidence * 100)}% confidence</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── Health Tab ── */}
+        {!loading && tab === "health" && (
+          <div className="feed-list">
+            <div className="section-title">System Health</div>
+            {healthStatus && (
+              <>
+                <div className="review-card" style={{ borderLeft: `3px solid ${healthStatus.status === "healthy" ? "#34C759" : healthStatus.status === "degraded" ? "#FF9500" : "#FF3B30"}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                    <div style={{ fontSize: 36, fontWeight: 800, color: healthStatus.status === "healthy" ? "#34C759" : healthStatus.status === "degraded" ? "#FF9500" : "#FF3B30" }}>
+                      {healthStatus.metrics.health_score}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{healthStatus.status.toUpperCase()}</div>
+                      <div style={{ fontSize: 12, color: "#888" }}>{healthStatus.message}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                    {[
+                      { label: "Signals", value: healthStatus.metrics.signals_processed, sub: `${healthStatus.metrics.unprocessed_signals} pending` },
+                      { label: "Entities", value: healthStatus.metrics.entity_count, sub: `${healthStatus.metrics.workspace_count} workspaces` },
+                      { label: "Obligations", value: healthStatus.metrics.open_obligations, sub: `${healthStatus.metrics.overdue_obligations} overdue`, warn: healthStatus.metrics.overdue_obligations > 0 },
+                      { label: "Contradictions", value: healthStatus.metrics.contradictions, sub: "active", warn: healthStatus.metrics.contradictions > 0 },
+                      { label: "Review", value: healthStatus.metrics.review_backlog, sub: "pending", warn: healthStatus.metrics.review_backlog > 0 },
+                      { label: "Failures", value: healthStatus.metrics.automation_failures, sub: "automation", warn: healthStatus.metrics.automation_failures > 0 },
+                    ].map(m => (
+                      <div key={m.label} style={{ background: "#0d0d1a", borderRadius: 8, padding: "8px 10px" }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: m.warn ? "#FF9500" : "var(--text1)" }}>{m.value}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{m.label}</div>
+                        <div style={{ fontSize: 10, color: "#555" }}>{m.sub}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {healthStatus.alerts.length > 0 && (
+                  <>
+                    <div className="section-title" style={{ marginTop: 16, color: "#FF9500" }}>Active Alerts</div>
+                    {healthStatus.alerts.map((a, i) => (
+                      <div key={i} className="review-card">
+                        <div className="review-card-header">
+                          <div className="review-sev-dot" style={{ background: a.severity === "critical" ? "#FF3B30" : a.severity === "warning" ? "#FF9500" : "#007AFF" }} />
+                          <div className="review-kind-badge">{a.severity.toUpperCase()}</div>
+                          <span className="review-time">{a.code}</span>
+                        </div>
+                        <div className="review-desc">{a.message}</div>
+                      </div>
+                    ))}
+                  </>
+                )}
+                <div className="section-title" style={{ marginTop: 16 }}>Automation Summary</div>
+                <div className="review-card">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    {[
+                      { label: "Total Runs", value: healthStatus.metrics.automation_summary.total_runs },
+                      { label: "Completed", value: healthStatus.metrics.automation_summary.completed },
+                      { label: "Failed", value: healthStatus.metrics.automation_summary.failed, warn: healthStatus.metrics.automation_summary.failed > 0 },
+                      { label: "Pending Approval", value: healthStatus.metrics.automation_summary.pending_approval },
+                    ].map(m => (
+                      <div key={m.label} style={{ background: "#0d0d1a", borderRadius: 8, padding: "8px 10px" }}>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: m.warn ? "#FF3B30" : "var(--text1)" }}>{m.value}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{m.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </main>
 
       {/* ── Bottom Nav ── */}
-      <nav className="bottom-nav">
+      <nav className="bottom-nav" style={{ overflowX: "auto", justifyContent: "flex-start", gap: 0 }}>
         <button className={`nav-item${tab === "feed" ? " active" : ""}`} onClick={() => setTab("feed")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           <span>Feed</span>
@@ -1040,6 +1247,18 @@ export default function App() {
         <button className={`nav-item${tab === "graph" ? " active" : ""}`} onClick={() => setTab("graph")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><line x1="7" y1="12" x2="17" y2="6"/><line x1="7" y1="12" x2="17" y2="18"/></svg>
           <span>Graph</span>
+        </button>
+        <button className={`nav-item${tab === "recipes" ? " active" : ""}`} onClick={() => setTab("recipes")}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span>Recipes</span>
+        </button>
+        <button className={`nav-item${tab === "simulate" ? " active" : ""}`} onClick={() => setTab("simulate")}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Simulate</span>
+        </button>
+        <button className={`nav-item${tab === "health" ? " active" : ""}`} onClick={() => setTab("health")}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Health</span>
         </button>
       </nav>
 
