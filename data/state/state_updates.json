@@ -1,202 +1,32 @@
 [
   {
-    "entity_label": "Self Visa® Credit Card",
-    "entity_domain": "account",
-    "field": "payment_due_date",
-    "new_value": "2026-03-20",
-    "previous_value": null,
-    "source_fact": "Your card payment is due in 7 days",
-    "signal_id": "sig-gmail-19ce7a9269197f62",
-    "mutated_at": "2026-03-13T18:12:53.234Z"
-  },
-  {
-    "entity_label": "Gaucho’s Fire Channel letters",
-    "entity_domain": "artifact",
-    "field": "fabrication_cost",
-    "new_value": "$1990",
-    "previous_value": null,
-    "source_fact": "Michael Sall provided pricing: $1990 to fabricate “Gaucho’s Fire” Channel letters, $1000 to Install “Gaucho’s Fire” Channel Letters",
-    "signal_id": "sig-gmail-19ce71e78642781d",
-    "mutated_at": "2026-03-13T18:13:28.887Z"
-  },
-  {
-    "entity_label": "Gaucho’s Fire Channel letters",
-    "entity_domain": "artifact",
-    "field": "installation_cost",
-    "new_value": "$1000",
-    "previous_value": null,
-    "source_fact": "Michael Sall provided pricing: $1990 to fabricate “Gaucho’s Fire” Channel letters, $1000 to Install “Gaucho’s Fire” Channel Letters",
-    "signal_id": "sig-gmail-19ce71e78642781d",
-    "mutated_at": "2026-03-13T18:13:28.887Z"
-  },
-  {
-    "entity_label": "Brazillian Street Food FCO Letters",
-    "entity_domain": "artifact",
-    "field": "installation_cost",
-    "new_value": "pending",
-    "previous_value": null,
-    "source_fact": "Michael Sall will get price to install “Brazillian Street Food” FCO Letters",
-    "signal_id": "sig-gmail-19ce71e78642781d",
-    "mutated_at": "2026-03-13T18:13:28.887Z"
-  },
-  {
-    "entity_label": "printdispatch@gmail.com",
-    "entity_domain": "person",
-    "field": "last_sign_in",
-    "new_value": "2026-03-13T15:00:39.000Z",
-    "previous_value": null,
-    "source_fact": "New sign-in to your account",
-    "signal_id": "sig-gmail-19ce7b6ccece272c",
-    "mutated_at": "2026-03-13T18:15:19.936Z"
-  },
-  {
-    "entity_label": "printdispatch@gmail.com",
-    "entity_domain": "person",
-    "field": "linked_accounts",
-    "new_value": "GitHub",
-    "previous_value": null,
-    "source_fact": "A new Google social identity was just linked to your GitHub account from the email address printdispatch@gmail.com.",
-    "signal_id": "sig-gmail-19ce51827fbc6038",
-    "mutated_at": "2026-03-13T18:18:42.475Z"
-  },
-  {
-    "entity_label": "Air Bnb",
-    "entity_domain": "organization",
-    "field": "availability_date",
-    "new_value": "2026-04-01",
-    "previous_value": null,
-    "source_fact": "I’d like to have my house online and ready by April 1st if possible.",
-    "signal_id": "sig-gmail-19ce3f28136c4ec8",
-    "mutated_at": "2026-03-13T18:20:28.435Z"
-  },
-  {
-    "entity_label": "Metro Area Printing",
-    "entity_domain": "organization",
-    "field": "status",
-    "new_value": "Coupon printing scheduled for 2026-03-13",
-    "previous_value": null,
-    "source_fact": "I will start Coupon printing tomorrow.",
-    "signal_id": "sig-gmail-19ce39c0aa83963f",
-    "mutated_at": "2026-03-13T18:21:31.607Z"
-  },
-  {
-    "entity_label": "Michael Sall",
-    "entity_domain": "person",
-    "field": "contact number",
-    "new_value": "317-800-6500",
-    "previous_value": null,
-    "source_fact": "317-800-6500",
-    "signal_id": "sig-gmail-19ce1ba3fe9c3330",
-    "mutated_at": "2026-03-13T18:28:39.074Z"
-  },
-  {
-    "entity_label": "Midwest Signs",
-    "entity_domain": "organization",
-    "field": "shipping address",
-    "new_value": "8560 E. 30th St., Suite A, Indianapolis, IN 46219",
-    "previous_value": null,
-    "source_fact": "8560 E. 30th St., Suite A, Indianapolis, IN 46219",
-    "signal_id": "sig-gmail-19ce1ba3fe9c3330",
-    "mutated_at": "2026-03-13T18:28:39.074Z"
-  },
-  {
     "entity_label": "edenframe.com",
     "entity_domain": "artifact",
     "field": "expiration_date",
     "new_value": "Mon, Apr 6th, 2026",
     "previous_value": null,
-    "source_fact": "Domains that failed to renew: edenframe.com — expires on Mon, Apr 6th, 2026",
-    "signal_id": "sig-gmail-19ce051321386e3c",
-    "mutated_at": "2026-03-13T18:29:18.851Z"
+    "source_fact": "edenframe.com expires on Mon, Apr 6th, 2026 and is set to auto-renew.",
+    "signal_id": "sig-gmail-19cd4dc4f654abd2",
+    "mutated_at": "2026-03-13T19:29:19.681Z"
   },
   {
-    "entity_label": "Metro Area Printing",
-    "entity_domain": "organization",
-    "field": "pricing",
-    "new_value": "$67.25 for 100 flyers, $437.50 for 125 raffle tickets",
-    "previous_value": null,
-    "source_fact": "$67.25 for 100 flyers 80lb gloss text paper 8.5\" x 11\"",
-    "signal_id": "sig-gmail-19ce03963b92536c",
-    "mutated_at": "2026-03-13T18:29:46.087Z"
-  },
-  {
-    "entity_label": "John D.",
-    "entity_domain": "person",
-    "field": "moving_date",
-    "new_value": "2026-03-13",
-    "previous_value": null,
-    "source_fact": "I am currently living in a recovery settings and on Friday moving downtown",
-    "signal_id": "sig-gmail-19cdf7114c4c2639",
-    "mutated_at": "2026-03-13T18:31:10.317Z"
-  },
-  {
-    "entity_label": "John D.",
-    "entity_domain": "person",
-    "field": "transportation_needed",
-    "new_value": "true",
-    "previous_value": null,
-    "source_fact": "I need someone who can transport my things as I don’t have a car.",
-    "signal_id": "sig-gmail-19cdf7114c4c2639",
-    "mutated_at": "2026-03-13T18:31:10.317Z"
-  },
-  {
-    "entity_label": "John D.",
-    "entity_domain": "person",
-    "field": "arrival_time",
-    "new_value": "10 AM",
-    "previous_value": null,
-    "source_fact": "I need to arrive by 10 AM at the latest.",
-    "signal_id": "sig-gmail-19cdf7114c4c2639",
-    "mutated_at": "2026-03-13T18:31:10.317Z"
-  },
-  {
-    "entity_label": "Midwest Signs",
-    "entity_domain": "organization",
-    "field": "billing_method",
-    "new_value": "wrap company",
-    "previous_value": null,
-    "source_fact": "We'll do it this way...I originally billed him through my wrap company so we'll keep it under that company.",
-    "signal_id": "sig-gmail-19cde7cd905f9959",
-    "mutated_at": "2026-03-13T18:32:07.461Z"
-  },
-  {
-    "entity_label": "Gaucho's Fire LLC",
-    "entity_domain": "organization",
-    "field": "install window",
-    "new_value": "Tuesday - Wednesday - Thursday 7am - 10:30am",
-    "previous_value": null,
-    "source_fact": "install window of Tuesday - Wednesday - Thursday 7am - 10:30am",
-    "signal_id": "sig-gmail-19cde548508c337e",
-    "mutated_at": "2026-03-13T18:33:02.647Z"
-  },
-  {
-    "entity_label": "Reventure App",
-    "entity_domain": "organization",
-    "field": "data_update",
-    "new_value": "Inventory and Price Cut data through February 2026",
-    "previous_value": null,
-    "source_fact": "The Reventure App just updated its Inventory and Price Cut data through February 2026.",
-    "signal_id": "sig-gmail-19cddc9f8a9a8437",
-    "mutated_at": "2026-03-13T18:34:23.157Z"
-  },
-  {
-    "entity_label": "WRAPOBSESSIONS_STICKERS.ai",
+    "entity_label": "edenframe.com",
     "entity_domain": "artifact",
-    "field": "downloaded",
+    "field": "auto_renew",
     "new_value": "true",
     "previous_value": null,
-    "source_fact": "Your files have been downloaded",
-    "signal_id": "sig-gmail-19cdd71d631e259d",
-    "mutated_at": "2026-03-13T18:35:33.152Z"
+    "source_fact": "edenframe.com expires on Mon, Apr 6th, 2026 and is set to auto-renew.",
+    "signal_id": "sig-gmail-19cd4dc4f654abd2",
+    "mutated_at": "2026-03-13T19:29:19.681Z"
   },
   {
-    "entity_label": "FirstClass_Transit_Cameron_WrapObsessions.ai",
+    "entity_label": "edenframe.com",
     "entity_domain": "artifact",
-    "field": "downloaded",
-    "new_value": "true",
+    "field": "expiration_date",
+    "new_value": "2026-04-06",
     "previous_value": null,
-    "source_fact": "Your files have been downloaded",
-    "signal_id": "sig-gmail-19cdd71d631e259d",
-    "mutated_at": "2026-03-13T18:35:33.152Z"
+    "source_fact": "edenframe.com expires on Mon, Apr 6th, 2026 and is set to auto-renew.",
+    "signal_id": "sig-gmail-19cd4dc4f654abd2",
+    "mutated_at": "2026-03-13T19:29:32.922Z"
   }
 ]

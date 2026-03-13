@@ -30,6 +30,13 @@ import {
   deleteToken,
 } from "../adapters/gmail_adapter.js";
 import { processBatch, processSingle } from "../engine/signal_processor_service.js";
+import {
+  applyReviewDecision,
+  resolveObligation,
+  snoozeObligation,
+  getEntityContext,
+  getLearnedNoise,
+} from "../engine/action_engine.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -217,28 +224,48 @@ app.get("/api/review/pending", (_req, res) => {
 });
 
 // POST /api/review/:id/decide — Approve, reject, resolve, or defer a review item
+// This now triggers real consequences via the action engine:
+//   approve  → creates an obligation (task) from the review item
+//   resolve  → closes the review item and any linked obligation
+//   reject   → dismisses and teaches the noise filter
+//   defer    → snoozes for 7 days
 app.post("/api/review/:id/decide", (req, res) => {
   const { decision, note } = req.body as { decision: string; note?: string };
-  const validDecisions = ["approved", "rejected", "resolved", "deferred"];
+  const validDecisions = ["approve", "resolve", "reject", "defer"];
   if (!validDecisions.includes(decision)) {
     return res.status(400).json({ error: `Invalid decision. Must be one of: ${validDecisions.join(", ")}` });
   }
 
-  const reviewPath = path.join(DATA_DIR, "review", "review_queue.json");
-  const items = readJson<Array<{ id: string; status: string; decision?: string; decision_note?: string; decided_at?: string }>>(reviewPath, []);
-  const item = items.find(i => i.id === req.params.id);
-  if (!item) return res.status(404).json({ error: "Review item not found" });
+  const result = applyReviewDecision(DATA_DIR, req.params.id, decision as any, note || "");
+  if (!result.success) return res.status(404).json({ error: result.message });
+  return res.json({ item: result.item, obligation: result.obligation, message: result.message });
+});
 
-  item.status = "reviewed";
-  item.decision = decision;
-  item.decision_note = note;
-  item.decided_at = new Date().toISOString();
+// POST /api/obligations/:id/resolve — Mark a task as done directly from Tasks tab
+app.post("/api/obligations/:id/resolve", (req, res) => {
+  const { note } = req.body as { note?: string };
+  const result = resolveObligation(DATA_DIR, req.params.id, note);
+  if (!result.success) return res.status(404).json({ error: result.message });
+  return res.json({ success: true, message: result.message });
+});
 
-  const dir = path.dirname(reviewPath);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(reviewPath, JSON.stringify(items, null, 2));
+// POST /api/obligations/:id/snooze — Push due date forward
+app.post("/api/obligations/:id/snooze", (req, res) => {
+  const { days } = req.body as { days?: number };
+  const result = snoozeObligation(DATA_DIR, req.params.id, days || 3);
+  if (!result.success) return res.status(404).json({ error: result.message });
+  return res.json({ success: true, message: result.message });
+});
 
-  return res.json(item);
+// GET /api/entities/:name/context — Full context for an entity
+app.get("/api/entities/:name/context", (req, res) => {
+  const context = getEntityContext(DATA_DIR, decodeURIComponent(req.params.name));
+  return res.json(context);
+});
+
+// GET /api/noise/learned — Get the learned noise list
+app.get("/api/noise/learned", (_req, res) => {
+  return res.json(getLearnedNoise(DATA_DIR));
 });
 
 // ─── Workspaces ──────────────────────────────────────────────────────────────
@@ -970,7 +997,7 @@ app.post("/api/ingest/manual", async (req, res) => {
 
 // POST /api/process/batch — Trigger batch processing of all unprocessed signals
 app.post("/api/process/batch", async (req, res) => {
-  const { max } = req.body as { max?: number };
+  const max = Number(req.query.limit ?? (req.body as { max?: number })?.max ?? 50);
   try {
     const result = await processBatch({
       dataDir: DATA_DIR,

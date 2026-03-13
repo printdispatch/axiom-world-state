@@ -36,9 +36,11 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@types/uuid": "^11.0.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "googleapis": "^171.4.0",
-    "openai": "^6.27.0"
+    "openai": "^6.27.0",
+    "uuid": "^13.0.0"
   }
 }

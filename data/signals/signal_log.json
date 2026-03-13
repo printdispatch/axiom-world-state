@@ -689,7 +689,7 @@
       ]
     },
     "received_at": "2026-03-12T12:27:43.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19ce1ba3fe9c3330",
@@ -709,7 +709,7 @@
       ]
     },
     "received_at": "2026-03-12T11:06:24.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19ce1ac4088ef422",
@@ -729,7 +729,7 @@
       ]
     },
     "received_at": "2026-03-12T10:51:27.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19ce051321386e3c",
@@ -749,7 +749,7 @@
       ]
     },
     "received_at": "2026-03-12T04:32:22.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19ce03963b92536c",
@@ -769,7 +769,7 @@
       ]
     },
     "received_at": "2026-03-12T04:06:13.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19ce015b2083a5cd",
@@ -789,7 +789,7 @@
       ]
     },
     "received_at": "2026-03-12T03:27:23.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdfa82873be96f",
@@ -809,7 +809,7 @@
       ]
     },
     "received_at": "2026-03-12T01:27:44.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdf7114c4c2639",
@@ -829,7 +829,7 @@
       ]
     },
     "received_at": "2026-03-12T00:27:34.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cded8b05143563",
@@ -849,7 +849,7 @@
       ]
     },
     "received_at": "2026-03-11T21:41:08.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdec7a0832c9aa",
@@ -869,7 +869,7 @@
       ]
     },
     "received_at": "2026-03-11T21:22:30.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdeb5326a41252",
@@ -889,7 +889,7 @@
       ]
     },
     "received_at": "2026-03-11T21:02:22.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdeb075b6c88de",
@@ -909,7 +909,7 @@
       ]
     },
     "received_at": "2026-03-11T20:57:10.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde7cd905f9959",
@@ -927,7 +927,7 @@
       ]
     },
     "received_at": "2026-03-11T20:00:49.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde6a73bda79d4",
@@ -947,7 +947,7 @@
       ]
     },
     "received_at": "2026-03-11T19:40:41.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde61340b10120",
@@ -967,7 +967,7 @@
       ]
     },
     "received_at": "2026-03-11T19:30:12.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde548508c337e",
@@ -985,7 +985,7 @@
       ]
     },
     "received_at": "2026-03-11T19:16:46.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde472326c2fe4",
@@ -1005,7 +1005,7 @@
       ]
     },
     "received_at": "2026-03-11T19:02:07.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde40d961d1fae",
@@ -1025,7 +1025,7 @@
       ]
     },
     "received_at": "2026-03-11T18:55:01.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde2170d933d66",
@@ -1043,7 +1043,7 @@
       ]
     },
     "received_at": "2026-03-11T18:20:59.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cde1d4532ba05c",
@@ -1061,7 +1061,7 @@
       ]
     },
     "received_at": "2026-03-11T18:16:24.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cddc9f8a9a8437",
@@ -1081,7 +1081,7 @@
       ]
     },
     "received_at": "2026-03-11T16:45:26.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cddba9b9ba335c",
@@ -1101,7 +1101,7 @@
       ]
     },
     "received_at": "2026-03-11T16:28:37.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdda9cbadf6fd8",
@@ -1121,7 +1121,7 @@
       ]
     },
     "received_at": "2026-03-11T16:10:16.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdda32ca40f027",
@@ -1141,7 +1141,7 @@
       ]
     },
     "received_at": "2026-03-11T16:03:03.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdd71d631e259d",
@@ -1161,7 +1161,7 @@
       ]
     },
     "received_at": "2026-03-11T15:09:10.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdd00c35b45d55",
@@ -1180,7 +1180,7 @@
       ]
     },
     "received_at": "2026-03-11T13:05:40.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdcfc6099614a8",
@@ -1200,7 +1200,7 @@
       ]
     },
     "received_at": "2026-03-11T13:00:49.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdcf8255773b0c",
@@ -1220,7 +1220,7 @@
       ]
     },
     "received_at": "2026-03-11T12:56:15.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdcc871def3d6f",
@@ -1240,7 +1240,7 @@
       ]
     },
     "received_at": "2026-03-11T12:04:08.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdc83f7b6d0b4e",
@@ -1260,7 +1260,7 @@
       ]
     },
     "received_at": "2026-03-11T10:49:21.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdc72ec1130610",
@@ -1280,7 +1280,7 @@
       ]
     },
     "received_at": "2026-03-11T10:30:44.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdaff6d222ae5e",
@@ -1300,7 +1300,7 @@
       ]
     },
     "received_at": "2026-03-11T03:44:50.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdaf2c0f0fad6c",
@@ -1318,7 +1318,7 @@
       ]
     },
     "received_at": "2026-03-11T03:31:06.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cdad8d7631d02f",
@@ -1338,7 +1338,7 @@
       ]
     },
     "received_at": "2026-03-11T03:02:48.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cda308e0b0036c",
@@ -1358,7 +1358,7 @@
       ]
     },
     "received_at": "2026-03-10T23:58:59.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd9f828cffe82a",
@@ -1378,7 +1378,7 @@
       ]
     },
     "received_at": "2026-03-10T22:57:24.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd9b1f31bfa550",
@@ -1398,7 +1398,7 @@
       ]
     },
     "received_at": "2026-03-10T21:40:43.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd972da1a2cd76",
@@ -1417,7 +1417,7 @@
       ]
     },
     "received_at": "2026-03-10T20:31:28.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd9533792c1abc",
@@ -1437,7 +1437,7 @@
       ]
     },
     "received_at": "2026-03-10T19:57:15.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd937654eadb3c",
@@ -1457,7 +1457,7 @@
       ]
     },
     "received_at": "2026-03-10T19:26:49.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd90c4a1dd5e70",
@@ -1475,7 +1475,7 @@
       ]
     },
     "received_at": "2026-03-10T18:39:47.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd8fbbde442832",
@@ -1495,7 +1495,7 @@
       ]
     },
     "received_at": "2026-03-10T18:21:25.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd8f851ff3e0c5",
@@ -1515,7 +1515,7 @@
       ]
     },
     "received_at": "2026-03-10T18:17:45.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd8ecdffef1eff",
@@ -1535,7 +1535,7 @@
       ]
     },
     "received_at": "2026-03-10T18:05:28.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd8e8f907b1ab9",
@@ -1555,7 +1555,7 @@
       ]
     },
     "received_at": "2026-03-10T18:01:08.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd8b009c7d0e44",
@@ -1575,7 +1575,7 @@
       ]
     },
     "received_at": "2026-03-10T16:59:00.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd7dbaf86d0c46",
@@ -1595,7 +1595,7 @@
       ]
     },
     "received_at": "2026-03-10T13:07:04.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd7b0ed75fbe61",
@@ -1614,7 +1614,7 @@
       ]
     },
     "received_at": "2026-03-10T12:20:21.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd75d1501b4ee7",
@@ -1634,7 +1634,7 @@
       ]
     },
     "received_at": "2026-03-10T10:48:46.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd5e69a61cf805",
@@ -1654,7 +1654,7 @@
       ]
     },
     "received_at": "2026-03-10T03:59:45.000Z",
-    "processed": false
+    "processed": true
   },
   {
     "id": "sig-gmail-19cd54160af0bdb6",
@@ -2934,6 +2934,26 @@
       ]
     },
     "received_at": "2026-03-13T18:24:50.000Z",
+    "processed": false
+  },
+  {
+    "id": "sig-gmail-19ce8abfecff58de",
+    "source": "gmail",
+    "adapter": "gmail",
+    "raw_content": "From: Movoto <customercare@email.movoto.com>\nSubject: 1 home in Frankfort IN with fresh updates for your review\nDate: Fri, 13 Mar 2026 19:28:29 +0000\n\nMovoto Saved Search /* Resets */ body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; } table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; } img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; display:block; } table { border-collapse:collapse !important; } body { margin:0 !important; padding:0 !important; width:100% !important; background:#f2f2f2; font-family:Helvetica, Arial, sans-serif; color:#212121; } .container { width:600px; margin:0 auto; } .padSide { padding-left:30px; padding-right:30px; } .cardOuter { border:1px solid #E6E6E6; border-radius:18px; overflow:hidden; background-color:#ffffff; width:100%; max-width:540px; } .labelRowOn { background-color:#00494F; color:#ffffff; height:32px; line-height:32px; font-size:12px; font-weight:650; text-transform:uppercase; padding:0 12px; mso-line-height-rule:exactly; letter-spacing:0.3px; } .hero1 { width:100%; max-width:540px; height:auto; } .detailPad { padding:12px 14px 14px 14px; } .price { font-size:20px; line-height:26px; font-weight:650; color:#212121; white-space:nowrap; } .stats { font-size:16px; line-height:22px; font-weight:600; color:#212121; white-space:nowrap; } .addr { font-size:15px; line-height:21px; color:#212121; padding-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; } .btn-main { background-color:#00494F; border:1px solid #00494F; border-radius:999px; color:#FFFFFF !important; display:inline-block; font-size:16px; line-height:44px; text-align:center; text-decoration:none; -webkit-text-size-adjust:none; font-weight:650; width:320px; } /* Edit Saved Search: responsive stacking (mobile only) */ .ess-left { width:340px; } .ess-right { width:200px; } .ess-img { width:200px; max-width:200px; height:auto; border-radius:14px; } @media only screen and (max-width:620px) { .container { width:100% !important; } .padSide { padding-left:16px !important; padding-right:16px !important; } .cardOuter { max-width:520px !important; } .hero1 { max-width:520px !important; width:100% !important; height:auto !important; } .btn-main { width:100% !important; max-width:420px !important; display:block !important; margin:0 auto !important; } .addr { white-space:normal !important; } /* Stack Edit Saved Search on mobile only */ .ess-stack { display:block !important; width:100% !important; } .ess-left, .ess-right { display:block !important; width:100% !important; } .ess-right { padding-top:14px !important; text-align:left !important; } .ess-right a { display:block !important; } .ess-img { margin:0 auto !important; } .ess-center { text-align:center !important; } } /* Dark Mode best effort (Mac Mail / iOS Mail) */ @media (prefers-color-scheme: dark) { body { background-color:#0f0f0f !important; color:#f2f2f2 !important; } .dmSurface { background-color:#1b1b1b !important; } .dmCard { background-color:#1f1f1f !important; border-color:#3a3a3a !important; } .dmText, .dmText a { color:#f2f2f2 !important; } .dmMuted { color:#bdbdbd !important; } /* Help buttons remain visible in forced-dark clients that honor this */ .dmBtnFill { background-color:#00494F !important; border-color:#00494F !important; } .dmBtnFill, .dmBtnFill span { color:#ffffff !important; } } [data-ogsc] body { background-color:#0f0f0f !important; color:#f2f2f2 !important; } [data-ogsc] .dmSurface { background-color:#1b1b1b !important; } [data-ogsc] .dmCard { background-color:#1f1f1f !important; border-color:#3a3a3a !important; } [data-ogsc] .dmText, [data-ogsc] .dmText a { color:#f2f2f2 !important; } [data-ogsc] .dmBtnFill { background-color:#00494F !important; border-color:#00494F !important; } [data-ogsc] .dmBtnFill, [data-ogsc] .dmBtnFill span { color:#ffffff !important; } Sale Pending in 46041 $120K 2Bd 1Ba . Single Family at 1210 S Columbia St &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp; 1 new match we think you’ll like Prices and status can change quickly — check your top matches now. PRICE DROP &#8595; $25K $120,000 2 Bd &nbsp;&nbsp;1 Ba &nbsp;&nbsp;936 Sqft 1210 S Columbia St, Frankfort, IN 46041 View All 1 Updates Take the next steps towards&nbsp;ownership Check your credit score A strong score may help you get a favorable mortgage rate. See My Credit Score Mortgage Preapproval Be ready to act fast on a home that fits. Get Preapproved Match with an agent Connect with the right agent for your real estate goals. Find an Agent &nbsp; &nbsp; Edit your saved&nbsp;search Looking for something else? Update “Frankfort IN” to receive listings meant for you. Edit Search Having trouble viewing this email? View it in your browser Need Help? &nbsp;&nbsp; |&nbsp;&nbsp; About Movoto &nbsp;&nbsp; |&nbsp;&nbsp; Privacy Policy &nbsp;&nbsp; |&nbsp;&nbsp; Terms &amp; Conditions Search for homes with the Movoto app. All Offerings OJO | Movoto | Movoto Homeowner Disclaimers: To make email notifications changes, click to manage your email notifications or unsubscribe from all Movoto emails. Copyright Movoto Real Estate © 2024 | All Rights Reserved | 1007 S Congress, Building 9, Suite 400, Austin, TX 78704 | (844) 417-0593 | Contact Us Real Estate License # : AL 000095484 | AK OFFICE2295 | AZ CO630616000 | AR PB00073784 | CA 01517281 | CO EC100028283 | CT REB.0790074 | DE RM-0020283 | FL CQ1032831 | GA 60521 | HI RB21289 | ID C041602 | IL 478025317 | IN RC51000616 | IA F05605000 | KS BR00041664 | KY 237831 | LA BROK.0995680614-CORP | ME AC90602763 | MD 5548 | MS 7976 | MI 6505359838 | MN 40351043 | MS 20647 | MO 2009034723 | MT RRE-BRO-LIC-12492 | NE 20120633 | NV B.0144395.CORP | NJ 900643 | NM 08661 | NY 10991202762 | NC C20694 | ND 9127 | OH REC.2011001469 | OK 157536 | OR 200812099 | PA RB066822 | RI REC.0016244 | SC 16857 | SD 13359 | TN 260939 | TX 583983 | UT 7345556-CN00 | VT 083.0091539-Main | VA #0226021488 | WA 17398 | WV 5047 | WI 936599-91 | WY 212100",
+    "metadata": {
+      "from": "Movoto <customercare@email.movoto.com>",
+      "subject": "1 home in Frankfort IN with fresh updates for your review",
+      "date": "2026-03-13T19:28:29.000Z",
+      "thread_id": "19ce8abfecff58de",
+      "message_id": "19ce8abfecff58de",
+      "labels": [
+        "UNREAD",
+        "CATEGORY_UPDATES",
+        "INBOX"
+      ]
+    },
+    "received_at": "2026-03-13T19:28:29.000Z",
     "processed": false
   }
 ]

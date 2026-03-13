@@ -203,14 +203,15 @@ function Avatar({ from, size = 44 }: { from: string; size?: number }) {
 
 // ─── Obligation Detail Sheet ──────────────────────────────────────────────────
 
-function ObligationSheet({ ob, onClose }: { ob: Obligation; onClose: () => void }) {
+function ObligationSheet({ ob, onClose, onResolve, onSnooze }: { ob: Obligation; onClose: () => void; onResolve?: (id: string) => void; onSnooze?: (id: string) => void }) {
+  const isOpen = ob.status === "open" || ob.status === "pending";
   return (
     <div className="sheet-overlay" onClick={onClose}>
       <div className="bottom-sheet" onClick={e => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-head">
           <div className="entity-avatar" style={{ background: priorityColor(ob.priority), width: 44, height: 44, minWidth: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 20 }}>✓</span>
+            <span style={{ fontSize: 20 }}>{isOpen ? "⏳" : "✓"}</span>
           </div>
           <div className="sheet-head-text">
             <div className="sheet-from">{ob.title}</div>
@@ -239,8 +240,30 @@ function ObligationSheet({ ob, onClose }: { ob: Obligation; onClose: () => void 
               </div>
             ))}
           </div>
+          {isOpen && (onResolve || onSnooze) && (
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              {onResolve && (
+                <button
+                  className="review-btn approve"
+                  style={{ flex: 1, padding: "12px 16px", fontSize: 14 }}
+                  onClick={() => onResolve(ob.id)}
+                >
+                  ✓ Mark Done
+                </button>
+              )}
+              {onSnooze && (
+                <button
+                  className="review-btn defer"
+                  style={{ flex: 1, padding: "12px 16px", fontSize: 14 }}
+                  onClick={() => onSnooze(ob.id)}
+                >
+                  ⏳ Snooze 3d
+                </button>
+              )}
+            </div>
+          )}
           <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "monospace" }}>
-            Signal: {ob.source_signal_id} · Created {timeAgo(ob.created_at)}
+            {ob.source_signal_id && `Signal: ${ob.source_signal_id} · `}Created {timeAgo(ob.created_at)}
           </div>
         </div>
       </div>
@@ -832,7 +855,7 @@ function WorldDashboard({ world, onObligationClick }: { world: WorldState; onObl
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "recipes" | "simulate" | "health" | "connect";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "connect" | "recipes" | "simulate";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "feed", label: "Signal Feed", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
@@ -843,7 +866,6 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "connect", label: "Connect", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
   { id: "recipes", label: "Automation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
   { id: "simulate", label: "Simulate", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
-  { id: "health", label: "System Health", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> },
 ];
 
 function Sidebar({ tab, setTab, pendingCount, onClose }: { tab: Tab; setTab: (t: Tab) => void; pendingCount: number; onClose: () => void }) {
@@ -1211,7 +1233,6 @@ export default function App() {
   const [worldState, setWorldState] = useState<WorldState | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [simulations, setSimulations] = useState<Simulation[]>([]);
-  const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [simForm, setSimForm] = useState({ name: "", kind: "obligation_resolved", target_id: "", description: "" });
   const [simRunning, setSimRunning] = useState(false);
@@ -1232,11 +1253,10 @@ export default function App() {
       fetch("/api/world").then(r => r.json()),
       fetch("/api/recipes").then(r => r.json()),
       fetch("/api/simulations").then(r => r.json()),
-      fetch("/api/health").then(r => r.json()),
-    ]).then(([s, o, e, c, sum, rv, ws, wd, rec, sims, health]) => {
+    ]).then(([s, o, e, c, sum, rv, ws, wd, rec, sims]) => {
       setSignals(s); setObligations(o); setEntities(e);
       setContradictions(c); setSummary(sum); setReviewItems(rv); setWorkspaces(ws); setWorldState(wd);
-      setRecipes(rec); setSimulations(sims); setHealthStatus(health);
+      setRecipes(rec); setSimulations(sims);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -1253,12 +1273,48 @@ export default function App() {
         body: JSON.stringify({ decision, note }),
       });
       if (res.ok) {
-        const updated = await res.json();
-        setReviewItems(prev => prev.map(r => r.id === id ? updated : r));
+        const data = await res.json() as { item: ReviewItem; obligation?: Obligation; message: string };
+        // Update the review item in state
+        setReviewItems(prev => prev.map(r => r.id === id ? (data.item || r) : r));
         setReviewNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
+        // If approve created a new obligation, add it to the tasks list
+        if (data.obligation) {
+          setObligations(prev => [data.obligation!, ...prev]);
+          setSummary(prev => prev ? { ...prev, open_obligations: prev.open_obligations + 1 } : prev);
+        }
       }
     } catch { /* ignore */ }
     setDecidingId(null);
+  };
+
+  const handleResolveObligation = async (id: string) => {
+    try {
+      const res = await fetch(`/api/obligations/${id}/resolve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        setObligations(prev => prev.map(o => o.id === id ? { ...o, status: "resolved" } : o));
+        setSummary(prev => prev ? { ...prev, open_obligations: Math.max(0, prev.open_obligations - 1) } : prev);
+        setSelectedObligation(null);
+      }
+    } catch { /* ignore */ }
+  };
+
+  const handleSnoozeObligation = async (id: string) => {
+    try {
+      const res = await fetch(`/api/obligations/${id}/snooze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days: 3 }),
+      });
+      if (res.ok) {
+        // Refresh obligations to get updated due date
+        fetch("/api/obligations").then(r => r.json()).then(setObligations).catch(() => {});
+        setSelectedObligation(null);
+      }
+    } catch { /* ignore */ }
   };
 
   const handleSelect = async (sig: Signal) => {
@@ -1444,19 +1500,17 @@ export default function App() {
                       onChange={e => setReviewNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
                     />
                     <div className="review-btn-row">
-                      {item.requires_approval && (
-                        <button className="review-btn approve" onClick={() => handleDecide(item.id, "approved")} disabled={decidingId === item.id}>
-                          ✓ Approve
-                        </button>
-                      )}
-                      <button className="review-btn reject" onClick={() => handleDecide(item.id, "rejected")} disabled={decidingId === item.id}>
-                        ✕ Reject
+                      <button className="review-btn approve" onClick={() => handleDecide(item.id, "approve")} disabled={decidingId === item.id} title="Creates a task from this item">
+                        ✓ Approve → Task
                       </button>
-                      <button className="review-btn resolve" onClick={() => handleDecide(item.id, "resolved")} disabled={decidingId === item.id}>
+                      <button className="review-btn resolve" onClick={() => handleDecide(item.id, "resolve")} disabled={decidingId === item.id} title="Mark as handled, no task needed">
                         ◎ Resolve
                       </button>
-                      <button className="review-btn defer" onClick={() => handleDecide(item.id, "deferred")} disabled={decidingId === item.id}>
-                        ⟳ Defer
+                      <button className="review-btn reject" onClick={() => handleDecide(item.id, "reject")} disabled={decidingId === item.id} title="Dismiss and teach noise filter">
+                        ✕ Reject
+                      </button>
+                      <button className="review-btn defer" onClick={() => handleDecide(item.id, "defer")} disabled={decidingId === item.id} title="Snooze for 7 days">
+                        ⟳ Defer 7d
                       </button>
                     </div>
                   </div>
@@ -1576,8 +1630,8 @@ export default function App() {
           </div>
         )}
 
-        {/* ── Health Tab ── */}
-        {!loading && tab === "health" && (
+        {/* Health tab removed — replaced by action-oriented Review/Tasks flow */}
+        {false && tab === ("health" as string) && (
           <div className="feed-list">
             <div className="section-title">System Health</div>
             {healthStatus && (
@@ -1676,7 +1730,12 @@ export default function App() {
 
       {/* ── Obligation Detail Sheet ── */}
       {selectedObligation && (
-        <ObligationSheet ob={selectedObligation as Obligation} onClose={() => setSelectedObligation(null)} />
+        <ObligationSheet
+          ob={selectedObligation as Obligation}
+          onClose={() => setSelectedObligation(null)}
+          onResolve={(selectedObligation as Obligation).status === "open" || (selectedObligation as Obligation).status === "pending" ? handleResolveObligation : undefined}
+          onSnooze={(selectedObligation as Obligation).status === "open" || (selectedObligation as Obligation).status === "pending" ? handleSnoozeObligation : undefined}
+        />
       )}
 
       {/* ── Workspace Detail Sheet ── */}
