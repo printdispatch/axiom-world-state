@@ -1,0 +1,58 @@
+[
+  {
+    "id": "sig-001",
+    "source": "gmail",
+    "raw_content": "Subject: Invoice #2024-089 — Meridian Coffee Brand Identity\n\nHi,\n\nPlease find attached Invoice #2024-089 for $4,200 for the completed brand identity work on the Meridian Coffee project. Payment is due April 11, 2026.\n\nBest,\nSarah Chen\nVertex Design Co",
+    "metadata": {
+      "from": "sarah@vertexdesign.com",
+      "subject": "Invoice #2024-089 — Meridian Coffee Brand Identity",
+      "date": "2026-03-10T09:15:00Z",
+      "thread_id": "thread-001"
+    },
+    "received_at": "2026-03-10T09:15:00Z",
+    "processed": true,
+    "adapter": "gmail"
+  },
+  {
+    "id": "sig-002",
+    "source": "gmail",
+    "raw_content": "Subject: Re: Harborview Restaurant — Logo Revisions\n\nHi,\n\nThank you for the updated logo files. We have reviewed them and have two minor revision requests before final approval:\n1. Slightly increase the font weight on the wordmark\n2. Try a warmer tone on the amber color\n\nPlease send revised files by March 20.\n\nRegards,\nMarcus Webb\nHarborview Restaurant Group",
+    "metadata": {
+      "from": "marcus@harborviewgroup.com",
+      "subject": "Re: Harborview Restaurant — Logo Revisions",
+      "date": "2026-03-11T14:30:00Z",
+      "thread_id": "thread-002"
+    },
+    "received_at": "2026-03-11T14:30:00Z",
+    "processed": true,
+    "adapter": "gmail"
+  },
+  {
+    "id": "sig-003",
+    "source": "gmail",
+    "raw_content": "Subject: 50% OFF Adobe Creative Cloud — Limited Time!\n\nDon't miss out on this exclusive offer...",
+    "metadata": {
+      "from": "noreply@adobe-offers.com",
+      "subject": "50% OFF Adobe Creative Cloud — Limited Time!",
+      "date": "2026-03-12T08:00:00Z",
+      "thread_id": "thread-003"
+    },
+    "received_at": "2026-03-12T08:00:00Z",
+    "processed": true,
+    "adapter": "gmail"
+  },
+  {
+    "id": "sig-004",
+    "source": "gmail",
+    "raw_content": "Subject: Contract Signed — Thornfield Bakery Rebrand\n\nHi,\n\nExcited to confirm that the contract for the Thornfield Bakery full rebrand has been signed. Project kickoff is scheduled for March 25, 2026. Budget is $12,500 as discussed.\n\nLooking forward to working together!\n\nElena Thornfield\nThornfield Bakery",
+    "metadata": {
+      "from": "elena@thornfieldbakery.com",
+      "subject": "Contract Signed — Thornfield Bakery Rebrand",
+      "date": "2026-03-13T10:00:00Z",
+      "thread_id": "thread-004"
+    },
+    "received_at": "2026-03-13T10:00:00Z",
+    "processed": true,
+    "adapter": "gmail"
+  }
+]

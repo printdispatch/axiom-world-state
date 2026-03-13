@@ -1,0 +1,10 @@
+{
+  "id": "proc-003", "signal_id": "sig-003", "processed_at": "2026-03-12T08:00:03Z",
+  "model": "gpt-5-pro", "is_noise": true,
+  "layer_1": { "is_noise": true, "raw_facts": [], "noise_reason": "Promotional marketing email — no actionable content" },
+  "layer_2": { "entity_candidates": [], "matched_entity_ids": [], "proposed_new_entities": [], "similarity_conflicts": [] },
+  "layer_3": { "state_updates": [], "unchanged_entities": [], "ambiguities": [] },
+  "layer_4": { "new_obligations": [], "updated_obligations": [], "dependency_changes": [] },
+  "layer_5": { "inferences": [], "risk_flags": [], "priority_estimates": [], "missing_information": [] },
+  "layer_6": { "proposed_actions": [], "any_requires_approval": false, "confidence": 0.99 }
+}

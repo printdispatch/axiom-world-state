@@ -1,0 +1,10 @@
+[
+  {"id": "ent-001", "canonical_name": "Sarah Chen", "domain": "person", "aliases": [{"value": "S. Chen", "source": "sig-001"}], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
+  {"id": "ent-002", "canonical_name": "Vertex Design Co", "domain": "organization", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
+  {"id": "ent-003", "canonical_name": "Meridian Coffee", "domain": "organization", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
+  {"id": "ent-004", "canonical_name": "Invoice #2024-089", "domain": "artifact", "aliases": [], "source_signal_id": "sig-001", "created_at": "2026-03-10T09:15:05Z", "superseded": false},
+  {"id": "ent-005", "canonical_name": "Marcus Webb", "domain": "person", "aliases": [], "source_signal_id": "sig-002", "created_at": "2026-03-11T14:30:05Z", "superseded": false},
+  {"id": "ent-006", "canonical_name": "Harborview Restaurant Group", "domain": "organization", "aliases": ["Harborview Restaurant"], "source_signal_id": "sig-002", "created_at": "2026-03-11T14:30:05Z", "superseded": false},
+  {"id": "ent-007", "canonical_name": "Elena Thornfield", "domain": "person", "aliases": [], "source_signal_id": "sig-004", "created_at": "2026-03-13T10:00:04Z", "superseded": false},
+  {"id": "ent-008", "canonical_name": "Thornfield Bakery", "domain": "organization", "aliases": [], "source_signal_id": "sig-004", "created_at": "2026-03-13T10:00:04Z", "superseded": false}
+]
