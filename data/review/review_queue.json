@@ -5,13 +5,19 @@
     "title": "Send payment confirmation reply to Sarah Chen",
     "description": "Agent proposes sending an email reply to sarah.chen@vertexdesign.co confirming receipt of Invoice #2024-089 for $4,200 and acknowledging the April 11 due date. This action sends an external email and cannot be undone.",
     "severity": "high",
-    "status": "pending",
+    "status": "reviewed",
     "signal_id": "sig-001",
-    "entity_ids": ["ent-001", "ent-002"],
+    "entity_ids": [
+      "ent-001",
+      "ent-002"
+    ],
     "action_description": "Reply to sarah.chen@vertexdesign.co: 'Hi Sarah, confirming receipt of Invoice #2024-089 for $4,200 due April 11. We will process payment by the due date.'",
     "action_risk": "high",
     "requires_approval": true,
-    "created_at": "2026-03-13T09:15:00Z"
+    "created_at": "2026-03-13T09:15:00Z",
+    "decision": "approved",
+    "decision_note": "",
+    "decided_at": "2026-03-13T16:54:42.031Z"
   },
   {
     "id": "rv-002",
@@ -19,11 +25,16 @@
     "title": "Ambiguous entity: J. Smith vs John Smith",
     "description": "A new signal references 'J. Smith' which partially matches existing entity 'John Smith' (similarity: 0.50). These may be the same person or different people. Please confirm whether to merge or keep separate.",
     "severity": "medium",
-    "status": "pending",
+    "status": "reviewed",
     "signal_id": "sig-003",
-    "entity_ids": ["ent-004"],
+    "entity_ids": [
+      "ent-004"
+    ],
     "requires_approval": false,
-    "created_at": "2026-03-13T09:22:00Z"
+    "created_at": "2026-03-13T09:22:00Z",
+    "decision": "resolved",
+    "decision_note": "Confirmed duplicate — merging",
+    "decided_at": "2026-03-13T17:16:52.339Z"
   },
   {
     "id": "rv-003",
@@ -31,11 +42,16 @@
     "title": "Conflicting project status for Meridian Coffee Co",
     "description": "Signal sig-001 indicates the Meridian Coffee Rebrand project is in 'final delivery' stage. Signal sig-004 references a 'kickoff meeting' for the same project. These two states are mutually exclusive.",
     "severity": "high",
-    "status": "pending",
+    "status": "reviewed",
     "signal_id": "sig-004",
-    "entity_ids": ["ent-003"],
+    "entity_ids": [
+      "ent-003"
+    ],
     "requires_approval": false,
-    "created_at": "2026-03-13T09:30:00Z"
+    "created_at": "2026-03-13T09:30:00Z",
+    "decision": "resolved",
+    "decision_note": "",
+    "decided_at": "2026-03-13T16:55:00.219Z"
   },
   {
     "id": "rv-004",

@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import KnowledgeGraph from "./KnowledgeGraph";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -86,20 +85,58 @@ interface HealthStatus {
 interface ReviewItem {
   id: string;
   kind: "entity_conflict" | "high_risk_action" | "contradiction" | "low_confidence";
-  title: string;
-  description: string;
+  title: string; description: string;
   severity: "low" | "medium" | "high" | "critical";
   status: "pending" | "reviewed";
-  decision?: string;
-  decision_note?: string;
-  decided_at?: string;
-  signal_id: string;
-  entity_ids?: string[];
-  action_description?: string;
-  action_risk?: string;
-  requires_approval: boolean;
-  created_at: string;
+  decision?: string; decision_note?: string; decided_at?: string;
+  signal_id: string; entity_ids?: string[];
+  action_description?: string; action_risk?: string;
+  requires_approval: boolean; created_at: string;
   metadata?: Record<string, unknown>;
+}
+interface Workspace {
+  id: string; name: string; description?: string; status: string;
+  client_name?: string; entity_ids: string[]; signal_ids: string[];
+  obligation_ids: string[]; tags: string[];
+  created_at: string; updated_at: string; last_activity_at?: string;
+  signals?: Signal[]; entities?: Entity[];
+  obligations?: Obligation[]; state_updates?: StateUpdate[];
+}
+interface WorldSummary {
+  total_signals: number; total_entities: number; open_obligations: number;
+  overdue_obligations: number; active_contradictions: number; pending_review: number;
+  active_workspaces: number; health_score: number;
+}
+interface WorldObligation {
+  id: string; title: string; status: string; priority: string;
+  due_date?: string; due_hint?: string; owed_by?: string; owed_to?: string;
+  workspace_hint?: string; created_at: string;
+}
+interface WorldActivity {
+  id: string; entity_label: string; field: string; new_value: string;
+  mutated_at: string; signal_id: string;
+}
+interface WorldContradiction {
+  id: string; description: string; resolved: boolean;
+  entity_label?: string; signal_ids?: string[]; created_at: string;
+}
+interface ActiveEntity {
+  id: string; canonical_name: string; domain: string;
+  update_count: number; updated_at: string;
+}
+interface WorldState {
+  summary: WorldSummary;
+  open_obligations: WorldObligation[];
+  overdue_obligations: WorldObligation[];
+  active_contradictions: WorldContradiction[];
+  most_active_entities: ActiveEntity[];
+  recent_activity: WorldActivity[];
+  review_by_severity: { critical: number; high: number; medium: number; low: number };
+  workspaces: Workspace[];
+}
+interface IngestConnection {
+  id: string; kind: "gmail" | "manual" | "webhook"; label: string;
+  status: "connected" | "disconnected" | "pending"; connected_at?: string;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -164,6 +201,53 @@ function Avatar({ from, size = 44 }: { from: string; size?: number }) {
   );
 }
 
+// ─── Obligation Detail Sheet ──────────────────────────────────────────────────
+
+function ObligationSheet({ ob, onClose }: { ob: Obligation; onClose: () => void }) {
+  return (
+    <div className="sheet-overlay" onClick={onClose}>
+      <div className="bottom-sheet" onClick={e => e.stopPropagation()}>
+        <div className="sheet-handle" />
+        <div className="sheet-head">
+          <div className="entity-avatar" style={{ background: priorityColor(ob.priority), width: 44, height: 44, minWidth: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 20 }}>✓</span>
+          </div>
+          <div className="sheet-head-text">
+            <div className="sheet-from">{ob.title}</div>
+            <div className="sheet-meta">{ob.status} · {ob.priority} priority</div>
+          </div>
+          <button className="sheet-close" onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div style={{ padding: "14px 16px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {ob.description && (
+            <div style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.5 }}>{ob.description}</div>
+          )}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {[
+              { label: "Owed By", value: ob.owed_by },
+              { label: "Owed To", value: ob.owed_to },
+              { label: "Priority", value: ob.priority },
+              { label: "Status", value: ob.status },
+              ob.due_hint ? { label: "Due", value: ob.due_hint } : null,
+              ob.workspace_hint ? { label: "Workspace", value: ob.workspace_hint } : null,
+            ].filter(Boolean).map((row) => (
+              <div key={row!.label} style={{ background: "var(--bg3)", borderRadius: 10, padding: "10px 12px" }}>
+                <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>{row!.label}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{row!.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "monospace" }}>
+            Signal: {ob.source_signal_id} · Created {timeAgo(ob.created_at)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Signal Card ──────────────────────────────────────────────────────────────
 
 function SignalCard({ signal, isSelected, onClick }: { signal: Signal; isSelected: boolean; onClick: () => void }) {
@@ -187,17 +271,6 @@ function SignalCard({ signal, isSelected, onClick }: { signal: Signal; isSelecte
           <span className="badge src">{signal.source}</span>
           {isNoise && <span className="badge noise">noise</span>}
           {!isNoise && <span className="badge ok">processed</span>}
-        </div>
-        <div className="card-actions">
-          <button className="icon-btn" onClick={e => e.stopPropagation()}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          </button>
-          <button className="icon-btn" onClick={e => e.stopPropagation()}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 6 9 17l-5-5"/></svg>
-          </button>
-          <button className="icon-btn" onClick={e => e.stopPropagation()}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-          </button>
         </div>
       </div>
     </div>
@@ -336,7 +409,6 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
     <div className="sheet-overlay" onClick={onClose}>
       <div className="bottom-sheet" onClick={e => e.stopPropagation()}>
         <div className="sheet-handle" />
-        {/* Header */}
         <div className="sheet-head">
           <div className="entity-avatar" style={{ background: domainColor(entity.domain) }}>
             <span style={{ fontSize: 22 }}>{domainIcon(entity.domain)}</span>
@@ -349,8 +421,6 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
-
-        {/* Sub-tabs */}
         <div className="entity-tabs">
           {(["overview", "provenance", "obligations"] as const).map(t => (
             <button key={t} className={`entity-tab${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>
@@ -358,85 +428,66 @@ function EntityProfile({ entity, onClose }: { entity: Entity; onClose: () => voi
             </button>
           ))}
         </div>
-
-        {/* Overview */}
-        {activeTab === "overview" && (
-          <div className="entity-body">
-            {entity.email && (
-              <div className="detail-row"><span className="d-sub">Email</span><span className="d-main">{entity.email}</span></div>
-            )}
-            {entity.organization && (
-              <div className="detail-row"><span className="d-sub">Organization</span><span className="d-main">{entity.organization}</span></div>
-            )}
-            {entity.role && (
-              <div className="detail-row"><span className="d-sub">Role</span><span className="d-main">{entity.role}</span></div>
-            )}
-            <div className="detail-row">
-              <span className="d-sub">Domain</span>
-              <span className="d-main" style={{ color: domainColor(entity.domain) }}>{entity.domain}</span>
-            </div>
-            <div className="detail-row">
-              <span className="d-sub">First seen</span>
-              <span className="d-main">{new Date(entity.created_at).toLocaleString()}</span>
-            </div>
-            {entity.aliases.length > 0 && (
-              <div className="detail-row">
-                <span className="d-sub">Also known as</span>
-                <div className="alias-chips">
-                  {entity.aliases.map((a, i) => (
-                    <span key={i} className="alias-chip">{a.value}</span>
-                  ))}
-                </div>
+        <div className="entity-body">
+          {activeTab === "overview" && (
+            <>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                {[
+                  { label: "Domain", value: entity.domain },
+                  { label: "Aliases", value: entity.aliases.length.toString() },
+                  entity.email ? { label: "Email", value: entity.email } : null,
+                  entity.organization ? { label: "Org", value: entity.organization } : null,
+                  entity.role ? { label: "Role", value: entity.role } : null,
+                ].filter(Boolean).map(row => (
+                  <div key={row!.label} style={{ background: "var(--bg3)", borderRadius: 10, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>{row!.label}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row!.value}</div>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Provenance Trace */}
-        {activeTab === "provenance" && (
-          <div className="entity-body">
-            {loadingProv && <div className="loader"><div className="spinner" /></div>}
-            {!loadingProv && !prov && <div className="detail-note">No provenance data available.</div>}
-            {!loadingProv && prov && prov.state_updates.length === 0 && (
-              <div className="detail-note">No state changes recorded for this entity yet.</div>
-            )}
-            {!loadingProv && prov && prov.state_updates.map((u, i) => (
-              <div key={i} className="prov-row">
-                <div className="prov-line" />
-                <div className="prov-content">
-                  <div className="prov-field">{u.field} → <span className="prov-value">{u.new_value}</span></div>
-                  <div className="prov-source">{u.source_fact}</div>
-                  {u.mutated_at && <div className="prov-time">{new Date(u.mutated_at).toLocaleString()}</div>}
-                  {u.signal_id && (
-                    <div className="prov-signal-ref">
-                      from signal: <span className="prov-signal-id">{u.signal_id}</span>
+              {entity.aliases.length > 0 && (
+                <>
+                  <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Known As</div>
+                  <div className="alias-chips">
+                    {entity.aliases.map((a, i) => (
+                      <span key={i} className="alias-chip">{a.value}</span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          {activeTab === "provenance" && (
+            loadingProv ? <div className="detail-note">Loading provenance…</div>
+            : !prov || prov.state_updates.length === 0
+              ? <div className="detail-note">No state changes recorded yet.</div>
+              : prov.state_updates.map((u, i) => (
+                  <div key={i} className="prov-row">
+                    <div className="prov-line" />
+                    <div className="prov-content">
+                      <div className="prov-field">{u.field} <span className="prov-value">→ {u.new_value}</span></div>
+                      <div className="prov-source">{u.source_fact}</div>
+                      {u.mutated_at && <div className="prov-time">{timeAgo(u.mutated_at)}</div>}
+                      {u.signal_id && <div className="prov-signal-ref">from <span className="prov-signal-id">{u.signal_id}</span></div>}
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Obligations */}
-        {activeTab === "obligations" && (
-          <div className="entity-body">
-            {loadingProv && <div className="loader"><div className="spinner" /></div>}
-            {!loadingProv && prov && prov.obligations.length === 0 && (
-              <div className="detail-note">No obligations linked to this entity.</div>
-            )}
-            {!loadingProv && prov && prov.obligations.map((ob, i) => (
-              <div key={i} className="detail-row">
-                <span className="d-main" style={{ color: priorityColor(ob.priority) }}>● {ob.title}</span>
-                <span className="d-sub">{ob.owed_by} → {ob.owed_to}</span>
-                <div className="action-chips">
-                  <span className="chip" style={{ color: ob.status === "open" ? "#FF9500" : "#34C759" }}>{ob.status}</span>
-                  <span className="chip">{ob.priority}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  </div>
+                ))
+          )}
+          {activeTab === "obligations" && (
+            loadingProv ? <div className="detail-note">Loading…</div>
+            : !prov || prov.obligations.length === 0
+              ? <div className="detail-note">No obligations linked to this entity.</div>
+              : prov.obligations.map((ob, i) => (
+                  <div key={i} className="ob-card">
+                    <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
+                    <div className="ob-body">
+                      <div className="ob-title">{ob.title}</div>
+                      <div className="ob-meta">{ob.owed_by} → {ob.owed_to} · {ob.status}</div>
+                    </div>
+                  </div>
+                ))
+          )}
+        </div>
       </div>
     </div>
   );
@@ -483,38 +534,17 @@ function ContraCard({ c }: { c: Contradiction }) {
 
 // ─── Obligation Card ──────────────────────────────────────────────────────────
 
-function ObCard({ ob }: { ob: Obligation }) {
+function ObCard({ ob, onClick }: { ob: Obligation; onClick?: () => void }) {
   return (
-    <div className="ob-card">
+    <div className={`ob-card${onClick ? " ob-card-clickable" : ""}`} onClick={onClick}>
       <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
       <div className="ob-body">
         <div className="ob-title">{ob.title}</div>
         <div className="ob-meta">{ob.owed_by} → {ob.owed_to}{ob.due_hint ? ` · ${ob.due_hint}` : ""}</div>
       </div>
+      {onClick && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text3)", flexShrink: 0, marginTop: 2 }}><path d="m9 18 6-6-6-6"/></svg>}
     </div>
   );
-}
-
-// ─── Workspace Types ─────────────────────────────────────────────────────────
-
-interface Workspace {
-  id: string;
-  name: string;
-  description?: string;
-  status: string;
-  client_name?: string;
-  entity_ids: string[];
-  signal_ids: string[];
-  obligation_ids: string[];
-  tags: string[];
-  created_at: string;
-  updated_at: string;
-  last_activity_at?: string;
-  // enriched fields from /api/workspaces/:id
-  signals?: Signal[];
-  entities?: Entity[];
-  obligations?: Obligation[];
-  state_updates?: StateUpdate[];
 }
 
 // ─── Workspace Card ───────────────────────────────────────────────────────────
@@ -593,15 +623,17 @@ function WorkspaceSheet({ ws, onClose }: { ws: Workspace; onClose: () => void })
             </button>
           ))}
         </div>
-        <div className="sheet-scroll">
+        <div style={{ overflowY: "auto", padding: "8px 0 24px" }}>
           {wsTab === "signals" && (
             <div>
               {!d.signals || d.signals.length === 0
                 ? <div className="empty-msg">No signals linked yet.</div>
                 : d.signals.map(sig => (
-                  <div key={sig.id} className="prov-entry">
-                    <div className="prov-field">{sig.metadata?.subject || "No subject"}</div>
-                    <div className="prov-val">{sig.metadata?.from || sig.source} · {timeAgo(sig.received_at)}</div>
+                  <div key={sig.id} className="prov-row" style={{ padding: "10px 16px" }}>
+                    <div className="prov-content">
+                      <div className="prov-field">{sig.metadata?.subject || "No subject"}</div>
+                      <div className="prov-source">{sig.metadata?.from || sig.source} · {timeAgo(sig.received_at)}</div>
+                    </div>
                   </div>
                 ))
               }
@@ -638,9 +670,11 @@ function WorkspaceSheet({ ws, onClose }: { ws: Workspace; onClose: () => void })
               {!d.state_updates || d.state_updates.length === 0
                 ? <div className="empty-msg">No state updates yet.</div>
                 : d.state_updates.map((u, i) => (
-                  <div key={i} className="prov-entry">
-                    <div className="prov-field">{u.entity_label} · {u.field}</div>
-                    <div className="prov-val">{String(u.new_value)}</div>
+                  <div key={i} className="prov-row" style={{ padding: "10px 16px" }}>
+                    <div className="prov-content">
+                      <div className="prov-field">{u.entity_label} · {u.field}</div>
+                      <div className="prov-source">{String(u.new_value)}</div>
+                    </div>
                   </div>
                 ))
               }
@@ -650,41 +684,6 @@ function WorkspaceSheet({ ws, onClose }: { ws: Workspace; onClose: () => void })
       </div>
     </div>
   );
-}
-
-// ─── World State Dashboard Types ────────────────────────────────────────────
-
-interface WorldSummary {
-  total_signals: number; total_entities: number; open_obligations: number;
-  overdue_obligations: number; active_contradictions: number; pending_review: number;
-  active_workspaces: number; health_score: number;
-}
-interface WorldObligation {
-  id: string; title: string; status: string; priority: string;
-  due_date?: string; due_hint?: string; owed_by?: string; owed_to?: string;
-  workspace_hint?: string; created_at: string;
-}
-interface WorldActivity {
-  id: string; entity_label: string; field: string; new_value: string;
-  mutated_at: string; signal_id: string;
-}
-interface WorldContradiction {
-  id: string; description: string; resolved: boolean;
-  entity_label?: string; signal_ids?: string[]; created_at: string;
-}
-interface ActiveEntity {
-  id: string; canonical_name: string; domain: string;
-  update_count: number; updated_at: string;
-}
-interface WorldState {
-  summary: WorldSummary;
-  open_obligations: WorldObligation[];
-  overdue_obligations: WorldObligation[];
-  active_contradictions: WorldContradiction[];
-  most_active_entities: ActiveEntity[];
-  recent_activity: WorldActivity[];
-  review_by_severity: { critical: number; high: number; medium: number; low: number };
-  workspaces: Workspace[];
 }
 
 // ─── Health Ring ─────────────────────────────────────────────────────────────
@@ -711,68 +710,69 @@ function HealthRing({ score }: { score: number }) {
 
 // ─── World State Dashboard ────────────────────────────────────────────────────
 
-function WorldDashboard({ world }: { world: WorldState }) {
+function WorldDashboard({ world, onObligationClick }: { world: WorldState; onObligationClick: (ob: WorldObligation) => void }) {
   const s = world.summary;
+  const maxUpdates = Math.max(1, ...world.most_active_entities.map(e => e.update_count));
   return (
     <div className="feed-list">
-      <div className="section-title">World State</div>
-
+      {/* Health card */}
       <div className="world-health-card">
         <HealthRing score={s.health_score} />
         <div className="world-stats-grid">
-          <div className="world-stat"><span className="world-stat-num">{s.total_signals}</span><span className="world-stat-lbl">Signals</span></div>
-          <div className="world-stat"><span className="world-stat-num">{s.total_entities}</span><span className="world-stat-lbl">Entities</span></div>
-          <div className="world-stat" style={{ color: s.open_obligations > 0 ? "#FF9500" : "var(--text1)" }}>
-            <span className="world-stat-num">{s.open_obligations}</span><span className="world-stat-lbl">Open</span>
-          </div>
-          <div className="world-stat" style={{ color: s.overdue_obligations > 0 ? "#FF3B30" : "var(--text1)" }}>
-            <span className="world-stat-num">{s.overdue_obligations}</span><span className="world-stat-lbl">Overdue</span>
-          </div>
-          <div className="world-stat" style={{ color: s.active_contradictions > 0 ? "#FF3B30" : "var(--text1)" }}>
-            <span className="world-stat-num">{s.active_contradictions}</span><span className="world-stat-lbl">Conflicts</span>
-          </div>
-          <div className="world-stat" style={{ color: s.pending_review > 0 ? "#FFD60A" : "var(--text1)" }}>
-            <span className="world-stat-num">{s.pending_review}</span><span className="world-stat-lbl">Review</span>
-          </div>
+          {[
+            { num: s.total_signals, lbl: "Signals" },
+            { num: s.total_entities, lbl: "Entities" },
+            { num: s.open_obligations, lbl: "Open", warn: s.open_obligations > 0 },
+            { num: s.overdue_obligations, lbl: "Overdue", warn: s.overdue_obligations > 0 },
+            { num: s.active_contradictions, lbl: "Conflicts", warn: s.active_contradictions > 0 },
+            { num: s.active_workspaces, lbl: "Workspaces" },
+          ].map(({ num, lbl, warn }) => (
+            <div key={lbl} className="world-stat">
+              <span className="world-stat-num" style={warn ? { color: "#FF9500" } : {}}>{num}</span>
+              <span className="world-stat-lbl">{lbl}</span>
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* Overdue obligations */}
       {world.overdue_obligations.length > 0 && (
         <>
-          <div className="section-title" style={{ color: "#FF3B30" }}>🔴 Overdue</div>
+          <div className="section-title" style={{ color: "#FF3B30" }}>⚠ Overdue</div>
           {world.overdue_obligations.map(ob => (
-            <div key={ob.id} className="world-ob-card overdue">
+            <div key={ob.id} className="world-ob-card overdue" style={{ cursor: "pointer" }} onClick={() => onObligationClick(ob)}>
               <div className="ob-dot" style={{ background: "#FF3B30" }} />
+              <div className="ob-body">
+                <div className="ob-title">{ob.title}</div>
+                <div className="ob-meta">{ob.owed_by} → {ob.owed_to}{ob.due_date ? ` · due ${new Date(ob.due_date).toLocaleDateString()}` : ""}</div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text3)", flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Open obligations */}
+      {world.open_obligations.length > 0 && (
+        <>
+          <div className="section-title">Open Tasks</div>
+          {world.open_obligations.slice(0, 5).map(ob => (
+            <div key={ob.id} className="world-ob-card" style={{ cursor: "pointer" }} onClick={() => onObligationClick(ob)}>
+              <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
               <div className="ob-body">
                 <div className="ob-title">{ob.title}</div>
                 <div className="ob-meta">{ob.owed_by} → {ob.owed_to}{ob.due_hint ? ` · ${ob.due_hint}` : ""}</div>
               </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text3)", flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
             </div>
           ))}
         </>
       )}
 
-      {world.open_obligations.length > 0 && (
-        <>
-          <div className="section-title">Open Obligations</div>
-          {world.open_obligations.map(ob => (
-            <div key={ob.id} className="world-ob-card">
-              <div className="ob-dot" style={{ background: priorityColor(ob.priority) }} />
-              <div className="ob-body">
-                <div className="ob-title">{ob.title}</div>
-                <div className="ob-meta">
-                  <span className="badge" style={{ background: priorityColor(ob.priority) + "22", color: priorityColor(ob.priority), marginRight: 6 }}>{ob.priority}</span>
-                  {ob.owed_by} → {ob.owed_to}{ob.due_hint ? ` · ${ob.due_hint}` : ""}
-                </div>
-              </div>
-            </div>
-          ))}
-        </>
-      )}
-
+      {/* Active contradictions */}
       {world.active_contradictions.length > 0 && (
         <>
-          <div className="section-title" style={{ color: "#FF3B30" }}>⚡ Active Contradictions</div>
+          <div className="section-title" style={{ color: "#FF9500" }}>Active Contradictions</div>
           {world.active_contradictions.map(c => (
             <div key={c.id} className="contra-card">
               <div className="contra-icon">⚡</div>
@@ -785,26 +785,28 @@ function WorldDashboard({ world }: { world: WorldState }) {
         </>
       )}
 
+      {/* Most active entities */}
       {world.most_active_entities.length > 0 && (
         <>
           <div className="section-title">Most Active Entities</div>
           {world.most_active_entities.map(e => (
             <div key={e.id} className="world-entity-row">
-              <div className="entity-avatar-sm" style={{ background: domainColor(e.domain) }}>
-                <span>{domainIcon(e.domain)}</span>
+              <div className="entity-avatar-sm" style={{ background: domainColor(e.domain), width: 36, height: 36, minWidth: 36 }}>
+                <span style={{ fontSize: 16 }}>{domainIcon(e.domain)}</span>
               </div>
               <div className="world-entity-body">
-                <div className="entity-name">{e.canonical_name}</div>
-                <div className="entity-meta">{e.domain} · {e.update_count} update{e.update_count !== 1 ? "s" : ""}</div>
+                <div className="entity-name" style={{ fontSize: 14 }}>{e.canonical_name}</div>
+                <div className="entity-meta">{e.update_count} update{e.update_count !== 1 ? "s" : ""}</div>
               </div>
               <div className="world-entity-bar-wrap">
-                <div className="world-entity-bar" style={{ width: `${Math.min(100, e.update_count * 20)}%`, background: domainColor(e.domain) }} />
+                <div className="world-entity-bar" style={{ width: `${Math.min(100, (e.update_count / maxUpdates) * 100)}%`, background: domainColor(e.domain) }} />
               </div>
             </div>
           ))}
         </>
       )}
 
+      {/* Recent activity */}
       {world.recent_activity.length > 0 && (
         <>
           <div className="section-title">Recent Activity</div>
@@ -825,9 +827,230 @@ function WorldDashboard({ world }: { world: WorldState }) {
   );
 }
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "graph" | "recipes" | "simulate" | "health";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "recipes" | "simulate" | "health" | "connect";
+
+const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: "feed", label: "Signal Feed", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+  { id: "tasks", label: "Tasks", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> },
+  { id: "review", label: "Review Queue", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+  { id: "entities", label: "Entities", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg> },
+  { id: "world", label: "World State", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> },
+  { id: "connect", label: "Connect", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
+  { id: "recipes", label: "Automation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
+  { id: "simulate", label: "Simulate", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
+  { id: "health", label: "System Health", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> },
+];
+
+function Sidebar({ tab, setTab, pendingCount, onClose }: { tab: Tab; setTab: (t: Tab) => void; pendingCount: number; onClose: () => void }) {
+  return (
+    <>
+      <div className="sidebar-overlay" onClick={onClose} />
+      <div className="sidebar">
+        <div className="sidebar-head">
+          <div className="topbar-logo">
+            <span className="logo-mark">◈</span>
+            <span className="logo-name">Axiom</span>
+          </div>
+          <button className="sheet-close" onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <nav className="sidebar-nav">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              className={`sidebar-item${tab === item.id ? " active" : ""}`}
+              onClick={() => { setTab(item.id); onClose(); }}
+            >
+              <span className="sidebar-icon">{item.icon}</span>
+              <span className="sidebar-label">{item.label}</span>
+              {item.id === "review" && pendingCount > 0 && (
+                <span className="sidebar-badge">{pendingCount}</span>
+              )}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <div style={{ fontSize: 12, color: "var(--text3)" }}>Axiom World State</div>
+          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>v0.13.0</div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Search Bar ───────────────────────────────────────────────────────────────
+
+function SearchBar({ query, setQuery, onClose }: { query: string; setQuery: (q: string) => void; onClose: () => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { inputRef.current?.focus(); }, []);
+  return (
+    <div className="search-bar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ color: "var(--text3)", flexShrink: 0 }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input
+        ref={inputRef}
+        className="search-input"
+        placeholder="Search signals, entities, tasks…"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+      />
+      {query && (
+        <button className="search-clear" onClick={() => setQuery("")}>✕</button>
+      )}
+      <button className="search-cancel" onClick={() => { setQuery(""); onClose(); }}>Cancel</button>
+    </div>
+  );
+}
+
+// ─── Connect Tab ──────────────────────────────────────────────────────────────
+
+function ConnectTab({ onIngest }: { onIngest: (signal: Signal) => void }) {
+  const [connections, setConnections] = useState<IngestConnection[]>([
+    { id: "gmail-1", kind: "gmail", label: "Gmail", status: "disconnected" },
+    { id: "manual-1", kind: "manual", label: "Manual Paste", status: "connected" },
+  ]);
+  const [pasteText, setPasteText] = useState("");
+  const [pasteFrom, setPasteFrom] = useState("");
+  const [pasteSubject, setPasteSubject] = useState("");
+  const [ingesting, setIngesting] = useState(false);
+  const [ingestResult, setIngestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const handleGmailConnect = () => {
+    // Open the Gmail OAuth flow
+    window.open("/api/connect/gmail/auth", "_blank", "width=500,height=600");
+    // Poll for connection status
+    const poll = setInterval(async () => {
+      try {
+        const r = await fetch("/api/connect/gmail/status");
+        if (r.ok) {
+          const data = await r.json() as { connected: boolean };
+          if (data.connected) {
+            setConnections(prev => prev.map(c => c.id === "gmail-1" ? { ...c, status: "connected", connected_at: new Date().toISOString() } : c));
+            clearInterval(poll);
+          }
+        }
+      } catch { /* ignore */ }
+    }, 2000);
+    setTimeout(() => clearInterval(poll), 60000);
+  };
+
+  const handleManualIngest = async () => {
+    if (!pasteText.trim()) return;
+    setIngesting(true);
+    setIngestResult(null);
+    try {
+      const res = await fetch("/api/ingest/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          raw_content: pasteText,
+          from: pasteFrom || "manual@paste",
+          subject: pasteSubject || "Manual ingest",
+        }),
+      });
+      if (res.ok) {
+        const signal = await res.json() as Signal;
+        onIngest(signal);
+        setPasteText("");
+        setPasteFrom("");
+        setPasteSubject("");
+        setIngestResult({ ok: true, message: `Signal ${signal.id} ingested successfully.` });
+      } else {
+        const err = await res.json() as { error?: string };
+        setIngestResult({ ok: false, message: err.error || "Ingest failed." });
+      }
+    } catch (e) {
+      setIngestResult({ ok: false, message: "Network error — is the API server running?" });
+    }
+    setIngesting(false);
+  };
+
+  return (
+    <div className="feed-list">
+      <div className="section-title">Ingest Connections</div>
+
+      {/* Connection cards */}
+      {connections.map(conn => (
+        <div key={conn.id} className="connect-card">
+          <div className="connect-icon">
+            {conn.kind === "gmail" ? "✉️" : conn.kind === "webhook" ? "🔗" : "📋"}
+          </div>
+          <div className="connect-body">
+            <div className="connect-name">{conn.label}</div>
+            <div className="connect-status" style={{ color: conn.status === "connected" ? "#34C759" : conn.status === "pending" ? "#FF9500" : "var(--text3)" }}>
+              {conn.status === "connected" ? "● Connected" : conn.status === "pending" ? "◌ Pending" : "○ Not connected"}
+              {conn.connected_at && ` · since ${new Date(conn.connected_at).toLocaleDateString()}`}
+            </div>
+          </div>
+          {conn.kind === "gmail" && conn.status !== "connected" && (
+            <button className="connect-btn" onClick={handleGmailConnect}>Connect</button>
+          )}
+          {conn.kind === "gmail" && conn.status === "connected" && (
+            <button className="connect-btn connect-btn-danger" onClick={() => setConnections(prev => prev.map(c => c.id === conn.id ? { ...c, status: "disconnected" } : c))}>Disconnect</button>
+          )}
+        </div>
+      ))}
+
+      {/* Manual paste ingest */}
+      <div className="section-title" style={{ marginTop: 8 }}>Manual Email Ingest</div>
+      <div className="review-card">
+        <div className="review-title" style={{ marginBottom: 12 }}>Paste an email to ingest it as a signal</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <input
+            className="review-note-input"
+            style={{ padding: "8px 12px" }}
+            placeholder="From (e.g. client@example.com)"
+            value={pasteFrom}
+            onChange={e => setPasteFrom(e.target.value)}
+          />
+          <input
+            className="review-note-input"
+            style={{ padding: "8px 12px" }}
+            placeholder="Subject"
+            value={pasteSubject}
+            onChange={e => setPasteSubject(e.target.value)}
+          />
+          <textarea
+            className="review-note-input"
+            style={{ padding: "10px 12px", minHeight: 120, resize: "vertical", fontFamily: "inherit", lineHeight: 1.5 }}
+            placeholder="Paste email body here…"
+            value={pasteText}
+            onChange={e => setPasteText(e.target.value)}
+          />
+          <button
+            className="review-btn approve"
+            style={{ alignSelf: "flex-start", padding: "10px 20px" }}
+            disabled={ingesting || !pasteText.trim()}
+            onClick={handleManualIngest}
+          >
+            {ingesting ? "Ingesting…" : "Ingest Signal"}
+          </button>
+          {ingestResult && (
+            <div style={{ fontSize: 13, color: ingestResult.ok ? "#34C759" : "#FF3B30", padding: "8px 12px", background: ingestResult.ok ? "rgba(52,199,89,0.08)" : "rgba(255,59,48,0.08)", borderRadius: 8 }}>
+              {ingestResult.message}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Webhook info */}
+      <div className="section-title" style={{ marginTop: 8 }}>Webhook Endpoint</div>
+      <div className="review-card">
+        <div className="review-desc">POST raw email payloads to this endpoint to ingest them programmatically:</div>
+        <div style={{ background: "var(--bg3)", borderRadius: 8, padding: "10px 12px", marginTop: 8, fontFamily: "monospace", fontSize: 12, color: "var(--accent)", wordBreak: "break-all" }}>
+          POST /api/ingest/manual
+        </div>
+        <div className="review-desc" style={{ marginTop: 8 }}>
+          Body: <code style={{ fontFamily: "monospace", background: "var(--bg3)", padding: "1px 5px", borderRadius: 4 }}>{"{ from, subject, raw_content }"}</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("feed");
@@ -839,8 +1062,10 @@ export default function App() {
   const [selected, setSelected] = useState<Signal | null>(null);
   const [result, setResult] = useState<ProcessingResult | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const [selectedObligation, setSelectedObligation] = useState<Obligation | WorldObligation | null>(null);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
-  const [reviewNote, setReviewNote] = useState<string>("");
+  // Per-item note state: map of id → note string
+  const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
@@ -851,6 +1076,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [simForm, setSimForm] = useState({ name: "", kind: "obligation_resolved", target_id: "", description: "" });
   const [simRunning, setSimRunning] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -877,16 +1105,17 @@ export default function App() {
 
   const handleDecide = async (id: string, decision: string) => {
     setDecidingId(id);
+    const note = reviewNotes[id] || "";
     try {
       const res = await fetch(`/api/review/${id}/decide`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ decision, note: reviewNote }),
+        body: JSON.stringify({ decision, note }),
       });
       if (res.ok) {
         const updated = await res.json();
         setReviewItems(prev => prev.map(r => r.id === id ? updated : r));
-        setReviewNote("");
+        setReviewNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
       }
     } catch { /* ignore */ }
     setDecidingId(null);
@@ -900,27 +1129,57 @@ export default function App() {
     } catch { setResult(null); }
   };
 
+  const handleIngest = (signal: Signal) => {
+    setSignals(prev => [signal, ...prev]);
+    setSummary(prev => prev ? { ...prev, signals: prev.signals + 1 } : prev);
+  };
+
+  // Search filtering
+  const q = searchQuery.toLowerCase();
+  const filteredSignals = q
+    ? signals.filter(s => (s.metadata?.subject || "").toLowerCase().includes(q) || (s.metadata?.from || "").toLowerCase().includes(q) || s.raw_content?.toLowerCase().includes(q))
+    : signals;
+  const filteredObligations = q
+    ? obligations.filter(o => o.title.toLowerCase().includes(q) || o.owed_by.toLowerCase().includes(q) || o.owed_to.toLowerCase().includes(q))
+    : obligations;
+  const filteredEntities = q
+    ? entities.filter(e => e.canonical_name.toLowerCase().includes(q) || e.domain.toLowerCase().includes(q) || e.aliases.some(a => a.value.toLowerCase().includes(q)))
+    : entities;
+
   // Group entities by domain
-  const people = entities.filter(e => e.domain === "person");
-  const orgs = entities.filter(e => e.domain === "organization");
-  const artifacts = entities.filter(e => e.domain === "artifact");
+  const people = filteredEntities.filter(e => e.domain === "person");
+  const orgs = filteredEntities.filter(e => e.domain === "organization");
+  const artifacts = filteredEntities.filter(e => e.domain === "artifact");
+
+  const tabLabel = NAV_ITEMS.find(n => n.id === tab)?.label ?? "Axiom";
 
   return (
     <div className="app">
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <Sidebar tab={tab} setTab={setTab} pendingCount={pendingReview.length} onClose={() => setSidebarOpen(false)} />
+      )}
+
       <header className="topbar">
-        <button className="topbar-icon">
+        <button className="topbar-icon" onClick={() => setSidebarOpen(true)}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <div className="topbar-logo">
-          <span className="logo-mark">◈</span>
-          <span className="logo-name">Axiom</span>
-        </div>
-        <button className="topbar-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </button>
+        {searchOpen ? (
+          <SearchBar query={searchQuery} setQuery={setSearchQuery} onClose={() => setSearchOpen(false)} />
+        ) : (
+          <>
+            <div className="topbar-logo">
+              <span className="logo-mark">◈</span>
+              <span className="logo-name">{tabLabel}</span>
+            </div>
+            <button className="topbar-icon" onClick={() => setSearchOpen(true)}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </button>
+          </>
+        )}
       </header>
 
-      {summary && (
+      {summary && !searchOpen && (
         <div className="summary-strip">
           <div className="s-pill"><span className="s-num">{summary.signals}</span><span className="s-lbl">signals</span></div>
           <div className="s-pill"><span className="s-num">{summary.entities}</span><span className="s-lbl">entities</span></div>
@@ -939,9 +1198,10 @@ export default function App() {
         {/* ── Feed Tab ── */}
         {!loading && tab === "feed" && (
           <div className="feed-list">
-            <div className="section-title">Signal Feed</div>
-            {signals.length === 0 && <div className="empty-msg">No signals yet. Connect Gmail to get started.</div>}
-            {signals.map(sig => (
+            {searchQuery && <div className="section-title">{filteredSignals.length} result{filteredSignals.length !== 1 ? "s" : ""} for "{searchQuery}"</div>}
+            {!searchQuery && <div className="section-title">Signal Feed</div>}
+            {filteredSignals.length === 0 && <div className="empty-msg">{searchQuery ? "No signals match your search." : "No signals yet. Connect Gmail or paste an email in the Connect tab."}</div>}
+            {filteredSignals.map(sig => (
               <SignalCard key={sig.id} signal={sig} isSelected={selected?.id === sig.id} onClick={() => handleSelect(sig)} />
             ))}
           </div>
@@ -950,40 +1210,44 @@ export default function App() {
         {/* ── Tasks Tab ── */}
         {!loading && tab === "tasks" && (
           <div className="feed-list">
-            <div className="section-title">Open Obligations</div>
-            {obligations.length === 0 && <div className="empty-msg">No open obligations.</div>}
-            {obligations.map(ob => <ObCard key={ob.id} ob={ob} />)}
+            {searchQuery && <div className="section-title">{filteredObligations.length} result{filteredObligations.length !== 1 ? "s" : ""} for "{searchQuery}"</div>}
+            {!searchQuery && <div className="section-title">Open Obligations</div>}
+            {filteredObligations.length === 0 && <div className="empty-msg">{searchQuery ? "No tasks match your search." : "No open obligations."}</div>}
+            {filteredObligations.map(ob => (
+              <ObCard key={ob.id} ob={ob} onClick={() => setSelectedObligation(ob)} />
+            ))}
           </div>
         )}
 
         {/* ── Entities Tab ── */}
         {!loading && tab === "entities" && (
           <div className="feed-list">
-            {contradictions.length > 0 && (
+            {contradictions.length > 0 && !searchQuery && (
               <>
                 <div className="section-title" style={{ color: "#FF3B30" }}>⚡ Contradictions</div>
                 {contradictions.map(c => <ContraCard key={c.id} c={c} />)}
               </>
             )}
+            {searchQuery && <div className="section-title">{filteredEntities.length} result{filteredEntities.length !== 1 ? "s" : ""} for "{searchQuery}"</div>}
             {people.length > 0 && (
               <>
-                <div className="section-title">People</div>
+                {!searchQuery && <div className="section-title">People</div>}
                 {people.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
               </>
             )}
             {orgs.length > 0 && (
               <>
-                <div className="section-title">Organizations</div>
+                {!searchQuery && <div className="section-title">Organizations</div>}
                 {orgs.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
               </>
             )}
             {artifacts.length > 0 && (
               <>
-                <div className="section-title">Artifacts</div>
+                {!searchQuery && <div className="section-title">Artifacts</div>}
                 {artifacts.map(e => <EntityCard key={e.id} entity={e} onClick={() => setSelectedEntity(e)} />)}
               </>
             )}
-            {entities.length === 0 && <div className="empty-msg">No entities resolved yet.</div>}
+            {filteredEntities.length === 0 && <div className="empty-msg">{searchQuery ? "No entities match your search." : "No entities resolved yet."}</div>}
           </div>
         )}
 
@@ -1015,9 +1279,9 @@ export default function App() {
                   <div className="review-actions">
                     <input
                       className="review-note-input"
-                      placeholder="Optional note..."
-                      value={decidingId === item.id ? reviewNote : ""}
-                      onChange={e => { setDecidingId(item.id); setReviewNote(e.target.value); }}
+                      placeholder="Optional note…"
+                      value={reviewNotes[item.id] || ""}
+                      onChange={e => setReviewNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
                     />
                     <div className="review-btn-row">
                       {item.requires_approval && (
@@ -1048,11 +1312,14 @@ export default function App() {
         {/* ── World Tab (Dashboard) ── */}
         {!loading && tab === "world" && (
           worldState
-            ? <WorldDashboard world={worldState} />
+            ? <WorldDashboard world={worldState} onObligationClick={(ob) => setSelectedObligation(ob as unknown as Obligation)} />
             : <div className="feed-list"><div className="empty-msg">Loading world state...</div></div>
         )}
-        {/* ── Graph Tab ── */}
-        {tab === "graph" && <KnowledgeGraph />}
+
+        {/* ── Connect Tab ── */}
+        {!loading && tab === "connect" && (
+          <ConnectTab onIngest={handleIngest} />
+        )}
 
         {/* ── Recipes Tab ── */}
         {!loading && tab === "recipes" && (
@@ -1136,7 +1403,7 @@ export default function App() {
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0", borderTop: "1px solid #1a1a2e" }}>
                           <div style={{ width: 8, height: 8, borderRadius: "50%", background: e.confidence >= 0.8 ? "#34C759" : e.confidence >= 0.5 ? "#FF9500" : "#888", marginTop: 4, flexShrink: 0 }} />
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13, color: "var(--text1)" }}>{e.description}</div>
+                            <div style={{ fontSize: 13, color: "var(--text)" }}>{e.description}</div>
                             <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{Math.round(e.confidence * 100)}% confidence</div>
                           </div>
                         </div>
@@ -1161,7 +1428,7 @@ export default function App() {
                       {healthStatus.metrics.health_score}
                     </div>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{healthStatus.status.toUpperCase()}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{healthStatus.status.toUpperCase()}</div>
                       <div style={{ fontSize: 12, color: "#888" }}>{healthStatus.message}</div>
                     </div>
                   </div>
@@ -1175,7 +1442,7 @@ export default function App() {
                       { label: "Failures", value: healthStatus.metrics.automation_failures, sub: "automation", warn: healthStatus.metrics.automation_failures > 0 },
                     ].map(m => (
                       <div key={m.label} style={{ background: "#0d0d1a", borderRadius: 8, padding: "8px 10px" }}>
-                        <div style={{ fontSize: 20, fontWeight: 700, color: m.warn ? "#FF9500" : "var(--text1)" }}>{m.value}</div>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: m.warn ? "#FF9500" : "var(--text)" }}>{m.value}</div>
                         <div style={{ fontSize: 11, color: "#888" }}>{m.label}</div>
                         <div style={{ fontSize: 10, color: "#555" }}>{m.sub}</div>
                       </div>
@@ -1207,7 +1474,7 @@ export default function App() {
                       { label: "Pending Approval", value: healthStatus.metrics.automation_summary.pending_approval },
                     ].map(m => (
                       <div key={m.label} style={{ background: "#0d0d1a", borderRadius: 8, padding: "8px 10px" }}>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: m.warn ? "#FF3B30" : "var(--text1)" }}>{m.value}</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: m.warn ? "#FF3B30" : "var(--text)" }}>{m.value}</div>
                         <div style={{ fontSize: 11, color: "#888" }}>{m.label}</div>
                       </div>
                     ))}
@@ -1221,45 +1488,20 @@ export default function App() {
 
       {/* ── Bottom Nav ── */}
       <nav className="bottom-nav" style={{ overflowX: "auto", justifyContent: "flex-start", gap: 0 }}>
-        <button className={`nav-item${tab === "feed" ? " active" : ""}`} onClick={() => setTab("feed")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Feed</span>
-        </button>
-        <button className={`nav-item${tab === "tasks" ? " active" : ""}`} onClick={() => setTab("tasks")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          <span>Tasks</span>
-        </button>
-        <button className={`nav-item${tab === "review" ? " active" : ""}`} onClick={() => setTab("review")} style={{ position: "relative" }}>
-          {pendingReview.length > 0 && (
-            <span style={{ position: "absolute", top: 4, right: 10, background: "#FF3B30", color: "#fff", borderRadius: "50%", width: 16, height: 16, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{pendingReview.length}</span>
-          )}
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>Review</span>
-        </button>
-        <button className={`nav-item${tab === "entities" ? " active" : ""}`} onClick={() => setTab("entities")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-          <span>Entities</span>
-        </button>
-        <button className={`nav-item${tab === "world" ? " active" : ""}`} onClick={() => setTab("world")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span>World</span>
-        </button>
-        <button className={`nav-item${tab === "graph" ? " active" : ""}`} onClick={() => setTab("graph")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><line x1="7" y1="12" x2="17" y2="6"/><line x1="7" y1="12" x2="17" y2="18"/></svg>
-          <span>Graph</span>
-        </button>
-        <button className={`nav-item${tab === "recipes" ? " active" : ""}`} onClick={() => setTab("recipes")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          <span>Recipes</span>
-        </button>
-        <button className={`nav-item${tab === "simulate" ? " active" : ""}`} onClick={() => setTab("simulate")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>Simulate</span>
-        </button>
-        <button className={`nav-item${tab === "health" ? " active" : ""}`} onClick={() => setTab("health")}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <span>Health</span>
-        </button>
+        {NAV_ITEMS.map(item => (
+          <button
+            key={item.id}
+            className={`nav-item${tab === item.id ? " active" : ""}`}
+            onClick={() => setTab(item.id)}
+            style={{ position: "relative" }}
+          >
+            {item.id === "review" && pendingReview.length > 0 && (
+              <span style={{ position: "absolute", top: 4, right: 10, background: "#FF3B30", color: "#fff", borderRadius: "50%", width: 16, height: 16, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{pendingReview.length}</span>
+            )}
+            {item.icon}
+            <span>{item.label.split(" ")[0]}</span>
+          </button>
+        ))}
       </nav>
 
       {/* ── Signal Inspector Sheet ── */}
@@ -1270,6 +1512,11 @@ export default function App() {
       {/* ── Entity Profile Sheet ── */}
       {selectedEntity && (
         <EntityProfile entity={selectedEntity} onClose={() => setSelectedEntity(null)} />
+      )}
+
+      {/* ── Obligation Detail Sheet ── */}
+      {selectedObligation && (
+        <ObligationSheet ob={selectedObligation as Obligation} onClose={() => setSelectedObligation(null)} />
       )}
 
       {/* ── Workspace Detail Sheet ── */}

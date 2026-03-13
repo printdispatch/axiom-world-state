@@ -911,6 +911,62 @@ app.get("/api/health/metrics", (_req, res) => {
   });
 });
 
+// ─── Manual Ingest ───────────────────────────────────────────────────────────
+
+// POST /api/ingest/manual — Accept a raw email paste and create a signal
+app.post("/api/ingest/manual", (req, res) => {
+  const { raw_content, from, subject } = req.body as { raw_content?: string; from?: string; subject?: string };
+  if (!raw_content || !raw_content.trim()) {
+    return res.status(400).json({ error: "raw_content is required" });
+  }
+
+  const signalId = `sig-manual-${Date.now().toString(36)}`;
+  const now = new Date().toISOString();
+  const signal = {
+    id: signalId,
+    source: "manual",
+    adapter: "manual",
+    raw_content: raw_content.trim(),
+    metadata: {
+      from: from || "manual@paste",
+      subject: subject || "Manual ingest",
+      date: now,
+      thread_id: signalId,
+    },
+    received_at: now,
+    processed: false,
+  };
+
+  // Append to signal log
+  const logPath = path.join(DATA_DIR, "signals", "signal_log.json");
+  const existing = readJson<unknown[]>(logPath, []);
+  existing.push(signal);
+  try {
+    fs.writeFileSync(logPath, JSON.stringify(existing, null, 2));
+  } catch (e) {
+    return res.status(500).json({ error: "Failed to save signal" });
+  }
+
+  return res.status(201).json(signal);
+});
+
+// GET /api/connect/gmail/status — Check Gmail connection status
+app.get("/api/connect/gmail/status", (_req, res) => {
+  // In production this would check OAuth token storage
+  // For now returns disconnected (real OAuth requires credentials)
+  return res.json({ connected: false, message: "Gmail OAuth not yet configured. Use manual ingest or set up OAuth credentials." });
+});
+
+// GET /api/connect/gmail/auth — Redirect to Gmail OAuth (placeholder)
+app.get("/api/connect/gmail/auth", (_req, res) => {
+  // In production: redirect to Google OAuth consent screen
+  // For now: return instructions
+  return res.status(501).json({
+    error: "Gmail OAuth requires Google API credentials. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables to enable.",
+    setup_url: "https://console.cloud.google.com/apis/credentials",
+  });
+});
+
 // ─── Static UI ────────────────────────────────────────────────────────────────
 
 const uiDir = path.resolve(__dirname, "../../ui/dist");

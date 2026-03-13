@@ -54,5 +54,19 @@
     "received_at": "2026-03-13T10:00:00Z",
     "processed": true,
     "adapter": "gmail"
+  },
+  {
+    "id": "sig-manual-mmp5pz0z",
+    "source": "manual",
+    "adapter": "manual",
+    "raw_content": "Hi, just a reminder that invoice #1042 for $2,400 is due by March 20. Please let me know if you have any questions.",
+    "metadata": {
+      "from": "client@example.com",
+      "subject": "Invoice #1042 - Payment Due",
+      "date": "2026-03-13T17:14:45.779Z",
+      "thread_id": "sig-manual-mmp5pz0z"
+    },
+    "received_at": "2026-03-13T17:14:45.779Z",
+    "processed": false
   }
 ]
