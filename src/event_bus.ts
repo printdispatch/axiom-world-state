@@ -78,6 +78,9 @@ export interface AxiomEvents {
   review_decided: ReviewDecidedPayload;
   processing_complete: { signal: { id: string }; result: import('../schema/processing.js').ProcessingResult };
   contradiction_detected: { signal_id: string; description: string; entities: string[] };
+  // Orchestration loop events
+  episode_observed: { episodeId: string };
+  episode_processed: { episodeId: string; deltaId: string; isNoise: boolean; commitResult?: Record<string, unknown>; proposedActions?: unknown[] };
 }
 
 export type AxiomEventName = keyof AxiomEvents;

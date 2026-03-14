@@ -30,6 +30,7 @@ import {
   deleteToken,
 } from "../adapters/gmail_adapter.js";
 import { processBatch, processSingle } from "../engine/signal_processor_service.js";
+import { createOrchestrationRouter } from "./orchestration_routes.js";
 import {
   applyReviewDecision,
   resolveObligation,
@@ -62,6 +63,9 @@ app.use(cors());
 app.use(express.json());
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
+
+// ── Orchestration Loop (new) ─────────────────────────────────────────────────
+app.use("/api", createOrchestrationRouter(DATA_DIR));
 
 // GET /api/summary
 app.get("/api/summary", (_req, res) => {

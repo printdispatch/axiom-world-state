@@ -55,7 +55,7 @@
     "field": "expiration_date",
     "new_value": "Mon, Apr 6th, 2026",
     "previous_value": null,
-    "source_fact": "Domains that failed to renew: edenframe.com \u2014 expires on Mon, Apr 6th, 2026",
+    "source_fact": "Domains that failed to renew: edenframe.com — expires on Mon, Apr 6th, 2026",
     "signal_id": "sig-gmail-19cc68f767be2186",
     "mutated_at": "2026-03-13T19:37:12.235Z"
   },
@@ -65,7 +65,7 @@
     "field": "expiration_date",
     "new_value": "2026-04-06",
     "previous_value": null,
-    "source_fact": "Domains that failed to renew: edenframe.com \u2014 expires on Mon, Apr 6th, 2026",
+    "source_fact": "Domains that failed to renew: edenframe.com — expires on Mon, Apr 6th, 2026",
     "signal_id": "sig-gmail-19cc68f767be2186",
     "mutated_at": "2026-03-13T19:37:26.553Z"
   },
@@ -85,7 +85,7 @@
     "field": "expiration_date",
     "new_value": "2026-03-09",
     "previous_value": null,
-    "source_fact": "8 items, 402 MB in total \u2022 Expires on 9 March, 2026",
+    "source_fact": "8 items, 402 MB in total • Expires on 9 March, 2026",
     "signal_id": "sig-gmail-19cc3c64c0a9b8c4",
     "mutated_at": "2026-03-13T19:39:03.262Z"
   },
@@ -108,5 +108,35 @@
     "source_fact": "Expires on 9 March, 2026",
     "signal_id": "sig-gmail-19cc3c64c0a9b8c4",
     "mutated_at": "2026-03-13T19:40:37.956Z"
+  },
+  {
+    "entity_label": "Squarespace subscription",
+    "entity_domain": "artifact",
+    "field": "payment_status",
+    "new_value": "failed",
+    "previous_value": null,
+    "source_fact": "Squarespace subscription renewal failed",
+    "signal_id": "sig-manual-mmpln8a4",
+    "mutated_at": "2026-03-14T00:40:52.028Z"
+  },
+  {
+    "entity_label": "Squarespace subscription",
+    "entity_domain": "artifact",
+    "field": "amount_due",
+    "new_value": "$16/month",
+    "previous_value": null,
+    "source_fact": "$16/month for your Basic Commerce plan",
+    "signal_id": "sig-manual-mmpln8a4",
+    "mutated_at": "2026-03-14T00:40:52.028Z"
+  },
+  {
+    "entity_label": "Squarespace subscription",
+    "entity_domain": "artifact",
+    "field": "suspension_deadline",
+    "new_value": "2026-03-21",
+    "previous_value": null,
+    "source_fact": "Your site will be suspended in 7 days if payment is not updated",
+    "signal_id": "sig-manual-mmpln8a4",
+    "mutated_at": "2026-03-14T00:40:52.028Z"
   }
 ]

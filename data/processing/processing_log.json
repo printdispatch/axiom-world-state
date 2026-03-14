@@ -7133,5 +7133,177 @@
       "any_requires_approval": false,
       "confidence": 0.9
     }
+  },
+  {
+    "id": "3e2cfbfe-91c6-4ea2-aec7-6aff4644704e",
+    "signal_id": "sig-manual-mmpln8a4",
+    "processed_at": "2026-03-14T00:40:51.995Z",
+    "model": "gpt-4o-mini",
+    "is_noise": false,
+    "layer_1": {
+      "raw_facts": [
+        {
+          "fact": "Squarespace subscription renewal failed",
+          "source_ref": "title"
+        },
+        {
+          "fact": "We were unable to charge your card ending in 4242",
+          "source_ref": "email body"
+        },
+        {
+          "fact": "$16/month for your Basic Commerce plan",
+          "source_ref": "email body"
+        },
+        {
+          "fact": "Your site will be suspended in 7 days if payment is not updated",
+          "source_ref": "email body"
+        },
+        {
+          "fact": "Please update your billing information at: https://account.squarespace.com/billing",
+          "source_ref": "email body"
+        },
+        {
+          "fact": "contact support@squarespace.com",
+          "source_ref": "email body"
+        },
+        {
+          "fact": "Squarespace Team",
+          "source_ref": "email body"
+        }
+      ],
+      "is_noise": false,
+      "noise_reason": null
+    },
+    "layer_2": {
+      "entity_candidates": [
+        {
+          "label": "Squarespace",
+          "domain": "organization",
+          "likely_existing": true,
+          "lookup_key": "squarespace.com"
+        },
+        {
+          "label": "support@squarespace.com",
+          "domain": "person",
+          "likely_existing": true,
+          "lookup_key": "support@squarespace.com"
+        }
+      ],
+      "matched_entity_ids": [],
+      "proposed_new_entities": [],
+      "similarity_conflicts": []
+    },
+    "layer_3": {
+      "state_updates": [
+        {
+          "entity_label": "Squarespace subscription",
+          "entity_domain": "artifact",
+          "field": "payment_status",
+          "new_value": "failed",
+          "previous_value": null,
+          "source_fact": "Squarespace subscription renewal failed"
+        },
+        {
+          "entity_label": "Squarespace subscription",
+          "entity_domain": "artifact",
+          "field": "amount_due",
+          "new_value": "$16/month",
+          "previous_value": null,
+          "source_fact": "$16/month for your Basic Commerce plan"
+        },
+        {
+          "entity_label": "Squarespace subscription",
+          "entity_domain": "artifact",
+          "field": "suspension_deadline",
+          "new_value": "2026-03-21",
+          "previous_value": null,
+          "source_fact": "Your site will be suspended in 7 days if payment is not updated"
+        }
+      ],
+      "unchanged_entities": [],
+      "ambiguities": []
+    },
+    "layer_4": {
+      "new_obligations": [
+        {
+          "title": "Update billing information",
+          "description": "The user must update their billing information to avoid suspension of the Squarespace site.",
+          "owed_by": "user",
+          "owed_to": "Squarespace",
+          "workspace_hint": null,
+          "source_fact": "Please update your billing information at: https://account.squarespace.com/billing",
+          "is_new": true,
+          "priority": "high",
+          "due_hint": "2026-03-21"
+        }
+      ],
+      "updated_obligations": [],
+      "dependency_changes": []
+    },
+    "layer_5": {
+      "inferences": [
+        {
+          "statement": "The user needs to act quickly to avoid site suspension.",
+          "confidence": 0.9,
+          "based_on_facts": [
+            "Your site will be suspended in 7 days if payment is not updated",
+            "Please update your billing information at: https://account.squarespace.com/billing"
+          ],
+          "risk_if_wrong": "high"
+        }
+      ],
+      "risk_flags": [
+        {
+          "description": "Payment failure could lead to site suspension.",
+          "level": "high"
+        }
+      ],
+      "priority_estimates": [],
+      "missing_information": [
+        "User's identity to notify about the payment failure."
+      ]
+    },
+    "layer_6": {
+      "proposed_actions": [
+        {
+          "rank": 1,
+          "kind": "notification",
+          "description": "Notify the user about the payment failure and the need to update billing information.",
+          "target_entities": [
+            "user"
+          ],
+          "risk": "medium",
+          "requires_approval": false,
+          "rationale": "Immediate action is required to prevent site suspension.",
+          "expected_outcome": "User updates billing information before the deadline."
+        },
+        {
+          "rank": 2,
+          "kind": "reminder",
+          "description": "Set a reminder for the user to update their billing information before the suspension deadline.",
+          "target_entities": [
+            "user"
+          ],
+          "risk": "low",
+          "requires_approval": false,
+          "rationale": "To ensure the user does not forget the deadline.",
+          "expected_outcome": "User receives a reminder and acts accordingly."
+        },
+        {
+          "rank": 3,
+          "kind": "contact",
+          "description": "Contact Squarespace support for assistance if the user has questions.",
+          "target_entities": [
+            "support@squarespace.com"
+          ],
+          "risk": "low",
+          "requires_approval": false,
+          "rationale": "To provide the user with support options.",
+          "expected_outcome": "User has access to support if needed."
+        }
+      ],
+      "any_requires_approval": false,
+      "confidence": 0.9
+    }
   }
 ]

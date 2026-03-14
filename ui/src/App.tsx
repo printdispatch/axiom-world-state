@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+import { TruthMachine } from "./TruthMachine";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -889,7 +890,7 @@ function WorldDashboard({ world, onObligationClick }: { world: WorldState; onObl
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "connect" | "simulate";
+type Tab = "feed" | "tasks" | "review" | "entities" | "world" | "connect" | "simulate" | "loop";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "feed", label: "Signal Feed", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
@@ -900,6 +901,7 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "connect", label: "Connect", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
   // Recipes tab removed — static templates with no trigger engine
   { id: "simulate", label: "Simulate", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg> },
+  { id: "loop", label: "Truth Machine", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg> },
 ];
 
 function Sidebar({ tab, setTab, pendingCount, onClose }: { tab: Tab; setTab: (t: Tab) => void; pendingCount: number; onClose: () => void }) {
@@ -1570,6 +1572,13 @@ export default function App() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ── Truth Machine Tab ── */}
+        {!loading && tab === "loop" && (
+          <div style={{ height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <TruthMachine />
           </div>
         )}
 

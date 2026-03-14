@@ -19,10 +19,12 @@
     "owed_by": "Squarespace",
     "owed_to": "Account Holder",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": null,
     "source_signal_id": "sig-gmail-19cce89552d23f3d",
-    "created_at": "2026-03-13T19:33:57.699Z"
+    "created_at": "2026-03-13T19:33:57.699Z",
+    "due_date": "2026-03-19T23:27:00.577Z",
+    "completed_at": "2026-03-13T23:33:03.704Z"
   },
   {
     "id": "ob-ff6d8da0",
@@ -31,10 +33,11 @@
     "owed_by": "printdispatch@gmail.com",
     "owed_to": "WeTransfer",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": null,
     "source_signal_id": "sig-gmail-19cc81e632beff34",
-    "created_at": "2026-03-13T19:36:35.076Z"
+    "created_at": "2026-03-13T19:36:35.076Z",
+    "completed_at": "2026-03-13T23:26:42.359Z"
   },
   {
     "id": "ob-0cbea2f1",
@@ -43,10 +46,11 @@
     "owed_by": "printdispatch@gmail.com",
     "owed_to": "WeTransfer",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": null,
     "source_signal_id": "sig-gmail-19cc81e632beff34",
-    "created_at": "2026-03-13T19:36:35.526Z"
+    "created_at": "2026-03-13T19:36:35.526Z",
+    "completed_at": "2026-03-13T23:26:47.806Z"
   },
   {
     "id": "ob-3e3f9bcb",
@@ -55,10 +59,11 @@
     "owed_by": "Cloudflare Registrar",
     "owed_to": "Account holder",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": "before Mon, Apr 6th, 2026",
     "source_signal_id": "sig-gmail-19cc68f767be2186",
-    "created_at": "2026-03-13T19:37:12.235Z"
+    "created_at": "2026-03-13T19:37:12.235Z",
+    "completed_at": "2026-03-13T23:33:01.554Z"
   },
   {
     "id": "ob-4ec51823",
@@ -67,10 +72,11 @@
     "owed_by": "Cloudflare Registrar",
     "owed_to": "Account Holder",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": "Before April 6, 2026",
     "source_signal_id": "sig-gmail-19cc68f767be2186",
-    "created_at": "2026-03-13T19:37:26.553Z"
+    "created_at": "2026-03-13T19:37:26.553Z",
+    "completed_at": "2026-03-13T23:32:59.829Z"
   },
   {
     "id": "ob-832a3574",
@@ -79,10 +85,11 @@
     "owed_by": "account holder",
     "owed_to": "Squarespace",
     "priority": "high",
-    "status": "open",
+    "status": "done",
     "due_hint": null,
     "source_signal_id": "sig-gmail-19ce871b40b9c3f4",
-    "created_at": "2026-03-13T19:41:59.719Z"
+    "created_at": "2026-03-13T19:41:59.719Z",
+    "completed_at": "2026-03-13T23:32:56.944Z"
   },
   {
     "id": "ob-a3277904",
@@ -156,5 +163,33 @@
     "source_review_id": "rev-5edcc8d7",
     "note": "",
     "completed_at": "2026-03-13T19:48:45.083Z"
+  },
+  {
+    "id": "obl-eb119e8f",
+    "created_at": "2026-03-14T00:40:47.144Z",
+    "last_updated_at": "2026-03-14T00:40:47.144Z",
+    "history": [],
+    "title": "Update Squarespace billing information",
+    "description": "The billing information for the Squarespace subscription needs to be updated to avoid suspension of the site.",
+    "owed_by": "user",
+    "owed_to": "Squarespace",
+    "workspace_hint": "Squarespace Subscription",
+    "priority": "critical",
+    "status": "open",
+    "due_hint": "within 7 days",
+    "source_episode_id": "ep-sig-manual-mmpln8a4",
+    "confidence": 0.9
+  },
+  {
+    "id": "ob-cfebb31c",
+    "title": "Update billing information",
+    "description": "The user must update their billing information to avoid suspension of the Squarespace site.",
+    "owed_by": "user",
+    "owed_to": "Squarespace",
+    "priority": "high",
+    "status": "open",
+    "due_hint": "2026-03-21",
+    "source_signal_id": "sig-manual-mmpln8a4",
+    "created_at": "2026-03-14T00:40:52.028Z"
   }
 ]

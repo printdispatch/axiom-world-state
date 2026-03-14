@@ -1,0 +1,49 @@
+[
+  {
+    "id": "delta-2c5973fcda62",
+    "episode_id": "ep-sig-manual-mmpln8a4",
+    "produced_at": "2026-03-14T00:40:47.141Z",
+    "is_noise": false,
+    "noise_reason": "",
+    "interpretation_summary": "The Squarespace subscription renewal payment has failed, and action is required to avoid suspension of the service.",
+    "confidence_overall": 0.9,
+    "entity_changes": [
+      {
+        "type": "update",
+        "entity_id": "ent-a1399c75",
+        "entity_name": "Squarespace",
+        "changes": {
+          "billing_status": "payment_failed"
+        },
+        "confidence": 0.9,
+        "source_fact": "We were unable to charge your card ending in 4242 for your Squarespace subscription renewal"
+      }
+    ],
+    "obligation_changes": [
+      {
+        "type": "create",
+        "title": "Update Squarespace billing information",
+        "description": "The billing information for the Squarespace subscription needs to be updated to avoid suspension of the site.",
+        "owed_by": "user",
+        "owed_to": "Squarespace",
+        "priority": "critical",
+        "due_hint": "within 7 days",
+        "workspace_hint": "Squarespace Subscription",
+        "confidence": 0.9,
+        "source_fact": "Your site will be suspended in 7 days if payment is not updated."
+      }
+    ],
+    "fact_changes": [],
+    "contradictions_found": [],
+    "proposed_actions": [
+      {
+        "action_type": "notify",
+        "description": "Notify the user to update their Squarespace billing information.",
+        "urgency": "critical",
+        "requires_approval": false,
+        "rationale": "To prevent suspension of the Squarespace site due to failed payment."
+      }
+    ],
+    "model": "gpt-4o-mini"
+  }
+]
