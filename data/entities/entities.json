@@ -1,126 +1,119 @@
 [
   {
-    "id": "ent-67c05920",
-    "name": "Cloudflare Registrar",
-    "type": "organization",
-    "lookup_key": "cloudflare.com",
-    "source_signal_id": "sig-gmail-19cd4dc4f654abd2",
-    "created_at": "2026-03-13T19:29:19.681Z",
-    "aliases": [
-      "Cloudflare Registrar"
-    ]
-  },
-  {
-    "id": "ent-5b1af030",
-    "name": "edenframe.com",
+    "id": "ent-8b6376f0",
+    "created_at": "2026-03-14T00:54:14.542Z",
+    "updated_at": "2026-03-14T01:04:52.742Z",
+    "name": "Self Visa® Credit Card",
     "type": "artifact",
-    "lookup_key": "edenframe.com",
-    "source_signal_id": "sig-gmail-19cd4dc4f654abd2",
-    "created_at": "2026-03-13T19:29:19.681Z",
+    "lookup_key": "self-visa-credit-card",
     "aliases": [
-      "edenframe.com"
-    ]
-  },
-  {
-    "id": "ent-a1399c75",
-    "name": "Squarespace",
-    "type": "organization",
-    "lookup_key": "squarespace.com",
-    "source_signal_id": "sig-gmail-19cce89552d23f3d",
-    "created_at": "2026-03-13T19:33:56.207Z",
-    "aliases": [
-      "Squarespace"
+      "Self Credit Card"
     ],
-    "billing_status": "payment_failed",
-    "updated_at": "2026-03-14T00:40:47.141Z",
-    "source_episode_id": "ep-sig-manual-mmpln8a4"
+    "source_episode_id": "ep-sig-manual-mmpln8a4",
+    "confidence": 0.9,
+    "facts": [
+      {
+        "property": "billing_status",
+        "value": "failed",
+        "valid_from": "2026-03-08T17:40:31.000Z",
+        "confidence": 0.9,
+        "source_fact": "Subject: Card Billing Failure"
+      },
+      {
+        "property": "billing_status",
+        "value": "failed",
+        "valid_from": "2026-03-13T18:24:50.000Z",
+        "confidence": 0.9,
+        "source_fact": "Subject: Card Billing Failure"
+      },
+      {
+        "property": "billing_status",
+        "value": "payment_failed",
+        "valid_from": "2026-03-14T00:40:31.660Z",
+        "confidence": 0.9,
+        "source_fact": "We were unable to charge your card ending in 4242 for your Squarespace subscription renewal"
+      }
+    ],
+    "billing_status": "payment_failed"
   },
   {
-    "id": "ent-dea2c0cd",
-    "name": "WeTransfer",
-    "type": "organization",
-    "lookup_key": "wetransfer.com",
-    "source_signal_id": "sig-gmail-19cc81e632beff34",
-    "created_at": "2026-03-13T19:36:35.076Z",
-    "aliases": [
-      "WeTransfer"
-    ]
-  },
-  {
-    "id": "ent-69f00608",
-    "name": "Sip&Squeeze_Folder",
-    "type": "artifact",
-    "lookup_key": "Sip&Squeeze_Folder",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "Sip&Squeeze_Folder"
-    ]
-  },
-  {
-    "id": "ent-cd7aa973",
-    "name": "J&J-EggRolls_Folder",
-    "type": "artifact",
-    "lookup_key": "J&J-EggRolls_Folder",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "J&J-EggRolls_Folder"
-    ]
-  },
-  {
-    "id": "ent-e19bba92",
-    "name": "FirstClass_Transit_Cameron_WrapObsessions.ai",
-    "type": "artifact",
-    "lookup_key": "FirstClass_Transit_Cameron_WrapObsessions.ai",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "FirstClass_Transit_Cameron_WrapObsessions.ai"
-    ]
-  },
-  {
-    "id": "ent-459fca0c",
-    "name": "WRAP_OBSESSIONS-STICKER-11.psd",
-    "type": "artifact",
-    "lookup_key": "WRAP_OBSESSIONS-STICKER-11.psd",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "WRAP_OBSESSIONS-STICKER-11.psd"
-    ]
-  },
-  {
-    "id": "ent-4d648180",
-    "name": "WRAP_OBSESSIONS-STICKER-4.psd",
-    "type": "artifact",
-    "lookup_key": "WRAP_OBSESSIONS-STICKER-4.psd",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "WRAP_OBSESSIONS-STICKER-4.psd"
-    ]
-  },
-  {
-    "id": "ent-53f8f462",
-    "name": "WRAP_OBSESSIONS-STICKER-5 copy.psd",
-    "type": "artifact",
-    "lookup_key": "WRAP_OBSESSIONS-STICKER-5 copy.psd",
-    "source_signal_id": "sig-gmail-19cc3c64c0a9b8c4",
-    "created_at": "2026-03-13T19:39:03.262Z",
-    "aliases": [
-      "WRAP_OBSESSIONS-STICKER-5 copy.psd"
-    ]
-  },
-  {
-    "id": "ent-2b36e2f4",
-    "name": "support@squarespace.com",
+    "id": "ent-449a7780",
+    "created_at": "2026-03-14T00:54:30.359Z",
+    "updated_at": "2026-03-14T00:57:48.142Z",
+    "name": "Chad Bush",
     "type": "person",
-    "lookup_key": "support@squarespace.com",
-    "source_signal_id": "sig-manual-mmpln8a4",
-    "created_at": "2026-03-14T00:40:52.028Z",
+    "lookup_key": "chad.bush@simon.com",
     "aliases": [
-      "support@squarespace.com"
-    ]
+      "Chad"
+    ],
+    "source_episode_id": "ep-19cde40d961d1fae",
+    "confidence": 0.8,
+    "field": "last_contact",
+    "new value": "2026-03-12T19:52:52.000Z",
+    "last_contact": "2026-03-11T18:55:01.000Z"
+  },
+  {
+    "id": "ent-3bc0df43",
+    "created_at": "2026-03-14T00:55:10.919Z",
+    "updated_at": "2026-03-14T00:57:32.656Z",
+    "name": "Metro Area Printing",
+    "type": "organization",
+    "lookup_key": "contact@metroareaprinting.com",
+    "aliases": [
+      "Metro Area Printing"
+    ],
+    "source_episode_id": "ep-19cde61340b10120",
+    "confidence": 0.9,
+    "contact_phone": "317-800-6500",
+    "field": "new customer form required"
+  },
+  {
+    "id": "ent-677b6d4b",
+    "created_at": "2026-03-14T00:55:33.260Z",
+    "updated_at": "2026-03-14T00:55:33.260Z",
+    "name": "Elaina Bahr",
+    "type": "person",
+    "lookup_key": "nextdoor_profile_176703652",
+    "aliases": [],
+    "source_episode_id": "ep-19ce384e2b37f4ed",
+    "confidence": 0.9
+  },
+  {
+    "id": "ent-9dfdc168",
+    "created_at": "2026-03-14T00:55:53.843Z",
+    "updated_at": "2026-03-14T01:02:54.058Z",
+    "name": "Indiana Independent Auto Dealers Association",
+    "type": "organization",
+    "lookup_key": "indianaiada.com",
+    "aliases": [
+      "Indiana IADA"
+    ],
+    "source_episode_id": "ep-19cc68f767be2186",
+    "confidence": 0.8,
+    "billing_status": "payment authorization failed"
+  },
+  {
+    "id": "ent-e717dae9",
+    "created_at": "2026-03-14T00:58:00.718Z",
+    "updated_at": "2026-03-14T00:58:00.718Z",
+    "name": "Gaucho's Fire Express",
+    "type": "organization",
+    "lookup_key": "gauchosfire@gmail.com",
+    "aliases": [
+      "Gaucho’s Fire Express"
+    ],
+    "source_episode_id": "ep-19cde1d4532ba05c",
+    "confidence": 0.8
+  },
+  {
+    "id": "ent-3b8b3349",
+    "created_at": "2026-03-14T00:59:00.290Z",
+    "updated_at": "2026-03-14T00:59:00.290Z",
+    "name": "Bolt for the Heart",
+    "type": "organization",
+    "lookup_key": "www.boltfortheheart.com",
+    "aliases": [],
+    "source_episode_id": "ep-19cd972da1a2cd76",
+    "confidence": 0.8
   }
 ]

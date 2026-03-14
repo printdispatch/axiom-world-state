@@ -1080,18 +1080,40 @@ app.get("/api/connect/gmail/callback", async (req, res) => {
   }
 });
 
-// POST /api/connect/gmail/sync — Manually trigger a Gmail sync and batch-process new signals
+// POST /api/connect/gmail/sync — Manually trigger a Gmail sync and run orchestration loop on new signals
 app.post("/api/connect/gmail/sync", async (_req, res) => {
   try {
     const result = await syncGmailEmails(DATA_DIR, "2026/03/06", 200);
     recordSync(DATA_DIR, result);
-    // Respond immediately, then process new signals in background
+    // Respond immediately, then run orchestration loop in background
     res.json({ success: true, ...result });
     if (result.added > 0) {
-      processBatch({ dataDir: DATA_DIR, maxSignals: result.added + 10,
-        onProgress: (done, total, id, noise) => console.log(`[Sync] ${done}/${total} — ${id} (noise=${noise})`),
-      }).then((r) => console.log(`[Sync] Batch done: ${r.processed} processed, ${r.noise} noise`))
-        .catch((err) => console.error("[Sync] Batch error:", err));
+      // Migrate new signals to episodes, then run the loop
+      const { EpisodeStore } = await import("../episodes/episode_store.js");
+      const { DeltaStore } = await import("../episodes/delta_store.js");
+      const { CognitionService } = await import("../engine/cognition_service.js");
+      const { Orchestrator } = await import("../orchestration/orchestrator.js");
+      const { JsonEntityStore, JsonObligationStore } = await import("../orchestration/stores.js");
+      const { EventBus } = await import("../event_bus.js");
+      const episodeStore = new EpisodeStore(DATA_DIR);
+      const signals = JSON.parse(fs.readFileSync(`${DATA_DIR}/signals/signal_log.json`, "utf-8")) as Record<string, unknown>[];
+      const existingIds = new Set(episodeStore.findAll().map((e) => String(e.raw_payload?.["id"] ?? "")));
+      let migrated = 0;
+      for (const signal of signals) {
+        if (!existingIds.has(String(signal["id"] ?? ""))) { episodeStore.createFromSignal(signal); migrated++; }
+      }
+      console.log(`[Sync] Migrated ${migrated} new signals to episodes`);
+      const orchestrator = new Orchestrator({
+        episodeStore,
+        deltaStore: new DeltaStore(DATA_DIR),
+        cognitionService: new CognitionService(process.env.OPENAI_MODEL ?? "gpt-4o-mini"),
+        eventBus: new EventBus(),
+        entityStore: new JsonEntityStore(DATA_DIR),
+        obligationStore: new JsonObligationStore(DATA_DIR),
+      });
+      orchestrator.processPending()
+        .then((r) => console.log(`[Sync] Loop done: ${r.processed} processed, ${r.noise} noise, ${r.failed} failed`))
+        .catch((err) => console.error("[Sync] Loop error:", err));
     }
     return;
   } catch (err) {
@@ -1134,9 +1156,28 @@ app.listen(PORT, () => {
       console.log("[Periodic Sync] Starting Gmail sync…");
       const result = await syncGmailEmails(DATA_DIR);
       if (result.added > 0) {
-        console.log(`[Periodic Sync] Added ${result.added} new signals. Running batch processor…`);
-        const batchResult = await processBatch({ dataDir: DATA_DIR, maxSignals: 50 });
-        console.log(`[Periodic Sync] Processed ${batchResult.processed} signals, ${batchResult.noise} noise.`);
+        console.log(`[Periodic Sync] Added ${result.added} new signals. Running orchestration loop…`);
+        const { EpisodeStore } = await import("../episodes/episode_store.js");
+        const { DeltaStore } = await import("../episodes/delta_store.js");
+        const { CognitionService } = await import("../engine/cognition_service.js");
+        const { Orchestrator } = await import("../orchestration/orchestrator.js");
+        const { JsonEntityStore, JsonObligationStore } = await import("../orchestration/stores.js");
+        const { EventBus } = await import("../event_bus.js");
+        const episodeStore = new EpisodeStore(DATA_DIR);
+        const signals = JSON.parse(fs.readFileSync(`${DATA_DIR}/signals/signal_log.json`, "utf-8")) as Record<string, unknown>[];
+        const existingIds = new Set(episodeStore.findAll().map((e) => String(e.raw_payload?.["id"] ?? "")));
+        for (const signal of signals) {
+          if (!existingIds.has(String(signal["id"] ?? ""))) episodeStore.createFromSignal(signal);
+        }
+        const loopResult = await new Orchestrator({
+          episodeStore,
+          deltaStore: new DeltaStore(DATA_DIR),
+          cognitionService: new CognitionService(process.env.OPENAI_MODEL ?? "gpt-4o-mini"),
+          eventBus: new EventBus(),
+          entityStore: new JsonEntityStore(DATA_DIR),
+          obligationStore: new JsonObligationStore(DATA_DIR),
+        }).processPending();
+        console.log(`[Periodic Sync] Loop done: ${loopResult.processed} processed, ${loopResult.noise} noise.`);
       } else {
         console.log("[Periodic Sync] No new emails.");
       }

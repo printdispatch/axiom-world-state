@@ -32,13 +32,14 @@
         ]
       },
       "received_at": "2026-03-13T17:42:49.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T17:42:49.000Z",
-    "updated_at": "2026-03-14T00:40:11.949Z"
+    "updated_at": "2026-03-14T00:53:56.914Z",
+    "noise_reason": "This is an automated security alert email from Google with no action required.",
+    "delta_id": "delta-26c86e5c79d6"
   },
   {
     "id": "ep-19ce848db2ece553",
@@ -73,13 +74,14 @@
         ]
       },
       "received_at": "2026-03-13T17:40:14.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T17:40:14.000Z",
-    "updated_at": "2026-03-14T00:40:11.949Z"
+    "updated_at": "2026-03-14T00:54:00.442Z",
+    "noise_reason": "This is a promotional email with no actionable content.",
+    "delta_id": "delta-83ba89159c25"
   },
   {
     "id": "ep-19ce83c4c4dab9af",
@@ -114,13 +116,14 @@
         ]
       },
       "received_at": "2026-03-13T17:26:31.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T17:26:31.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:03.136Z",
+    "noise_reason": "This is a promotional email offering a discount on grocery orders.",
+    "delta_id": "delta-8d85d3de806c"
   },
   {
     "id": "ep-19ce7b6ccece272c",
@@ -155,13 +158,14 @@
         ]
       },
       "received_at": "2026-03-13T15:00:39.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T15:00:39.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:07.269Z",
+    "noise_reason": "This is an automated security notification from Google regarding account activity.",
+    "delta_id": "delta-abd4e4640f27"
   },
   {
     "id": "ep-19ce7a9269197f62",
@@ -196,13 +200,14 @@
         ]
       },
       "received_at": "2026-03-13T14:45:47.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-13T14:45:47.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:14.542Z",
+    "delta_id": "delta-4ca6373e2e2e",
+    "committed_at": "2026-03-14T00:54:14.542Z"
   },
   {
     "id": "ep-19ce74d4d075ed36",
@@ -237,13 +242,14 @@
         ]
       },
       "received_at": "2026-03-13T13:05:28.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T13:05:28.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:18.176Z",
+    "noise_reason": "This is a marketing email about startups for sale with no actionable items.",
+    "delta_id": "delta-50ad37847194"
   },
   {
     "id": "ep-19ce73d1c35c9118",
@@ -278,13 +284,14 @@
         ]
       },
       "received_at": "2026-03-13T12:47:46.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T12:47:46.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:21.139Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-6a82e58d3e21"
   },
   {
     "id": "ep-19ce71e78642781d",
@@ -317,13 +324,14 @@
         ]
       },
       "received_at": "2026-03-13T12:14:19.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-13T12:14:19.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:30.359Z",
+    "delta_id": "delta-f1d90bb8381b",
+    "committed_at": "2026-03-14T00:54:30.359Z"
   },
   {
     "id": "ep-19ce6d0eff4f086c",
@@ -358,13 +366,14 @@
         ]
       },
       "received_at": "2026-03-13T10:49:37.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T10:49:37.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:33.116Z",
+    "noise_reason": "This is a newsletter containing general news and updates without any actionable items.",
+    "delta_id": "delta-f2ff7fa41290"
   },
   {
     "id": "ep-19ce550551e0e42a",
@@ -399,13 +408,14 @@
         ]
       },
       "received_at": "2026-03-13T03:49:32.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T03:49:32.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:36.068Z",
+    "noise_reason": "This is a community post seeking social connections and does not require any action.",
+    "delta_id": "delta-2dd4a0209cdb"
   },
   {
     "id": "ep-19ce52aa19758fc2",
@@ -439,13 +449,14 @@
         ]
       },
       "received_at": "2026-03-13T03:08:21.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T03:08:21.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:38.440Z",
+    "noise_reason": "This is an automated notification from GitHub regarding a security event.",
+    "delta_id": "delta-4a03ec80ec12"
   },
   {
     "id": "ep-19ce51827fbc6038",
@@ -479,13 +490,14 @@
         ]
       },
       "received_at": "2026-03-13T02:48:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T02:48:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:41.344Z",
+    "noise_reason": "This is an automated notification from GitHub regarding account security.",
+    "delta_id": "delta-1ff7853c1c19"
   },
   {
     "id": "ep-19ce5176bc47a521",
@@ -519,13 +531,14 @@
         ]
       },
       "received_at": "2026-03-13T02:47:22.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T02:47:22.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:44.637Z",
+    "noise_reason": "This is an automated notification from GitHub regarding a third-party application access.",
+    "delta_id": "delta-b21e97c1ae1c"
   },
   {
     "id": "ep-19ce4e250a65688d",
@@ -560,13 +573,14 @@
         ]
       },
       "received_at": "2026-03-13T01:49:21.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T01:49:21.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:47.457Z",
+    "noise_reason": "This is a community post from Nextdoor discussing alarming stories without requiring any specific action.",
+    "delta_id": "delta-66cbdd874314"
   },
   {
     "id": "ep-19ce4aa4f0a1b58b",
@@ -601,13 +615,14 @@
         ]
       },
       "received_at": "2026-03-13T00:48:11.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T00:48:11.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:50.028Z",
+    "noise_reason": "This is a community post about free items and does not require any action.",
+    "delta_id": "delta-8792f7bf1d10"
   },
   {
     "id": "ep-19ce44661aed089a",
@@ -642,13 +657,14 @@
         ]
       },
       "received_at": "2026-03-12T22:59:01.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T22:59:01.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:52.724Z",
+    "noise_reason": "This is a promotional email offering a discount.",
+    "delta_id": "delta-7579df253e45"
   },
   {
     "id": "ep-19ce42935ccc09c9",
@@ -683,13 +699,14 @@
         ]
       },
       "received_at": "2026-03-12T22:27:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T22:27:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:55.264Z",
+    "noise_reason": "This is a community post regarding a lost item and does not require any action.",
+    "delta_id": "delta-f0633977d44d"
   },
   {
     "id": "ep-19ce3f28136c4ec8",
@@ -724,13 +741,14 @@
         ]
       },
       "received_at": "2026-03-12T21:27:25.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T21:27:25.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:54:58.691Z",
+    "noise_reason": "This is a community post from Nextdoor regarding a missing puppy and other neighborhood updates.",
+    "delta_id": "delta-d843cf7d1b4b"
   },
   {
     "id": "ep-19ce3c83a1175e84",
@@ -765,13 +783,14 @@
         ]
       },
       "received_at": "2026-03-12T20:41:16.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T20:41:16.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:01.675Z",
+    "noise_reason": "This is a marketing email from Pinterest with no actionable content.",
+    "delta_id": "delta-97ad974ef006"
   },
   {
     "id": "ep-19ce39c0aa83963f",
@@ -806,13 +825,14 @@
         ]
       },
       "received_at": "2026-03-12T19:52:52.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T19:52:52.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:10.919Z",
+    "delta_id": "delta-d3c18d7c7266",
+    "committed_at": "2026-03-14T00:55:10.919Z"
   },
   {
     "id": "ep-19ce398a3f0fba5d",
@@ -845,13 +865,14 @@
         ]
       },
       "received_at": "2026-03-12T19:49:16.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T19:49:16.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:15.838Z",
+    "delta_id": "delta-32a9d6767cdf",
+    "committed_at": "2026-03-14T00:55:15.837Z"
   },
   {
     "id": "ep-19ce39428dcf14d1",
@@ -886,13 +907,14 @@
         ]
       },
       "received_at": "2026-03-12T19:44:22.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T19:44:22.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:20.845Z",
+    "noise_reason": "This is a promotional email regarding real estate listings.",
+    "delta_id": "delta-08a115651657"
   },
   {
     "id": "ep-19ce384e2b37f4ed",
@@ -927,13 +949,14 @@
         ]
       },
       "received_at": "2026-03-12T19:27:41.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T19:27:41.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:33.260Z",
+    "delta_id": "delta-12114b054b82",
+    "committed_at": "2026-03-14T00:55:33.260Z"
   },
   {
     "id": "ep-19ce3265789e8c7e",
@@ -968,13 +991,14 @@
         ]
       },
       "received_at": "2026-03-12T17:44:25.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T17:44:25.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:36.409Z",
+    "noise_reason": "This is a promotional email about open houses and does not require any action.",
+    "delta_id": "delta-7b3b63faaec0"
   },
   {
     "id": "ep-19ce31fc3fa3f03b",
@@ -1009,13 +1033,14 @@
         ]
       },
       "received_at": "2026-03-12T17:37:14.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T17:37:14.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:39.031Z",
+    "noise_reason": "This is a promotional email from Creative Market with no actionable items.",
+    "delta_id": "delta-47f7a056112f"
   },
   {
     "id": "ep-19ce2fa1d96459fa",
@@ -1050,13 +1075,14 @@
         ]
       },
       "received_at": "2026-03-12T16:56:06.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T16:56:06.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:42.522Z",
+    "noise_reason": "This is a promotional email from Uber offering discounts.",
+    "delta_id": "delta-fda1a455994b"
   },
   {
     "id": "ep-19ce2bbd65323e18",
@@ -1091,13 +1117,14 @@
         ]
       },
       "received_at": "2026-03-12T15:48:05.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T15:48:05.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:45.229Z",
+    "noise_reason": "This is a promotional email offering a credit card with no action required.",
+    "delta_id": "delta-d02b41c6b20e"
   },
   {
     "id": "ep-19ce29eb10b514d2",
@@ -1132,13 +1159,14 @@
         ]
       },
       "received_at": "2026-03-12T15:16:03.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T15:16:03.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:53.844Z",
+    "delta_id": "delta-733e04a9677e",
+    "committed_at": "2026-03-14T00:55:53.843Z"
   },
   {
     "id": "ep-19ce2972278be03f",
@@ -1173,13 +1201,14 @@
         ]
       },
       "received_at": "2026-03-12T15:07:48.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T15:07:48.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:55:58.004Z",
+    "delta_id": "delta-26789441bbb4",
+    "committed_at": "2026-03-14T00:55:58.003Z"
   },
   {
     "id": "ep-19ce292c1e5e883d",
@@ -1214,13 +1243,14 @@
         ]
       },
       "received_at": "2026-03-12T15:02:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T15:02:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:02.899Z",
+    "delta_id": "delta-bfb227e22382",
+    "committed_at": "2026-03-14T00:56:02.899Z"
   },
   {
     "id": "ep-19ce2441fc3fc019",
@@ -1255,13 +1285,14 @@
         ]
       },
       "received_at": "2026-03-12T13:37:20.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T13:37:20.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:14.439Z",
+    "noise_reason": "This is an automated notification about mentions in academic papers with no required action.",
+    "delta_id": "delta-fc05af1dda56"
   },
   {
     "id": "ep-19ce236e7f4d63d6",
@@ -1296,13 +1327,14 @@
         ]
       },
       "received_at": "2026-03-12T13:22:53.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T13:22:53.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:16.885Z",
+    "noise_reason": "This is an automated notification about a file transfer expiration with no required action.",
+    "delta_id": "delta-d7b8a3344c35"
   },
   {
     "id": "ep-19ce236e06c424c8",
@@ -1337,13 +1369,14 @@
         ]
       },
       "received_at": "2026-03-12T13:22:52.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T13:22:52.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:19.977Z",
+    "noise_reason": "This is an automated notification about a file transfer expiration with no required action.",
+    "delta_id": "delta-e95eb53a9ca2"
   },
   {
     "id": "ep-19ce22733b0d5017",
@@ -1378,13 +1411,14 @@
         ]
       },
       "received_at": "2026-03-12T13:05:45.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T13:05:45.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:23.571Z",
+    "noise_reason": "This is a marketing email about startups for sale with no actionable items.",
+    "delta_id": "delta-6c2ac073877d"
   },
   {
     "id": "ep-19ce204665555ed7",
@@ -1418,13 +1452,14 @@
         ]
       },
       "received_at": "2026-03-12T12:27:43.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T12:27:43.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:26.207Z",
+    "noise_reason": "This is a community post about a lost item with no actionable requirements.",
+    "delta_id": "delta-94854d17e21b"
   },
   {
     "id": "ep-19ce1ba3fe9c3330",
@@ -1459,13 +1494,14 @@
         ]
       },
       "received_at": "2026-03-12T11:06:24.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T11:06:24.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:37.579Z",
+    "delta_id": "delta-ec41661354aa",
+    "committed_at": "2026-03-14T00:56:37.578Z"
   },
   {
     "id": "ep-19ce1ac4088ef422",
@@ -1500,13 +1536,14 @@
         ]
       },
       "received_at": "2026-03-12T10:51:27.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T10:51:27.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:39.909Z",
+    "noise_reason": "This is a newsletter containing general information and updates about technology, with no actionable items.",
+    "delta_id": "delta-2a69126db778"
   },
   {
     "id": "ep-19ce051321386e3c",
@@ -1541,13 +1578,14 @@
         ]
       },
       "received_at": "2026-03-12T04:32:22.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T04:32:22.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:46.823Z",
+    "delta_id": "delta-22e744c83799",
+    "committed_at": "2026-03-14T00:56:46.823Z"
   },
   {
     "id": "ep-19ce03963b92536c",
@@ -1582,13 +1620,14 @@
         ]
       },
       "received_at": "2026-03-12T04:06:13.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-12T04:06:13.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:53.568Z",
+    "delta_id": "delta-6e3d59cd541e",
+    "committed_at": "2026-03-14T00:56:53.568Z"
   },
   {
     "id": "ep-19ce015b2083a5cd",
@@ -1623,13 +1662,14 @@
         ]
       },
       "received_at": "2026-03-12T03:27:23.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T03:27:23.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:56.144Z",
+    "noise_reason": "This is a community post from Nextdoor asking for advice on meeting new friends, which does not require any action.",
+    "delta_id": "delta-f8cca206bceb"
   },
   {
     "id": "ep-19cdfa82873be96f",
@@ -1664,13 +1704,14 @@
         ]
       },
       "received_at": "2026-03-12T01:27:44.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T01:27:44.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:56:58.638Z",
+    "noise_reason": "This is a promotional email from a community platform with no actionable items.",
+    "delta_id": "delta-1ed1c5c1cbd3"
   },
   {
     "id": "ep-19cdf7114c4c2639",
@@ -1705,13 +1746,14 @@
         ]
       },
       "received_at": "2026-03-12T00:27:34.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-12T00:27:34.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:00.977Z",
+    "noise_reason": "This is a community post seeking assistance for transportation, which does not require any specific action or decision.",
+    "delta_id": "delta-e8e4d87eef31"
   },
   {
     "id": "ep-19cded8b05143563",
@@ -1746,13 +1788,14 @@
         ]
       },
       "received_at": "2026-03-11T21:41:08.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T21:41:08.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:03.565Z",
+    "noise_reason": "This is a marketing email from Pinterest with no actionable content.",
+    "delta_id": "delta-abdfee33f868"
   },
   {
     "id": "ep-19cdec7a0832c9aa",
@@ -1787,13 +1830,14 @@
         ]
       },
       "received_at": "2026-03-11T21:22:30.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T21:22:30.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:06.258Z",
+    "noise_reason": "This is a promotional email from Uber Eats offering discounts.",
+    "delta_id": "delta-e550a4d54f4c"
   },
   {
     "id": "ep-19cdeb5326a41252",
@@ -1828,13 +1872,14 @@
         ]
       },
       "received_at": "2026-03-11T21:02:22.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T21:02:22.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:08.871Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-4d7af827a7d0"
   },
   {
     "id": "ep-19cdeb075b6c88de",
@@ -1869,13 +1914,14 @@
         ]
       },
       "received_at": "2026-03-11T20:57:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T20:57:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:14.807Z",
+    "noise_reason": "This is a promotional email about a sale.",
+    "delta_id": "delta-dc8c5f4c0ea5"
   },
   {
     "id": "ep-19cde7cd905f9959",
@@ -1908,13 +1954,14 @@
         ]
       },
       "received_at": "2026-03-11T20:00:49.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T20:00:49.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:20.794Z",
+    "delta_id": "delta-76bd35a576ba",
+    "committed_at": "2026-03-14T00:57:20.794Z"
   },
   {
     "id": "ep-19cde6a73bda79d4",
@@ -1949,13 +1996,14 @@
         ]
       },
       "received_at": "2026-03-11T19:40:41.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T19:40:41.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:23.349Z",
+    "noise_reason": "This is a marketing email about real estate listings with no actionable items.",
+    "delta_id": "delta-75f4640e60cc"
   },
   {
     "id": "ep-19cde61340b10120",
@@ -1990,13 +2038,14 @@
         ]
       },
       "received_at": "2026-03-11T19:30:12.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T19:30:12.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:32.656Z",
+    "delta_id": "delta-3209d008339f",
+    "committed_at": "2026-03-14T00:57:32.656Z"
   },
   {
     "id": "ep-19cde548508c337e",
@@ -2029,13 +2078,14 @@
         ]
       },
       "received_at": "2026-03-11T19:16:46.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T19:16:46.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:37.606Z",
+    "delta_id": "delta-ed518567ed35",
+    "committed_at": "2026-03-14T00:57:37.606Z"
   },
   {
     "id": "ep-19cde472326c2fe4",
@@ -2070,13 +2120,14 @@
         ]
       },
       "received_at": "2026-03-11T19:02:07.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T19:02:07.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:40.075Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable content.",
+    "delta_id": "delta-616225c9ea6f"
   },
   {
     "id": "ep-19cde40d961d1fae",
@@ -2111,13 +2162,14 @@
         ]
       },
       "received_at": "2026-03-11T18:55:01.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T18:55:01.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:48.142Z",
+    "delta_id": "delta-f4a0366a1fa2",
+    "committed_at": "2026-03-14T00:57:48.142Z"
   },
   {
     "id": "ep-19cde2170d933d66",
@@ -2150,13 +2202,14 @@
         ]
       },
       "received_at": "2026-03-11T18:20:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T18:20:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:57:51.792Z",
+    "delta_id": "delta-200352d9e745",
+    "committed_at": "2026-03-14T00:57:51.792Z"
   },
   {
     "id": "ep-19cde1d4532ba05c",
@@ -2189,13 +2242,14 @@
         ]
       },
       "received_at": "2026-03-11T18:16:24.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T18:16:24.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:00.719Z",
+    "delta_id": "delta-576e146b0261",
+    "committed_at": "2026-03-14T00:58:00.718Z"
   },
   {
     "id": "ep-19cddc9f8a9a8437",
@@ -2230,13 +2284,14 @@
         ]
       },
       "received_at": "2026-03-11T16:45:26.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T16:45:26.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:03.495Z",
+    "noise_reason": "This is a promotional email about housing data updates with no required action.",
+    "delta_id": "delta-500b7104dd98"
   },
   {
     "id": "ep-19cddba9b9ba335c",
@@ -2271,13 +2326,14 @@
         ]
       },
       "received_at": "2026-03-11T16:28:37.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T16:28:37.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:06.148Z",
+    "noise_reason": "This is a promotional email from Self regarding credit building services.",
+    "delta_id": "delta-8c120b158f57"
   },
   {
     "id": "ep-19cdda9cbadf6fd8",
@@ -2312,13 +2368,14 @@
         ]
       },
       "received_at": "2026-03-11T16:10:16.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T16:10:16.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:08.966Z",
+    "noise_reason": "This is a promotional email regarding credit services with no required action.",
+    "delta_id": "delta-d4c45ce64a44"
   },
   {
     "id": "ep-19cdda32ca40f027",
@@ -2353,13 +2410,14 @@
         ]
       },
       "received_at": "2026-03-11T16:03:03.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T16:03:03.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:12.149Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-2a0dc772a0c6"
   },
   {
     "id": "ep-19cdd71d631e259d",
@@ -2394,13 +2452,14 @@
         ]
       },
       "received_at": "2026-03-11T15:09:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T15:09:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:15.321Z",
+    "noise_reason": "This is an automated notification about a file download with no required action.",
+    "delta_id": "delta-3365089e62d7"
   },
   {
     "id": "ep-19cdd00c35b45d55",
@@ -2434,13 +2493,14 @@
         ]
       },
       "received_at": "2026-03-11T13:05:40.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T13:05:40.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:18.025Z",
+    "noise_reason": "This is a promotional email about startups for sale with no actionable items.",
+    "delta_id": "delta-fc62f00a5a9f"
   },
   {
     "id": "ep-19cdcfc6099614a8",
@@ -2475,13 +2535,14 @@
         ]
       },
       "received_at": "2026-03-11T13:00:49.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T13:00:49.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:20.245Z",
+    "noise_reason": "This is a promotional email from Printful regarding a limited offer on products.",
+    "delta_id": "delta-1797acd0fc1e"
   },
   {
     "id": "ep-19cdcf8255773b0c",
@@ -2516,13 +2577,14 @@
         ]
       },
       "received_at": "2026-03-11T12:56:15.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T12:56:15.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:22.850Z",
+    "noise_reason": "This is a notification email about mentions in academic papers with no required action.",
+    "delta_id": "delta-acb04e83be51"
   },
   {
     "id": "ep-19cdcc871def3d6f",
@@ -2557,13 +2619,14 @@
         ]
       },
       "received_at": "2026-03-11T12:04:08.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T12:04:08.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:25.376Z",
+    "noise_reason": "This is a community post introducing a new neighbor and sharing local events and sales, which does not require any action.",
+    "delta_id": "delta-7db7085fb4d9"
   },
   {
     "id": "ep-19cdc83f7b6d0b4e",
@@ -2598,13 +2661,14 @@
         ]
       },
       "received_at": "2026-03-11T10:49:21.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T10:49:21.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:27.860Z",
+    "noise_reason": "This is a newsletter with no actionable items.",
+    "delta_id": "delta-c5ec67ec9758"
   },
   {
     "id": "ep-19cdc72ec1130610",
@@ -2639,13 +2703,14 @@
         ]
       },
       "received_at": "2026-03-11T10:30:44.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T10:30:44.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:30.549Z",
+    "noise_reason": "This is a weather alert email with no actionable items.",
+    "delta_id": "delta-88b44c5dbc22"
   },
   {
     "id": "ep-19cdaff6d222ae5e",
@@ -2680,13 +2745,14 @@
         ]
       },
       "received_at": "2026-03-11T03:44:50.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T03:44:50.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:36.074Z",
+    "delta_id": "delta-2987725fdad1",
+    "committed_at": "2026-03-14T00:58:36.074Z"
   },
   {
     "id": "ep-19cdaf2c0f0fad6c",
@@ -2719,13 +2785,14 @@
         ]
       },
       "received_at": "2026-03-11T03:31:06.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-11T03:31:06.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:41.421Z",
+    "delta_id": "delta-a437e63a6989",
+    "committed_at": "2026-03-14T00:58:41.420Z"
   },
   {
     "id": "ep-19cdad8d7631d02f",
@@ -2760,13 +2827,14 @@
         ]
       },
       "received_at": "2026-03-11T03:02:48.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-11T03:02:48.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:44.778Z",
+    "noise_reason": "This is a promotional post from a community platform with no actionable items.",
+    "delta_id": "delta-28e2652ee289"
   },
   {
     "id": "ep-19cda308e0b0036c",
@@ -2801,13 +2869,14 @@
         ]
       },
       "received_at": "2026-03-10T23:58:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T23:58:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:47.287Z",
+    "noise_reason": "This is a community news email with no actionable content.",
+    "delta_id": "delta-395ac2ca98c8"
   },
   {
     "id": "ep-19cd9f828cffe82a",
@@ -2842,13 +2911,14 @@
         ]
       },
       "received_at": "2026-03-10T22:57:24.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T22:57:24.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:50.094Z",
+    "noise_reason": "This is a community post about items for sale and local events with no actionable items.",
+    "delta_id": "delta-4df46afdc2cb"
   },
   {
     "id": "ep-19cd9b1f31bfa550",
@@ -2883,13 +2953,14 @@
         ]
       },
       "received_at": "2026-03-10T21:40:43.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T21:40:43.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:58:53.310Z",
+    "noise_reason": "This is a promotional email from Pinterest with no actionable content.",
+    "delta_id": "delta-12053e798d84"
   },
   {
     "id": "ep-19cd972da1a2cd76",
@@ -2923,13 +2994,14 @@
         ]
       },
       "received_at": "2026-03-10T20:31:28.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-10T20:31:28.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:00.291Z",
+    "delta_id": "delta-90a582657f20",
+    "committed_at": "2026-03-14T00:59:00.290Z"
   },
   {
     "id": "ep-19cd9533792c1abc",
@@ -2964,13 +3036,14 @@
         ]
       },
       "received_at": "2026-03-10T19:57:15.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T19:57:15.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:05.203Z",
+    "noise_reason": "This is a community news update with no actionable items.",
+    "delta_id": "delta-4f48af915614"
   },
   {
     "id": "ep-19cd937654eadb3c",
@@ -3005,13 +3078,14 @@
         ]
       },
       "received_at": "2026-03-10T19:26:49.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T19:26:49.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:08.398Z",
+    "noise_reason": "This is a promotional email about real estate listings with no actionable items.",
+    "delta_id": "delta-7d20984465c3"
   },
   {
     "id": "ep-19cd90c4a1dd5e70",
@@ -3044,13 +3118,14 @@
         ]
       },
       "received_at": "2026-03-10T18:39:47.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-10T18:39:47.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:13.346Z",
+    "delta_id": "delta-86da777d89c8",
+    "committed_at": "2026-03-14T00:59:13.346Z"
   },
   {
     "id": "ep-19cd8fbbde442832",
@@ -3085,13 +3160,14 @@
         ]
       },
       "received_at": "2026-03-10T18:21:25.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T18:21:25.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:16.936Z",
+    "noise_reason": "This is an email with an attachment regarding a coupon book cover, which does not require any action.",
+    "delta_id": "delta-16df0d69b2ab"
   },
   {
     "id": "ep-19cd8f851ff3e0c5",
@@ -3126,13 +3202,14 @@
         ]
       },
       "received_at": "2026-03-10T18:17:45.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-10T18:17:45.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:20.942Z",
+    "delta_id": "delta-330a97d5d14f",
+    "committed_at": "2026-03-14T00:59:20.942Z"
   },
   {
     "id": "ep-19cd8ecdffef1eff",
@@ -3167,13 +3244,14 @@
         ]
       },
       "received_at": "2026-03-10T18:05:28.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T18:05:28.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:25.915Z",
+    "noise_reason": "This is a promotional email from Creative Market with no actionable content.",
+    "delta_id": "delta-bf6c1c38bfe7"
   },
   {
     "id": "ep-19cd8e8f907b1ab9",
@@ -3208,13 +3286,14 @@
         ]
       },
       "received_at": "2026-03-10T18:01:08.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T18:01:08.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:29.025Z",
+    "noise_reason": "This email contains promotional content and forecasts without requiring any action.",
+    "delta_id": "delta-c9bec0b8cb0d"
   },
   {
     "id": "ep-19cd8b009c7d0e44",
@@ -3249,13 +3328,14 @@
         ]
       },
       "received_at": "2026-03-10T16:59:00.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T16:59:00.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:32.001Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-33913e74c067"
   },
   {
     "id": "ep-19cd7dbaf86d0c46",
@@ -3290,13 +3370,14 @@
         ]
       },
       "received_at": "2026-03-10T13:07:04.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T13:07:04.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:35.280Z",
+    "noise_reason": "This is a promotional email about startups for sale with no required action.",
+    "delta_id": "delta-582af7c68a02"
   },
   {
     "id": "ep-19cd7b0ed75fbe61",
@@ -3330,13 +3411,14 @@
         ]
       },
       "received_at": "2026-03-10T12:20:21.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T12:20:21.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:38.085Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-957aec44d568"
   },
   {
     "id": "ep-19cd75d1501b4ee7",
@@ -3371,13 +3453,14 @@
         ]
       },
       "received_at": "2026-03-10T10:48:46.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T10:48:46.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:41.199Z",
+    "noise_reason": "This is a newsletter containing general news updates without any actionable items.",
+    "delta_id": "delta-cd8d206bec51"
   },
   {
     "id": "ep-19cd5e69a61cf805",
@@ -3412,13 +3495,14 @@
         ]
       },
       "received_at": "2026-03-10T03:59:45.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T03:59:45.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:43.766Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable content.",
+    "delta_id": "delta-e251c8a92895"
   },
   {
     "id": "ep-19cd54160af0bdb6",
@@ -3453,13 +3537,14 @@
         ]
       },
       "received_at": "2026-03-10T00:59:16.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-10T00:59:16.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:46.569Z",
+    "noise_reason": "This is a community post about a lost pet with no actionable items.",
+    "delta_id": "delta-74d78c796a06"
   },
   {
     "id": "ep-19cd4dc4f654abd2",
@@ -3494,13 +3579,14 @@
         ]
       },
       "received_at": "2026-03-09T23:08:53.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
     "status": "committed",
     "is_noise": false,
     "created_at": "2026-03-09T23:08:53.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:53.211Z",
+    "delta_id": "delta-ea19dc1a2101",
+    "committed_at": "2026-03-14T00:59:53.211Z"
   },
   {
     "id": "ep-19cd4c13fbf9ff5f",
@@ -3535,13 +3621,14 @@
         ]
       },
       "received_at": "2026-03-09T22:39:19.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T22:39:19.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:56.661Z",
+    "noise_reason": "This is a community post from Nextdoor regarding a lost and found item with no actionable content.",
+    "delta_id": "delta-5665288e31cb"
   },
   {
     "id": "ep-19cd48ca5907f9a4",
@@ -3576,13 +3663,14 @@
         ]
       },
       "received_at": "2026-03-09T21:41:52.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T21:41:52.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T00:59:59.295Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-528f8b5efb40"
   },
   {
     "id": "ep-19cd4864031a2bfc",
@@ -3617,13 +3705,14 @@
         ]
       },
       "received_at": "2026-03-09T21:34:54.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T21:34:54.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:01.885Z",
+    "noise_reason": "This is a promotional email from Pinterest with no actionable content.",
+    "delta_id": "delta-43d602afecc9"
   },
   {
     "id": "ep-19cd4217b3d6a8f2",
@@ -3658,13 +3747,14 @@
         ]
       },
       "received_at": "2026-03-09T19:44:48.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T19:44:48.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:05.060Z",
+    "noise_reason": "This is a promotional post from a community platform with no actionable items.",
+    "delta_id": "delta-437a2292fc53"
   },
   {
     "id": "ep-19cd40d008ed8275",
@@ -3699,13 +3789,14 @@
         ]
       },
       "received_at": "2026-03-09T19:22:24.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T19:22:24.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:08.051Z",
+    "noise_reason": "This is a marketing email about real estate updates with no actionable items.",
+    "delta_id": "delta-e2e282a73f26"
   },
   {
     "id": "ep-19cd3caef8ea7fff",
@@ -3740,13 +3831,14 @@
         ]
       },
       "received_at": "2026-03-09T18:10:16.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T18:10:16.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:11.199Z",
+    "noise_reason": "This is a promotional email from Creative Market with no actionable content.",
+    "delta_id": "delta-7430a60c224f"
   },
   {
     "id": "ep-19cd39eaec9e3445",
@@ -3781,13 +3873,14 @@
         ]
       },
       "received_at": "2026-03-09T17:21:57.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T17:21:57.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:14.777Z",
+    "noise_reason": "This is an automated security alert email with no required action.",
+    "delta_id": "delta-5809dff6ba29"
   },
   {
     "id": "ep-19cd36d128ddc6b3",
@@ -3822,13 +3915,14 @@
         ]
       },
       "received_at": "2026-03-09T16:27:45.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T16:27:45.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:18.229Z",
+    "noise_reason": "This is a promotional email regarding a credit card offer with no required action.",
+    "delta_id": "delta-a4b014743ede"
   },
   {
     "id": "ep-19cd3535a5b39a90",
@@ -3863,13 +3957,14 @@
         ]
       },
       "received_at": "2026-03-09T15:59:39.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T15:59:39.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:20.967Z",
+    "noise_reason": "This is a promotional email from Uber with no actionable content.",
+    "delta_id": "delta-4c690f26d281"
   },
   {
     "id": "ep-19cd2b35ab268132",
@@ -3905,13 +4000,14 @@
         ]
       },
       "received_at": "2026-03-09T13:04:55.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T13:04:55.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:25.336Z",
+    "noise_reason": "This is a marketing email about startups for sale with no required action.",
+    "delta_id": "delta-83ffbc304dd5"
   },
   {
     "id": "ep-19cd29ee6b6357f0",
@@ -3946,13 +4042,14 @@
         ]
       },
       "received_at": "2026-03-09T12:42:33.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T12:42:33.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:29.022Z",
+    "noise_reason": "This is a community post seeking legal advice and contains no actionable items.",
+    "delta_id": "delta-3d513811a5aa"
   },
   {
     "id": "ep-19cd2604325b5a77",
@@ -3987,13 +4084,14 @@
         ]
       },
       "received_at": "2026-03-09T11:34:09.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T11:34:09.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:32.742Z",
+    "noise_reason": "This is an automated notification about mentions in academic papers with no required action.",
+    "delta_id": "delta-92cb937b7cee"
   },
   {
     "id": "ep-19cd239b32b0729c",
@@ -4028,13 +4126,14 @@
         ]
       },
       "received_at": "2026-03-09T10:52:02.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T10:52:02.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:36.956Z",
+    "noise_reason": "This is a newsletter with no actionable items.",
+    "delta_id": "delta-97b5ca265941"
   },
   {
     "id": "ep-19cd15f3f7b3cb3b",
@@ -4069,13 +4168,14 @@
         ]
       },
       "received_at": "2026-03-09T06:53:25.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T06:53:25.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:47.046Z",
+    "noise_reason": "This is a marketing email with updates about Supabase, containing no actionable items.",
+    "delta_id": "delta-deb68e496ebc"
   },
   {
     "id": "ep-19cd04b283047490",
@@ -4110,13 +4210,14 @@
         ]
       },
       "received_at": "2026-03-09T01:51:52.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-09T01:51:52.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:00:56.976Z",
+    "delta_id": "delta-728eff38ea57",
+    "committed_at": "2026-03-14T01:00:56.976Z"
   },
   {
     "id": "ep-19cd00739366577e",
@@ -4151,13 +4252,14 @@
         ]
       },
       "received_at": "2026-03-09T00:37:38.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-09T00:37:38.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:00.466Z",
+    "noise_reason": "This is a community post from Nextdoor about a garage sale with no actionable items.",
+    "delta_id": "delta-68989d4b4195"
   },
   {
     "id": "ep-19ccf916ef59f7ad",
@@ -4192,13 +4294,14 @@
         ]
       },
       "received_at": "2026-03-08T22:28:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T22:28:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:05.921Z",
+    "noise_reason": "This is a community post seeking a caregiver and does not require any action related to the known entities or obligations.",
+    "delta_id": "delta-09bd1626dae7"
   },
   {
     "id": "ep-19ccf5fbe17466db",
@@ -4233,13 +4336,14 @@
         ]
       },
       "received_at": "2026-03-08T21:34:44.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T21:34:44.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:10.242Z",
+    "noise_reason": "This is a promotional email from Pinterest with no actionable content.",
+    "delta_id": "delta-22b215fa19a8"
   },
   {
     "id": "ep-19ccf5926f877d98",
@@ -4274,13 +4378,14 @@
         ]
       },
       "received_at": "2026-03-08T21:27:31.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T21:27:31.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:14.830Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-56ff365cf9f1"
   },
   {
     "id": "ep-19cceeba9de58de9",
@@ -4315,13 +4420,14 @@
         ]
       },
       "received_at": "2026-03-08T19:27:55.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T19:27:55.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:18.760Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-60ec6991e849"
   },
   {
     "id": "ep-19ccedf38d41d665",
@@ -4356,13 +4462,14 @@
         ]
       },
       "received_at": "2026-03-08T19:14:19.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T19:14:19.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:23.261Z",
+    "noise_reason": "This is a promotional email about real estate listings with no actionable items.",
+    "delta_id": "delta-de625de1ee2b"
   },
   {
     "id": "ep-19cce93374764833",
@@ -4397,13 +4504,14 @@
         ]
       },
       "received_at": "2026-03-08T17:51:20.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
-    "status": "noise",
-    "is_noise": true,
+    "status": "committed",
+    "is_noise": false,
     "created_at": "2026-03-08T17:51:20.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:29.413Z",
+    "delta_id": "delta-33999e8923b8",
+    "committed_at": "2026-03-14T01:01:29.413Z"
   },
   {
     "id": "ep-19cce89552d23f3d",
@@ -4438,13 +4546,14 @@
         ]
       },
       "received_at": "2026-03-08T17:40:31.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
     "status": "committed",
     "is_noise": false,
     "created_at": "2026-03-08T17:40:31.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:40.039Z",
+    "delta_id": "delta-8d1e8efba557",
+    "committed_at": "2026-03-14T01:01:40.039Z"
   },
   {
     "id": "ep-19cce4ba874a71e6",
@@ -4479,13 +4588,14 @@
         ]
       },
       "received_at": "2026-03-08T16:33:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T16:33:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:43.665Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-05d688a2af81"
   },
   {
     "id": "ep-19cce4ab7478772a",
@@ -4520,13 +4630,14 @@
         ]
       },
       "received_at": "2026-03-08T16:32:08.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T16:32:08.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:46.393Z",
+    "noise_reason": "This is a promotional email from Uber offering discounts.",
+    "delta_id": "delta-e94404eb5681"
   },
   {
     "id": "ep-19ccda2a3fe35a8d",
@@ -4561,13 +4672,14 @@
         ]
       },
       "received_at": "2026-03-08T13:28:32.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T13:28:32.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:49.488Z",
+    "noise_reason": "This is a promotional email with no actionable content.",
+    "delta_id": "delta-5b6977cc8327"
   },
   {
     "id": "ep-19ccd8ddf3e44fcf",
@@ -4601,13 +4713,14 @@
         ]
       },
       "received_at": "2026-03-08T13:05:52.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T13:05:52.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:52.304Z",
+    "noise_reason": "This is a promotional email about startups for sale with no required action.",
+    "delta_id": "delta-0bc2bd2d4d32"
   },
   {
     "id": "ep-19ccd6f9f210575e",
@@ -4642,13 +4755,14 @@
         ]
       },
       "received_at": "2026-03-08T12:32:49.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T12:32:49.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:54.996Z",
+    "noise_reason": "This is a community post from a social media platform with no actionable content.",
+    "delta_id": "delta-3524e61e6d01"
   },
   {
     "id": "ep-19ccd19e1d4ab859",
@@ -4683,13 +4797,14 @@
         ]
       },
       "received_at": "2026-03-08T10:59:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T10:59:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:01:58.110Z",
+    "noise_reason": "This is an automated notification about mentions in academic papers.",
+    "delta_id": "delta-a49d2ddeb629"
   },
   {
     "id": "ep-19ccb7c526482c85",
@@ -4724,13 +4839,14 @@
         ]
       },
       "received_at": "2026-03-08T03:27:27.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-08T03:27:27.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:01.388Z",
+    "noise_reason": "This is a community post from Nextdoor regarding lost and found items with no actionable items.",
+    "delta_id": "delta-f26bc280d963"
   },
   {
     "id": "ep-19cca83066f1394b",
@@ -4765,13 +4881,14 @@
         ]
       },
       "received_at": "2026-03-07T22:55:10.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T22:55:10.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:04.732Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-6656a0553a77"
   },
   {
     "id": "ep-19cca4bbde0d732a",
@@ -4806,13 +4923,14 @@
         ]
       },
       "received_at": "2026-03-07T21:54:46.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T21:54:46.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:07.681Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable items.",
+    "delta_id": "delta-9546fa8d6966"
   },
   {
     "id": "ep-19cca38054ec6211",
@@ -4847,13 +4965,14 @@
         ]
       },
       "received_at": "2026-03-07T21:33:14.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T21:33:14.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:11.604Z",
+    "noise_reason": "This is a promotional email from Uber with no actionable content.",
+    "delta_id": "delta-3756505a790d"
   },
   {
     "id": "ep-19cc9c39b1ea379d",
@@ -4888,13 +5007,14 @@
         ]
       },
       "received_at": "2026-03-07T19:26:04.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T19:26:04.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:14.176Z",
+    "noise_reason": "This is a marketing email regarding real estate listings.",
+    "delta_id": "delta-402503efcb91"
   },
   {
     "id": "ep-19cc9575441ee1a6",
@@ -4929,13 +5049,14 @@
         ]
       },
       "received_at": "2026-03-07T17:27:48.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T17:27:48.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:16.702Z",
+    "noise_reason": "This is a promotional email from Canva Create with no required action.",
+    "delta_id": "delta-b354420064a2"
   },
   {
     "id": "ep-19cc93292074c5a6",
@@ -4970,13 +5091,14 @@
         ]
       },
       "received_at": "2026-03-07T16:47:40.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T16:47:40.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:20.115Z",
+    "noise_reason": "This is a community post discussing noise complaints and petitions, which does not require action.",
+    "delta_id": "delta-a38868b15d96"
   },
   {
     "id": "ep-19cc91fa00673764",
@@ -5011,13 +5133,14 @@
         ]
       },
       "received_at": "2026-03-07T16:26:57.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T16:26:57.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:23.463Z",
+    "noise_reason": "This is a promotional email from Self regarding credit building services.",
+    "delta_id": "delta-bb991ff2306f"
   },
   {
     "id": "ep-19cc86f62717327a",
@@ -5052,13 +5175,14 @@
         ]
       },
       "received_at": "2026-03-07T13:14:28.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T13:14:28.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:27.694Z",
+    "noise_reason": "This is a promotional email from Uber with no actionable content.",
+    "delta_id": "delta-b0c228fc4736"
   },
   {
     "id": "ep-19cc862261e66d6d",
@@ -5093,13 +5217,14 @@
         ]
       },
       "received_at": "2026-03-07T13:00:01.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T13:00:01.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:30.745Z",
+    "noise_reason": "This is a marketing email with no actionable items.",
+    "delta_id": "delta-802d181cda2c"
   },
   {
     "id": "ep-19cc8407041ccce4",
@@ -5134,13 +5259,14 @@
         ]
       },
       "received_at": "2026-03-07T12:23:11.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T12:23:11.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:33.704Z",
+    "noise_reason": "This episode contains promotional content and community posts without any actionable items.",
+    "delta_id": "delta-3e4e3e5723f9"
   },
   {
     "id": "ep-19cc81e632beff34",
@@ -5175,13 +5301,14 @@
         ]
       },
       "received_at": "2026-03-07T11:45:59.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
-    "status": "committed",
-    "is_noise": false,
+    "status": "noise",
+    "is_noise": true,
     "created_at": "2026-03-07T11:45:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:36.244Z",
+    "noise_reason": "This is an automated notification about a file transfer expiration with no required action.",
+    "delta_id": "delta-31bfe7a64706"
   },
   {
     "id": "ep-19cc7f4909696920",
@@ -5216,13 +5343,14 @@
         ]
       },
       "received_at": "2026-03-07T11:00:17.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T11:00:17.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:38.980Z",
+    "noise_reason": "This is a promotional email about a workshop with no required action.",
+    "delta_id": "delta-7282e36c8675"
   },
   {
     "id": "ep-19cc69fb5569638d",
@@ -5257,13 +5385,14 @@
         ]
       },
       "received_at": "2026-03-07T04:47:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T04:47:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:41.493Z",
+    "noise_reason": "This is a promotional email from a local photographer with no actionable items.",
+    "delta_id": "delta-e5ea49fcea45"
   },
   {
     "id": "ep-19cc68f767be2186",
@@ -5298,13 +5427,14 @@
         ]
       },
       "received_at": "2026-03-07T04:30:15.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
     "status": "committed",
     "is_noise": false,
     "created_at": "2026-03-07T04:30:15.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:54.058Z",
+    "delta_id": "delta-5495cba0a13e",
+    "committed_at": "2026-03-14T01:02:54.058Z"
   },
   {
     "id": "ep-19cc66a23114d0fe",
@@ -5339,13 +5469,14 @@
         ]
       },
       "received_at": "2026-03-07T03:49:28.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T03:49:28.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:02:57.400Z",
+    "noise_reason": "This is a promotional email from Nextdoor regarding landscaping services.",
+    "delta_id": "delta-3477a75f331d"
   },
   {
     "id": "ep-19cc5fb49b33a1cf",
@@ -5380,13 +5511,14 @@
         ]
       },
       "received_at": "2026-03-07T01:48:24.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-07T01:48:24.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:03.901Z",
+    "noise_reason": "This is a promotional email from Nextdoor with no actionable content.",
+    "delta_id": "delta-f7217105a457"
   },
   {
     "id": "ep-19cc5786705e494a",
@@ -5421,13 +5553,14 @@
         ]
       },
       "received_at": "2026-03-06T23:25:27.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T23:25:27.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:07.004Z",
+    "noise_reason": "This is a promotional email from Uber regarding their zero emissions initiative.",
+    "delta_id": "delta-b689fa1459ba"
   },
   {
     "id": "ep-19cc52c4687c7a78",
@@ -5462,13 +5595,14 @@
         ]
       },
       "received_at": "2026-03-06T22:02:18.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T22:02:18.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:09.803Z",
+    "noise_reason": "This is a promotional email about free items from neighbors.",
+    "delta_id": "delta-c50dec5e7a79"
   },
   {
     "id": "ep-19cc4f537283b74e",
@@ -5503,13 +5637,14 @@
         ]
       },
       "received_at": "2026-03-06T21:02:09.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T21:02:09.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:13.483Z",
+    "noise_reason": "This is a community post from Nextdoor seeking advice and sharing local events, which does not require any action.",
+    "delta_id": "delta-94f2a5644e59"
   },
   {
     "id": "ep-19cc49ee1f820279",
@@ -5544,13 +5679,14 @@
         ]
       },
       "received_at": "2026-03-06T19:27:50.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T19:27:50.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:16.003Z",
+    "noise_reason": "This is a marketing email about real estate listings.",
+    "delta_id": "delta-e23b15943ee1"
   },
   {
     "id": "ep-19cc4712300e20b5",
@@ -5585,13 +5721,14 @@
         ]
       },
       "received_at": "2026-03-06T18:37:53.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T18:37:53.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:19.012Z",
+    "noise_reason": "This is a promotional email from Uber Eats with no actionable content.",
+    "delta_id": "delta-7166c565fde9"
   },
   {
     "id": "ep-19cc3e2b7e5648c9",
@@ -5626,13 +5763,14 @@
         ]
       },
       "received_at": "2026-03-06T16:02:19.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T16:02:19.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:22.311Z",
+    "noise_reason": "This is a promotional email about local events with no actionable items.",
+    "delta_id": "delta-d7f6e58a312b"
   },
   {
     "id": "ep-19cc3c64c0a9b8c4",
@@ -5667,13 +5805,14 @@
         ]
       },
       "received_at": "2026-03-06T15:31:18.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
-    "status": "committed",
-    "is_noise": false,
+    "status": "noise",
+    "is_noise": true,
     "created_at": "2026-03-06T15:31:18.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:25.354Z",
+    "noise_reason": "This is an automated notification about a file download with no action required.",
+    "delta_id": "delta-2cf46a6a1996"
   },
   {
     "id": "ep-19cc35293a4b5eae",
@@ -5708,13 +5847,14 @@
         ]
       },
       "received_at": "2026-03-06T13:24:54.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T13:24:54.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:30.930Z",
+    "noise_reason": "This is a promotional email from Uber Eats regarding missed savings.",
+    "delta_id": "delta-444c96dd4d33"
   },
   {
     "id": "ep-19cc3523f1696725",
@@ -5749,13 +5889,14 @@
         ]
       },
       "received_at": "2026-03-06T13:24:31.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T13:24:31.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:34.960Z",
+    "noise_reason": "This is a promotional email from Pinterest with no actionable content.",
+    "delta_id": "delta-3c85f7582b2a"
   },
   {
     "id": "ep-19cc30ae89912b03",
@@ -5790,13 +5931,14 @@
         ]
       },
       "received_at": "2026-03-06T12:06:37.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T12:06:37.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:39.086Z",
+    "noise_reason": "This is a community post looking for a calculus teacher and contains various unrelated posts.",
+    "delta_id": "delta-f3b295e6c0c9"
   },
   {
     "id": "ep-19cc2faae1dab7eb",
@@ -5831,13 +5973,14 @@
         ]
       },
       "received_at": "2026-03-06T11:48:54.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T11:48:54.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:42.209Z",
+    "noise_reason": "This is a newsletter containing updates on technology and AI, with no actionable items.",
+    "delta_id": "delta-63d29fbcc550"
   },
   {
     "id": "ep-19cc282c704505ff",
@@ -5872,13 +6015,14 @@
         ]
       },
       "received_at": "2026-03-06T09:37:56.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T09:37:56.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:46.219Z",
+    "noise_reason": "This is a notification email about mentions in academic papers with no required action.",
+    "delta_id": "delta-3b6d8c3c8344"
   },
   {
     "id": "ep-19cc14fe79895200",
@@ -5913,13 +6057,14 @@
         ]
       },
       "received_at": "2026-03-06T04:02:44.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T04:02:44.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:52.117Z",
+    "noise_reason": "This is a promotional email from a local business owner seeking clients.",
+    "delta_id": "delta-5c0bd6598c34"
   },
   {
     "id": "ep-19cc119077d117b0",
@@ -5954,13 +6099,14 @@
         ]
       },
       "received_at": "2026-03-06T03:02:48.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T03:02:48.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:03:55.999Z",
+    "noise_reason": "This is a promotional post from a local business on Nextdoor.",
+    "delta_id": "delta-d757a46f07b6"
   },
   {
     "id": "ep-19cc0acd8879766f",
@@ -5995,13 +6141,14 @@
         ]
       },
       "received_at": "2026-03-06T01:04:38.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-06T01:04:38.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:00.484Z",
+    "noise_reason": "This is a community post from Nextdoor with no actionable content.",
+    "delta_id": "delta-8b0b07c1d170"
   },
   {
     "id": "ep-19ce871b40b9c3f4",
@@ -6036,13 +6183,14 @@
         ]
       },
       "received_at": "2026-03-13T18:24:50.000Z",
-      "processed": true,
-      "is_noise": false
+      "processed": false
     },
     "status": "committed",
     "is_noise": false,
     "created_at": "2026-03-13T18:24:50.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:12.690Z",
+    "delta_id": "delta-f743bb6a31c0",
+    "committed_at": "2026-03-14T01:04:12.690Z"
   },
   {
     "id": "ep-19ce8abfecff58de",
@@ -6077,13 +6225,14 @@
         ]
       },
       "received_at": "2026-03-13T19:28:29.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T19:28:29.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:16.649Z",
+    "noise_reason": "This is a promotional email regarding real estate listings.",
+    "delta_id": "delta-150951be4212"
   },
   {
     "id": "ep-19ce8bec39fe91fb",
@@ -6118,13 +6267,14 @@
         ]
       },
       "received_at": "2026-03-13T19:48:59.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T19:48:59.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:22.084Z",
+    "noise_reason": "This is a promotional post from Nextdoor regarding a job opening, which does not require any action.",
+    "delta_id": "delta-e53cc01ab88a"
   },
   {
     "id": "ep-19ce964b041b30ef",
@@ -6159,13 +6309,14 @@
         ]
       },
       "received_at": "2026-03-13T22:50:15.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T22:50:15.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:25.962Z",
+    "noise_reason": "This is a community post from a neighborhood platform with no actionable items.",
+    "delta_id": "delta-322700d0f584"
   },
   {
     "id": "ep-19ce94e35191baf1",
@@ -6200,13 +6351,14 @@
         ]
       },
       "received_at": "2026-03-13T22:25:42.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T22:25:42.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:30.993Z",
+    "noise_reason": "Promotional offer from Uber Eats with no actionable content.",
+    "delta_id": "delta-768442e6677c"
   },
   {
     "id": "ep-19ce8ef6448b9846",
@@ -6241,13 +6393,14 @@
         ]
       },
       "received_at": "2026-03-13T20:42:08.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-13T20:42:08.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:34.703Z",
+    "noise_reason": "This is a promotional email from Pinterest with no actionable content.",
+    "delta_id": "delta-ba7da459f411"
   },
   {
     "id": "ep-19ce9ad3f5bbf1a9",
@@ -6282,13 +6435,14 @@
         ]
       },
       "received_at": "2026-03-14T00:09:29.000Z",
-      "processed": true,
-      "is_noise": true
+      "processed": false
     },
     "status": "noise",
     "is_noise": true,
     "created_at": "2026-03-14T00:09:29.000Z",
-    "updated_at": "2026-03-14T00:40:11.950Z"
+    "updated_at": "2026-03-14T01:04:38.385Z",
+    "noise_reason": "This is a community post from Nextdoor asking for recommendations, which does not require any action.",
+    "delta_id": "delta-fa629ac87867"
   },
   {
     "id": "ep-sig-manual-mmpln8a4",
@@ -6322,8 +6476,8 @@
     "status": "committed",
     "is_noise": false,
     "created_at": "2026-03-14T00:40:31.660Z",
-    "updated_at": "2026-03-14T00:40:47.146Z",
-    "delta_id": "delta-2c5973fcda62",
-    "committed_at": "2026-03-14T00:40:47.141Z"
+    "updated_at": "2026-03-14T01:04:52.742Z",
+    "delta_id": "delta-4f3271b52b1b",
+    "committed_at": "2026-03-14T01:04:52.741Z"
   }
 ]

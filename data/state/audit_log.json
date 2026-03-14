@@ -1,7 +1,1 @@
-[
-  {"id": "aud-001", "event_type": "obligation_created", "record_id": "obl-001", "summary": "Obligation created: \"Pay Invoice #2024-089\" — Meridian Coffee owes Vertex Design Co", "source_signal_id": "sig-001", "source_processing_id": "proc-001", "timestamp": "2026-03-10T09:15:05Z"},
-  {"id": "aud-002", "event_type": "state_updated", "record_id": "upd-001", "summary": "State update: Invoice #2024-089.status → \"sent\"", "source_signal_id": "sig-001", "source_processing_id": "proc-001", "timestamp": "2026-03-10T09:15:05Z"},
-  {"id": "aud-003", "event_type": "obligation_created", "record_id": "obl-002", "summary": "Obligation created: \"Deliver logo revisions to Harborview\" — You owe Harborview Restaurant Group", "source_signal_id": "sig-002", "source_processing_id": "proc-002", "timestamp": "2026-03-11T14:30:05Z"},
-  {"id": "aud-004", "event_type": "obligation_created", "record_id": "obl-003", "summary": "Obligation created: \"Prepare Thornfield Bakery kickoff\" — You owe Thornfield Bakery", "source_signal_id": "sig-004", "source_processing_id": "proc-004", "timestamp": "2026-03-13T10:00:04Z"},
-  {"id": "aud-005", "event_type": "state_updated", "record_id": "upd-005", "summary": "State update: Thornfield Bakery.project_status → \"contract_signed\"", "source_signal_id": "sig-004", "source_processing_id": "proc-004", "timestamp": "2026-03-13T10:00:04Z"}
-]
+[]
