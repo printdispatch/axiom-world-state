@@ -88,6 +88,7 @@ export interface OrchestratorOptions {
 // Simple interfaces for the stores we need
 export interface EntityStore {
   findAll(): EntityRecord[];
+  findById(id: string): EntityRecord | undefined;
   create(entity: Omit<EntityRecord, "id" | "created_at" | "updated_at">): EntityRecord;
   update(id: string, changes: Partial<EntityRecord>): EntityRecord;
   findByName(name: string): EntityRecord | undefined;
@@ -276,12 +277,37 @@ export class Orchestrator {
           result.entities_created++;
         }
       } else if (change.type === "update") {
-        this.entityStore.update(change.entity_id, {
-          ...change.changes,
-          updated_at: new Date().toISOString(),
-          source_episode_id: episode.id,
-        });
-        result.entities_updated++;
+        // Gracefully handle stale entity IDs — model may reference an ID that no longer exists
+        // after a data wipe. Fall back to a name-match or create.
+        const existingById = this.entityStore.findById(change.entity_id);
+        if (existingById) {
+          this.entityStore.update(change.entity_id, {
+            ...change.changes,
+            updated_at: new Date().toISOString(),
+            source_episode_id: episode.id,
+          });
+          result.entities_updated++;
+        } else {
+          // Try to find by name before creating
+          const byName = this.entityStore.findByName(change.entity_name ?? "");
+          if (byName) {
+            this.entityStore.update(byName.id, {
+              ...change.changes,
+              updated_at: new Date().toISOString(),
+              source_episode_id: episode.id,
+            });
+            result.entities_updated++;
+          } else {
+            // Entity doesn't exist — treat as create
+            this.entityStore.create({
+              name: change.entity_name ?? "Unknown Entity",
+              type: (change.changes as Record<string, string>)["type"] ?? "organization",
+              aliases: [],
+              source_episode_id: episode.id,
+            });
+            result.entities_created++;
+          }
+        }
       }
     }
 

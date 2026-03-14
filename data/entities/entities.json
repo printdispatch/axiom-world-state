@@ -1,119 +1,159 @@
 [
   {
-    "id": "ent-8b6376f0",
-    "created_at": "2026-03-14T00:54:14.542Z",
-    "updated_at": "2026-03-14T01:04:52.742Z",
+    "id": "ent-960c579d",
+    "created_at": "2026-03-14T01:40:26.877Z",
+    "updated_at": "2026-03-14T01:47:29.104Z",
     "name": "Self Visa® Credit Card",
-    "type": "artifact",
+    "type": "financial_account",
     "lookup_key": "self-visa-credit-card",
     "aliases": [
-      "Self Credit Card"
+      "Self"
     ],
     "source_episode_id": "ep-sig-manual-mmpln8a4",
     "confidence": 0.9,
     "facts": [
       {
-        "property": "billing_status",
-        "value": "failed",
-        "valid_from": "2026-03-08T17:40:31.000Z",
+        "property": "payment_due",
+        "value": "2026-03-08T17:51:15Z",
+        "valid_from": "2026-03-09T01:51:52Z",
         "confidence": 0.9,
-        "source_fact": "Subject: Card Billing Failure"
+        "source_fact": "Payment method card ending with 4084"
       },
       {
-        "property": "billing_status",
-        "value": "failed",
-        "valid_from": "2026-03-13T18:24:50.000Z",
+        "property": "payment_due",
+        "value": "$20.00",
+        "valid_from": "2026-03-08T17:51:15.000Z",
         "confidence": 0.9,
-        "source_fact": "Subject: Card Billing Failure"
-      },
-      {
-        "property": "billing_status",
-        "value": "payment_failed",
-        "valid_from": "2026-03-14T00:40:31.660Z",
-        "confidence": 0.9,
-        "source_fact": "We were unable to charge your card ending in 4242 for your Squarespace subscription renewal"
+        "source_fact": "Invoiced amount $20.00"
       }
     ],
-    "billing_status": "payment_failed"
+    "billing_status": "failed"
   },
   {
-    "id": "ent-449a7780",
-    "created_at": "2026-03-14T00:54:30.359Z",
-    "updated_at": "2026-03-14T00:57:48.142Z",
+    "id": "ent-771c473d",
+    "created_at": "2026-03-14T01:40:36.639Z",
+    "updated_at": "2026-03-14T01:40:36.639Z",
     "name": "Chad Bush",
     "type": "person",
     "lookup_key": "chad.bush@simon.com",
     "aliases": [
       "Chad"
     ],
-    "source_episode_id": "ep-19cde40d961d1fae",
-    "confidence": 0.8,
-    "field": "last_contact",
-    "new value": "2026-03-12T19:52:52.000Z",
-    "last_contact": "2026-03-11T18:55:01.000Z"
+    "source_episode_id": "ep-19ce71e78642781d",
+    "confidence": 0.9
   },
   {
-    "id": "ent-3bc0df43",
-    "created_at": "2026-03-14T00:55:10.919Z",
-    "updated_at": "2026-03-14T00:57:32.656Z",
+    "id": "ent-8f8a01d0",
+    "created_at": "2026-03-14T01:40:36.639Z",
+    "updated_at": "2026-03-14T01:42:36.833Z",
+    "name": "Midwest Signs",
+    "type": "organization",
+    "lookup_key": "service@midwestsigns.com",
+    "aliases": [
+      "MidwestSigns"
+    ],
+    "source_episode_id": "ep-19cde40d961d1fae",
+    "confidence": 0.9,
+    "phone": "317-800-6500",
+    "shipping_address": "8560 E. 30th St., Suite A, Indianapolis, IN 46219",
+    "contact_email": "service@midwestsigns.com",
+    "contact_phone": "317-800-6500",
+    "email": "service@midwestsigns.com",
+    "address": "8560 E. 30th St., Suite A, Indianapolis, IN 46219"
+  },
+  {
+    "id": "ent-b6631c83",
+    "created_at": "2026-03-14T01:41:09.099Z",
+    "updated_at": "2026-03-14T01:43:11.633Z",
     "name": "Metro Area Printing",
     "type": "organization",
-    "lookup_key": "contact@metroareaprinting.com",
+    "lookup_key": "metroareaprinting.com",
     "aliases": [
       "Metro Area Printing"
     ],
-    "source_episode_id": "ep-19cde61340b10120",
+    "source_episode_id": "ep-19ce39c0aa83963f",
     "confidence": 0.9,
-    "contact_phone": "317-800-6500",
-    "field": "new customer form required"
+    "facts": [
+      {
+        "property": "last_contact",
+        "value": "2026-03-10T23:44:50-04:00",
+        "valid_from": "2026-03-10T23:44:50-04:00",
+        "confidence": 0.9,
+        "source_fact": "I think 80lb gloss text should be good for flyers."
+      }
+    ]
   },
   {
-    "id": "ent-677b6d4b",
-    "created_at": "2026-03-14T00:55:33.260Z",
-    "updated_at": "2026-03-14T00:55:33.260Z",
+    "id": "ent-5fd84931",
+    "created_at": "2026-03-14T01:41:09.099Z",
+    "updated_at": "2026-03-14T01:46:15.749Z",
+    "name": "Ahmer K. Khan",
+    "type": "person",
+    "lookup_key": "ahmer.k.khan@metroareaprinting.com",
+    "aliases": [
+      "Ahmer Khan"
+    ],
+    "source_episode_id": "ep-19cc68f767be2186",
+    "confidence": 0.9,
+    "billing_status": "payment authorization failed",
+    "last_contact": "2026-03-08T17:51:20.000Z",
+    "renewal_date": "2026-04-06"
+  },
+  {
+    "id": "ent-49a41531",
+    "created_at": "2026-03-14T01:41:19.505Z",
+    "updated_at": "2026-03-14T01:41:19.505Z",
     "name": "Elaina Bahr",
     "type": "person",
-    "lookup_key": "nextdoor_profile_176703652",
+    "lookup_key": "elaina.bahr@nextdoor.com",
     "aliases": [],
     "source_episode_id": "ep-19ce384e2b37f4ed",
     "confidence": 0.9
   },
   {
-    "id": "ent-9dfdc168",
-    "created_at": "2026-03-14T00:55:53.843Z",
-    "updated_at": "2026-03-14T01:02:54.058Z",
+    "id": "ent-ed6fb254",
+    "created_at": "2026-03-14T01:41:30.458Z",
+    "updated_at": "2026-03-14T01:41:30.458Z",
     "name": "Indiana Independent Auto Dealers Association",
     "type": "organization",
     "lookup_key": "indianaiada.com",
     "aliases": [
-      "Indiana IADA"
+      "IAADA"
     ],
-    "source_episode_id": "ep-19cc68f767be2186",
-    "confidence": 0.8,
-    "billing_status": "payment authorization failed"
+    "source_episode_id": "ep-19ce29eb10b514d2",
+    "confidence": 0.9
   },
   {
-    "id": "ent-e717dae9",
-    "created_at": "2026-03-14T00:58:00.718Z",
-    "updated_at": "2026-03-14T00:58:00.718Z",
-    "name": "Gaucho's Fire Express",
-    "type": "organization",
-    "lookup_key": "gauchosfire@gmail.com",
-    "aliases": [
-      "Gaucho’s Fire Express"
-    ],
-    "source_episode_id": "ep-19cde1d4532ba05c",
-    "confidence": 0.8
-  },
-  {
-    "id": "ent-3b8b3349",
-    "created_at": "2026-03-14T00:59:00.290Z",
-    "updated_at": "2026-03-14T00:59:00.290Z",
+    "id": "ent-135fe606",
+    "created_at": "2026-03-14T01:43:31.448Z",
+    "updated_at": "2026-03-14T01:43:31.448Z",
     "name": "Bolt for the Heart",
     "type": "organization",
     "lookup_key": "www.boltfortheheart.com",
     "aliases": [],
     "source_episode_id": "ep-19cd972da1a2cd76",
-    "confidence": 0.8
+    "confidence": 0.9
+  },
+  {
+    "id": "ent-d4b72dbd",
+    "created_at": "2026-03-14T01:44:48.490Z",
+    "updated_at": "2026-03-14T01:44:48.490Z",
+    "name": "Sue Bowman",
+    "type": "person",
+    "lookup_key": "nextdoor.com/profile/75746930",
+    "aliases": [],
+    "source_episode_id": "ep-19ccf916ef59f7ad",
+    "confidence": 0.9
+  },
+  {
+    "id": "ent-d463a835",
+    "created_at": "2026-03-14T01:45:30.234Z",
+    "updated_at": "2026-03-14T01:45:30.234Z",
+    "name": "Ava Gabriel",
+    "type": "person",
+    "lookup_key": "175204375",
+    "aliases": [],
+    "source_episode_id": "ep-19cca83066f1394b",
+    "confidence": 0.9
   }
 ]

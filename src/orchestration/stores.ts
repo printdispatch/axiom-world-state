@@ -61,6 +61,10 @@ export class JsonEntityStore implements EntityStore {
     return [...this.entities.values()];
   }
 
+  findById(id: string): EntityRecord | undefined {
+    return this.entities.get(id);
+  }
+
   findByName(name: string): EntityRecord | undefined {
     const lower = name.toLowerCase();
     return [...this.entities.values()].find(

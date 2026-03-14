@@ -22,8 +22,6 @@ import { Episode } from "../../schema/episodes.js";
 import { Delta, EntityChange, ObligationChange, FactChange, ContradictionFound } from "../../schema/delta.js";
 
 // ─── World Context ────────────────────────────────────────────────────────────
-// A lightweight snapshot of current world state passed to the engine.
-// The engine reads this but never writes to it.
 
 export interface WorldContext {
   entities: Array<{ id: string; name: string; type: string; aliases: string[] }>;
@@ -47,11 +45,6 @@ export class CognitionService {
    *
    * Analyzes an Episode in the context of the current World State.
    * Returns a Delta of proposed changes — does NOT write to state.
-   *
-   * This is the core cognitive operation. The prompt gives the model:
-   *   - The raw episode content
-   *   - The current entities and obligations (world context)
-   *   - Instructions to produce a structured Delta
    */
   async interpret(episode: Episode, worldContext: WorldContext): Promise<Delta> {
     const systemPrompt = this.buildSystemPrompt(worldContext);
@@ -131,103 +124,146 @@ Analyze the episode and return a JSON object with this exact structure:
 \`\`\`json
 {
   "is_noise": boolean,
-  "noise_reason": "string (only if is_noise=true)",
+  "noise_reason": "string (only if is_noise=true — one sentence explaining why)",
   "interpretation_summary": "one sentence: what this episode means for the world state",
   "confidence_overall": 0.0-1.0,
-  "entity_changes": [
-    {
-      "type": "create",
-      "name": "Entity Name",
-      "entity_type": "organization|person|artifact|domain",
-      "lookup_key": "optional unique key like domain or email",
-      "aliases": ["alt name"],
-      "confidence": 0.0-1.0,
-      "source_fact": "exact quote from episode that justifies this"
-    },
-    {
-      "type": "update",
-      "entity_id": "existing entity id from world state",
-      "entity_name": "Entity Name",
-      "changes": { "field": "new value" },
-      "confidence": 0.0-1.0,
-      "source_fact": "exact quote from episode"
-    }
-  ],
-  "obligation_changes": [
-    {
-      "type": "create",
-      "title": "Short action title",
-      "description": "What needs to be done and why",
-      "owed_by": "who must act",
-      "owed_to": "who is waiting",
-      "priority": "critical|high|medium|low",
-      "due_hint": "optional deadline hint",
-      "workspace_hint": "optional project/workspace name",
-      "confidence": 0.0-1.0,
-      "source_fact": "exact quote from episode"
-    },
-    {
-      "type": "update",
-      "obligation_id": "existing obligation id",
-      "obligation_title": "title for reference",
-      "new_status": "open|fulfilled|overdue|cancelled|disputed",
-      "reason": "why this status change is warranted",
-      "confidence": 0.0-1.0
-    }
-  ],
-  "fact_changes": [
-    {
-      "entity_name": "Entity Name",
-      "property": "billing_status|renewal_date|last_contact|etc",
-      "value": "new value",
-      "valid_from": "ISO timestamp",
-      "confidence": 0.0-1.0,
-      "source_fact": "exact quote"
-    }
-  ],
-  "contradictions_found": [
-    {
-      "description": "what conflicts",
-      "entity_name": "Entity Name",
-      "field": "optional field name",
-      "existing_value": "what we thought was true",
-      "incoming_value": "what this episode says"
-    }
-  ],
-  "proposed_actions": [
-    {
-      "action_type": "notify|draft_reply|schedule|escalate|archive",
-      "description": "what to do",
-      "urgency": "low|medium|high|critical",
-      "requires_approval": boolean,
-      "rationale": "why this action is recommended"
-    }
-  ]
+  "entity_changes": [...],
+  "obligation_changes": [...],
+  "fact_changes": [...],
+  "contradictions_found": [...],
+  "proposed_actions": [...]
 }
 \`\`\`
 
-## Noise Classification
+## Entity Types (use exactly one of these)
 
-Mark is_noise=true for: newsletters, marketing emails, automated system notifications with no action required, community posts (Nextdoor, Reddit, etc.), social media notifications, promotional offers.
+- **person** — a named individual (client, vendor, contact, sender)
+- **organization** — a company, business, nonprofit, association, or institution
+- **financial_account** — a credit card, bank account, payment method, or subscription billing account
+- **domain** — a registered internet domain name (e.g. edenframe.com)
+- **service** — a SaaS product, platform, or hosted service (e.g. Squarespace, Cloudflare, Uber)
+- **project** — a named work engagement, campaign, or deliverable
+- **place** — a physical location, venue, or address
 
-Mark is_noise=false for: billing issues, domain renewals, client communications, file transfers requiring review, payment failures, contract-related emails, anything requiring a human decision or action.
+## Entity Change Schema
+
+\`\`\`json
+{
+  "type": "create",
+  "name": "Entity Name",
+  "entity_type": "person|organization|financial_account|domain|service|project|place",
+  "lookup_key": "optional unique key (domain name, email address, account number)",
+  "aliases": ["alternative name or abbreviation"],
+  "confidence": 0.0-1.0,
+  "source_fact": "exact quote from episode that justifies this entity"
+}
+\`\`\`
+
+For updates to existing entities:
+\`\`\`json
+{
+  "type": "update",
+  "entity_id": "existing entity id from world state",
+  "entity_name": "Entity Name",
+  "changes": { "field": "new value" },
+  "confidence": 0.0-1.0,
+  "source_fact": "exact quote from episode"
+}
+\`\`\`
+
+## Obligation Change Schema
+
+\`\`\`json
+{
+  "type": "create",
+  "title": "Short imperative action title (max 8 words)",
+  "description": "What needs to be done, why it matters, and any relevant context from the email thread",
+  "owed_by": "who must act (use 'user' if it is the inbox owner)",
+  "owed_to": "who is waiting or who benefits",
+  "priority": "critical|high|medium|low",
+  "due_hint": "specific date or relative deadline if mentioned, otherwise omit",
+  "workspace_hint": "project or client name if clearly identifiable",
+  "confidence": 0.0-1.0,
+  "source_fact": "exact quote from episode"
+}
+\`\`\`
+
+For status updates to existing obligations:
+\`\`\`json
+{
+  "type": "update",
+  "obligation_id": "existing obligation id",
+  "obligation_title": "title for reference",
+  "new_status": "open|fulfilled|overdue|cancelled|disputed",
+  "reason": "why this status change is warranted",
+  "confidence": 0.0-1.0
+}
+\`\`\`
+
+## Fact Change Schema (for properties on existing entities)
+
+\`\`\`json
+{
+  "entity_name": "Entity Name",
+  "property": "billing_status|renewal_date|last_contact|payment_due|phone|address|etc",
+  "value": "new value",
+  "valid_from": "ISO timestamp",
+  "confidence": 0.0-1.0,
+  "source_fact": "exact quote"
+}
+\`\`\`
+
+## Noise Classification Rules
+
+**Mark is_noise=true for:**
+- Newsletters, digests, and marketing emails with no required action
+- Automated notifications that are purely informational (e.g. "your file was downloaded")
+- Community posts (Nextdoor, Reddit, Facebook groups) with no direct obligation to the inbox owner
+- Social media notifications (Pinterest, Instagram, LinkedIn activity alerts)
+- Promotional offers and discount codes
+- Subscription renewal confirmations where no action is needed
+- Spam and cold outreach with no existing relationship
+
+**Mark is_noise=false for:**
+- Billing failures, payment issues, or overdue invoices — even if automated
+- Domain renewal warnings or expiration notices
+- Client communications, vendor replies, or any email in an active thread
+- File transfers or attachments requiring review or approval
+- Any email that contains a question, request, or deadline directed at the inbox owner
+- Legal, compliance, or contractual notices
+- Emails where someone is waiting for a response
+
+**Short reply threads:** If an email is a brief reply in an ongoing thread (e.g. "Sounds good, let me check"), it is still signal if it implies a pending action or advances a client relationship. Extract the obligation from context even if the email body is short.
 
 ## Entity Deduplication
 
-Before creating a new entity, check the Known Entities list. If the entity already exists, use type "update" with the existing entity_id. Do NOT create duplicates.
+Before creating a new entity, check the Known Entities list. If the entity already exists (same name or alias), use type "update" with the existing entity_id. Do NOT create duplicates.
+
+Common aliases to watch for:
+- "Squarespace" and "Squarespace Inc." are the same service entity
+- "Cloudflare" and "Cloudflare Registrar" are the same service entity
+- A person's first name in a reply thread likely matches an existing person entity
 
 ## Obligation Deduplication
 
-Before creating a new obligation, check the Open Obligations list. If a similar obligation already exists (same owed_by, same topic), use type "update" to update its status rather than creating a duplicate.
+Before creating a new obligation, check the Open Obligations list. If a similar obligation already exists (same owed_by, same topic, same counterparty), use type "update" to change its status rather than creating a duplicate.
 
-Be precise. Only propose changes that are clearly justified by the episode content.`;
+## Quality Standards
+
+- Every entity_change must have a source_fact — a direct quote from the episode
+- Every obligation_change must have a source_fact
+- Do not invent obligations not supported by the episode content
+- For short reply threads with no clear new obligation, it is acceptable to return empty entity_changes and obligation_changes — but still provide an interpretation_summary
+- confidence_overall should reflect your certainty: 0.9+ for clear explicit content, 0.7-0.8 for inferred, below 0.7 for ambiguous
+
+Be precise. Only propose changes clearly justified by the episode content.`;
   }
 
   // ─── User Message ───────────────────────────────────────────────────────────
 
   private buildUserMessage(episode: Episode): string {
-    const content = episode.raw_text.length > 3000
-      ? episode.raw_text.slice(0, 3000) + "\n[... truncated ...]"
+    const content = episode.raw_text.length > 4000
+      ? episode.raw_text.slice(0, 4000) + "\n[... truncated ...]"
       : episode.raw_text;
 
     return [
